@@ -1,12 +1,109 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import Dashboard from '@/components/Dashboard';
+import SyllabusTracker from '@/components/SyllabusTracker';
+import CBTLab from '@/components/CBTLab';
+import MistakeLog from '@/components/MistakeLog';
+import { useJambStore } from '@/hooks/useJambStore';
+import { SYLLABUS } from '@/data/syllabus';
+
+type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes';
+
+const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'dashboard', label: 'HQ', icon: '⚡' },
+  { id: 'syllabus', label: 'AOC', icon: '📋' },
+  { id: 'cbt', label: 'CBT', icon: '🖥️' },
+  { id: 'mistakes', label: 'LOG', icon: '📝' },
+];
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const store = useJambStore();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background text-foreground scanline">
+      {/* Top Bar */}
+      {!store.restMode && (
+        <header className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-50">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🤖</span>
+            <span className="text-sm font-black tracking-widest text-foreground">JAMB MACHINE</span>
+          </div>
+          <button
+            onClick={store.toggleRestMode}
+            className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"
+          >
+            😴 REST
+          </button>
+        </header>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-2xl mx-auto p-4 pb-24">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === 'dashboard' && (
+            <Dashboard
+              restMode={store.restMode}
+              onToggleRest={store.toggleRestMode}
+              streakDays={store.streakDays}
+              masteredCount={store.topicsMasteredCount}
+              totalTopics={SYLLABUS.length}
+              revisionsDue={store.getRevisionsDue().length}
+            />
+          )}
+          {activeTab === 'syllabus' && (
+            <SyllabusTracker
+              mastered={store.mastered}
+              onToggle={store.toggleMastered}
+              onMarkRevised={store.markRevised}
+              getRevisionsDue={store.getRevisionsDue}
+            />
+          )}
+          {activeTab === 'cbt' && (
+            <CBTLab
+              onSessionComplete={store.addCBTSession}
+              sessions={store.cbtSessions}
+            />
+          )}
+          {activeTab === 'mistakes' && (
+            <MistakeLog
+              mistakes={store.mistakes}
+              onAdd={store.addMistake}
+              onDelete={store.deleteMistake}
+            />
+          )}
+        </motion.div>
+      </main>
+
+      {/* Bottom Navigation */}
+      {!store.restMode && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-50">
+          <div className="max-w-2xl mx-auto flex">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${
+                  activeTab === tab.id
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                <span className="text-[10px] font-bold tracking-widest">{tab.label}</span>
+                {activeTab === tab.id && (
+                  <motion.div layoutId="nav-indicator" className="w-6 h-0.5 bg-primary rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
     </div>
   );
 };
