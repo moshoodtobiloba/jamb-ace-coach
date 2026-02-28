@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Dashboard from '@/components/Dashboard';
 import SyllabusTracker from '@/components/SyllabusTracker';
-import CBTLab from '@/components/CBTLab';
+import CBTExam from '@/components/CBTExam';
 import MistakeLog from '@/components/MistakeLog';
 import { useJambStore } from '@/hooks/useJambStore';
 import { SYLLABUS } from '@/data/syllabus';
@@ -21,10 +21,10 @@ const Index = () => {
   const store = useJambStore();
 
   return (
-    <div className="min-h-screen bg-background text-foreground scanline">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Top Bar */}
       {!store.restMode && (
-        <header className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-50">
+        <header className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-40">
           <div className="flex items-center gap-2">
             <span className="text-lg">🤖</span>
             <span className="text-sm font-black tracking-widest text-foreground">JAMB MACHINE</span>
@@ -65,7 +65,7 @@ const Index = () => {
             />
           )}
           {activeTab === 'cbt' && (
-            <CBTLab
+            <CBTExam
               onSessionComplete={store.addCBTSession}
               sessions={store.cbtSessions}
             />
@@ -82,7 +82,7 @@ const Index = () => {
 
       {/* Bottom Navigation */}
       {!store.restMode && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-50">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-40">
           <div className="max-w-2xl mx-auto flex">
             {TABS.map(tab => (
               <button
