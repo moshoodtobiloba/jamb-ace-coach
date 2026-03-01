@@ -111,6 +111,7 @@ export const SYLLABUS: Topic[] = [
   { id: 'eng-15', name: 'Direct & Indirect Speech', subject: 'english', category: 'Lexis & Structure' },
   { id: 'eng-16', name: 'The Life Changer – Khadija Abubakar Jalli', subject: 'english', category: 'Literature' },
   { id: 'eng-17', name: 'In Dependence – Sarah Ladipo Manyika', subject: 'english', category: 'Literature' },
+  { id: 'eng-18', name: 'The Lekki Headmaster – Adebayo Oke-Lawal', subject: 'english', category: 'Literature' },
 ];
 
 // Daily schedule alternation: Day A = Physics + English, Day B = Chemistry + Math

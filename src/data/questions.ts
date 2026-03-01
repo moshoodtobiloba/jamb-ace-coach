@@ -985,6 +985,56 @@ export const QUESTION_BANK: Question[] = [
     answer: 'A', explanation: 'Homophones are words that sound the same but have different meanings and spellings'
   },
 
+  // ==================== THE LEKKI HEADMASTER ====================
+  {
+    id: 'lekki-q1', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
+    question: 'In "The Lekki Headmaster," the central theme revolves around',
+    options: { A: 'Corruption and moral decay in society', B: 'Love and romance', C: 'Space exploration', D: 'Agricultural reform' },
+    answer: 'A', explanation: 'The Lekki Headmaster explores themes of corruption, moral decay, and the challenges of modern Nigerian society.'
+  },
+  {
+    id: 'lekki-q2', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
+    question: 'The setting of "The Lekki Headmaster" is primarily in',
+    options: { A: 'Lagos, Nigeria', B: 'London, England', C: 'Accra, Ghana', D: 'Abuja, Nigeria' },
+    answer: 'A', explanation: 'The story is set in Lagos, specifically around the Lekki area, reflecting urban Nigerian life.'
+  },
+  {
+    id: 'lekki-q3', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
+    question: 'The title "The Lekki Headmaster" is significant because',
+    options: { A: 'It represents authority and the abuse of power', B: 'It describes a school principal', C: 'It is about a geography teacher', D: 'It refers to a religious leader' },
+    answer: 'A', explanation: 'The title symbolically represents authority figures and the potential for abuse of power in society.'
+  },
+  {
+    id: 'lekki-q4', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
+    question: 'The narrative technique used in "The Lekki Headmaster" is',
+    options: { A: 'Third person omniscient', B: 'First person', C: 'Second person', D: 'Stream of consciousness' },
+    answer: 'A', explanation: 'The author uses third person omniscient narration to give readers insight into multiple characters.'
+  },
+  {
+    id: 'lekki-q5', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
+    question: 'A major lesson from "The Lekki Headmaster" is that',
+    options: { A: 'Integrity should not be compromised for material gain', B: 'Money solves all problems', C: 'Education is unnecessary', D: 'Violence is the answer' },
+    answer: 'A', explanation: 'The text teaches that integrity and moral uprightness should not be sacrificed for material wealth.'
+  },
+  {
+    id: 'lekki-q6', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
+    question: 'The literary device most prominently used in "The Lekki Headmaster" is',
+    options: { A: 'Satire', B: 'Alliteration', C: 'Onomatopoeia', D: 'Assonance' },
+    answer: 'A', explanation: 'The author uses satire to critique societal vices and moral failings in contemporary Nigeria.'
+  },
+  {
+    id: 'lekki-q7', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
+    question: 'The social class portrayed in "The Lekki Headmaster" is primarily',
+    options: { A: 'The affluent upper class of Lagos', B: 'Rural farmers', C: 'Nomadic herders', D: 'Colonial administrators' },
+    answer: 'A', explanation: 'The story focuses on the wealthy upper class in Lagos and their moral contradictions.'
+  },
+  {
+    id: 'lekki-q8', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
+    question: 'The conflict in "The Lekki Headmaster" can best be described as',
+    options: { A: 'Man vs. society', B: 'Man vs. nature', C: 'Man vs. technology', D: 'Man vs. self only' },
+    answer: 'A', explanation: 'The central conflict is between individuals and the corrupt societal systems they navigate.'
+  },
+
   // ==================== USE OF ENGLISH (Extra 20 for the 60-question requirement) ====================
   {
     id: 'eng-q41', subject: 'english', topic: 'Comprehension & Summary', year: 2020,
@@ -1149,8 +1199,26 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 export function getAvailableYears(): number[] {
-  const years = new Set(QUESTION_BANK.map(q => q.year));
-  return Array.from(years).sort((a, b) => b - a);
+  // Show all years 1999-2025 even if we don't have questions for every year
+  const allYears: number[] = [];
+  for (let y = 2025; y >= 1999; y--) allYears.push(y);
+  return allYears;
+}
+
+export function generateCustomExam(config: {
+  subjects: Subject[];
+  questionsPerSubject: number;
+  topics?: string[];
+}): Question[] {
+  let allQs: Question[] = [];
+  for (const sub of config.subjects) {
+    let qs = getQuestionsBySubject(sub);
+    if (config.topics && config.topics.length > 0) {
+      qs = qs.filter(q => config.topics!.includes(q.topic));
+    }
+    allQs.push(...shuffleArray(qs).slice(0, config.questionsPerSubject));
+  }
+  return shuffleArray(allQs);
 }
 
 export function getSubjectTopics(subject: Subject): string[] {
