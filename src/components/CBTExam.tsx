@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Question, generateExam, getQuestionsBySubject, getAvailableYears, getSubjectTopics } from '@/data/questions';
+import { Question, generateExam, generateCustomExam, getQuestionsBySubject, getAvailableYears, getSubjectTopics } from '@/data/questions';
 import { Subject, SUBJECT_LABELS } from '@/data/syllabus';
 import Calculator from './Calculator';
 
@@ -27,6 +27,12 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
   const [practiceSubject, setPracticeSubject] = useState<Subject>('mathematics');
   const [practiceTopic, setPracticeTopic] = useState<string>('all');
   const [practiceYear, setPracticeYear] = useState<number | 'all'>('all');
+
+  // Custom CBT mode
+  const [showCustom, setShowCustom] = useState(false);
+  const [customSubjects, setCustomSubjects] = useState<Subject[]>(['mathematics', 'physics', 'chemistry', 'english']);
+  const [customQPerSubject, setCustomQPerSubject] = useState(15);
+  const [customTimeMin, setCustomTimeMin] = useState(30);
 
   const EXAM_DURATION = examType === 'general' ? 120 * 60 : 30 * 60;
 
@@ -93,6 +99,21 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     setMode('exam');
     setExamType('daily');
     setSubjectFilter('all');
+  };
+
+  const startCustomExam = () => {
+    if (customSubjects.length === 0) return;
+    const qs = generateCustomExam({ subjects: customSubjects, questionsPerSubject: customQPerSubject });
+    if (qs.length === 0) return;
+    setQuestions(qs);
+    setAnswers({});
+    setCurrentQ(0);
+    setTimeLeft(customTimeMin * 60);
+    setExamStartTime(Date.now());
+    setMode('exam');
+    setExamType('daily');
+    setSubjectFilter('all');
+    setShowCustom(false);
   };
 
   const handleSubmit = useCallback(() => {
@@ -240,6 +261,47 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
           >
             START PRACTICE →
           </button>
+        </div>
+
+        {/* Custom CBT Mode */}
+        <div className="border border-border rounded-lg p-5 space-y-4">
+          <button onClick={() => setShowCustom(!showCustom)} className="w-full text-left">
+            <p className="text-xs font-bold tracking-widest text-muted-foreground">🎯 CUSTOM CBT MODE {showCustom ? '▼' : '▶'}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Choose subjects, questions count, and time</p>
+          </button>
+          {showCustom && (
+            <div className="space-y-3 pt-2">
+              <div className="flex gap-2 flex-wrap">
+                {(['mathematics', 'physics', 'chemistry', 'english'] as Subject[]).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setCustomSubjects(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])}
+                    className={`px-3 py-1.5 rounded text-xs font-bold tracking-wider transition-colors ${
+                      customSubjects.includes(s) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {SUBJECT_LABELS[s]}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">QUESTIONS / SUBJECT</label>
+                  <input type="number" value={customQPerSubject} onChange={e => setCustomQPerSubject(Math.max(1, parseInt(e.target.value) || 1))} min={1} max={60}
+                    className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">TIME (MINUTES)</label>
+                  <input type="number" value={customTimeMin} onChange={e => setCustomTimeMin(Math.max(1, parseInt(e.target.value) || 1))} min={1} max={180}
+                    className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground" />
+                </div>
+              </div>
+              <button onClick={startCustomExam} disabled={customSubjects.length === 0}
+                className="w-full py-2.5 bg-secondary text-secondary-foreground rounded text-xs font-bold tracking-wider hover:bg-secondary/80 transition-colors disabled:opacity-40">
+                🎯 START CUSTOM CBT ({customSubjects.length * customQPerSubject} Q • {customTimeMin} MIN)
+              </button>
+            </div>
+          )}
         </div>
 
         {/* JAMB Keyboard Guide */}
