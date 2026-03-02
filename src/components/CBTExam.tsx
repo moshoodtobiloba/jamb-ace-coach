@@ -33,8 +33,8 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
   const [customSubjects, setCustomSubjects] = useState<Subject[]>(['mathematics', 'physics', 'chemistry', 'english']);
   const [customQPerSubject, setCustomQPerSubject] = useState(15);
   const [customTimeMin, setCustomTimeMin] = useState(30);
-
-  const EXAM_DURATION = examType === 'general' ? 120 * 60 : 30 * 60;
+  const [customYear, setCustomYear] = useState<number | 'all'>('all');
+  const [customTopics, setCustomTopics] = useState<string[]>([]);
 
   // Timer
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     return () => clearInterval(t);
   }, [mode, timeLeft]);
 
-  // Keyboard shortcuts - exactly like real JAMB
+  // Keyboard shortcuts
   useEffect(() => {
     if (mode !== 'exam') return;
     const handleKey = (e: KeyboardEvent) => {
@@ -91,10 +91,12 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     if (practiceTopic !== 'all') qs = qs.filter(q => q.topic === practiceTopic);
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
+    // Shuffle for randomness
+    qs = [...qs].sort(() => Math.random() - 0.5);
     setQuestions(qs);
     setAnswers({});
     setCurrentQ(0);
-    setTimeLeft(qs.length * 90); // 1.5 min per question
+    setTimeLeft(qs.length * 90);
     setExamStartTime(Date.now());
     setMode('exam');
     setExamType('daily');
@@ -103,7 +105,12 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
   const startCustomExam = () => {
     if (customSubjects.length === 0) return;
-    const qs = generateCustomExam({ subjects: customSubjects, questionsPerSubject: customQPerSubject });
+    const qs = generateCustomExam({
+      subjects: customSubjects,
+      questionsPerSubject: customQPerSubject, // No cap - use whatever user sets
+      topics: customTopics.length > 0 ? customTopics : undefined,
+      year: customYear !== 'all' ? customYear : undefined,
+    });
     if (qs.length === 0) return;
     setQuestions(qs);
     setAnswers({});
@@ -141,12 +148,18 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const getSubjectForQuestion = (idx: number) => questions[idx]?.subject;
-
-  // Get question indices filtered by subject
   const getFilteredIndices = () => {
     if (subjectFilter === 'all') return questions.map((_, i) => i);
     return questions.map((q, i) => q.subject === subjectFilter ? i : -1).filter(i => i !== -1);
+  };
+
+  // Get all topics for custom mode based on selected subjects
+  const getCustomTopicsList = () => {
+    const topics = new Set<string>();
+    customSubjects.forEach(sub => {
+      getSubjectTopics(sub).forEach(t => topics.add(t));
+    });
+    return Array.from(topics);
   };
 
   // ============== SETUP SCREEN ==============
@@ -154,10 +167,10 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     const todaySessions = sessions.filter(s => s.date === new Date().toDateString());
     const availableYears = getAvailableYears();
     const topics = getSubjectTopics(practiceSubject);
+    const customTopicsList = getCustomTopicsList();
 
     return (
       <div className="space-y-6">
-        {/* Header */}
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black tracking-wider text-foreground">JAMB UTME CBT</h2>
           <p className="text-xs text-muted-foreground tracking-widest">COMPUTER BASED TEST — SIMULATION MODE</p>
@@ -169,34 +182,26 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
         {/* Exam Mode Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Daily CBT */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => startExam('daily')}
-            className="border border-border rounded-lg p-6 text-left hover:border-primary/50 transition-colors group"
-          >
+            className="border border-border rounded-lg p-6 text-left hover:border-primary/50 transition-colors group">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">⚡</span>
               <div>
                 <p className="font-bold tracking-wider text-foreground group-hover:text-primary transition-colors">DAILY CBT</p>
-                <p className="text-[10px] text-muted-foreground tracking-widest">QUICK FIRE TEST</p>
+                <p className="text-[10px] text-muted-foreground tracking-widest">RANDOM MIX EVERY TIME</p>
               </div>
             </div>
             <div className="space-y-1 text-xs text-muted-foreground">
               <p>• 60 Questions (15 per subject)</p>
               <p>• 30 Minutes</p>
-              <p>• All 4 subjects</p>
+              <p>• Questions shuffled randomly</p>
             </div>
           </motion.button>
 
-          {/* General CBT */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => startExam('general')}
-            className="border border-secondary/30 rounded-lg p-6 text-left hover:border-secondary/60 transition-colors group"
-          >
+            className="border border-secondary/30 rounded-lg p-6 text-left hover:border-secondary/60 transition-colors group">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">🔥</span>
               <div>
@@ -207,7 +212,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
             <div className="space-y-1 text-xs text-muted-foreground">
               <p>• 180 Questions (60 English + 40×3)</p>
               <p>• 2 Hours (120 Minutes)</p>
-              <p>• Full JAMB Standard</p>
+              <p>• Random questions from all years</p>
             </div>
           </motion.button>
         </div>
@@ -215,50 +220,34 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
         {/* Practice by Topic/Year */}
         <div className="border border-border rounded-lg p-5 space-y-4">
           <p className="text-xs font-bold tracking-widest text-muted-foreground">📚 PRACTICE BY TOPIC / YEAR</p>
-          
           <div className="flex gap-2 flex-wrap">
             {(['mathematics', 'physics', 'chemistry', 'english'] as Subject[]).map(s => (
-              <button
-                key={s}
-                onClick={() => { setPracticeSubject(s); setPracticeTopic('all'); }}
+              <button key={s} onClick={() => { setPracticeSubject(s); setPracticeTopic('all'); }}
                 className={`px-3 py-1.5 rounded text-xs font-bold tracking-wider transition-colors ${
                   practiceSubject === s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {SUBJECT_LABELS[s]}
-              </button>
+                }`}>{SUBJECT_LABELS[s]}</button>
             ))}
           </div>
-
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">TOPIC</label>
-              <select
-                value={practiceTopic}
-                onChange={e => setPracticeTopic(e.target.value)}
-                className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground"
-              >
+              <select value={practiceTopic} onChange={e => setPracticeTopic(e.target.value)}
+                className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground">
                 <option value="all">All Topics</option>
                 {topics.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
               <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">YEAR</label>
-              <select
-                value={practiceYear}
-                onChange={e => setPracticeYear(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
-                className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground"
-              >
+              <select value={practiceYear} onChange={e => setPracticeYear(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground">
                 <option value="all">All Years</option>
                 {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           </div>
-
-          <button
-            onClick={startPractice}
-            className="w-full py-2.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors"
-          >
+          <button onClick={startPractice}
+            className="w-full py-2.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors">
             START PRACTICE →
           </button>
         </div>
@@ -267,35 +256,69 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
         <div className="border border-border rounded-lg p-5 space-y-4">
           <button onClick={() => setShowCustom(!showCustom)} className="w-full text-left">
             <p className="text-xs font-bold tracking-widest text-muted-foreground">🎯 CUSTOM CBT MODE {showCustom ? '▼' : '▶'}</p>
-            <p className="text-[10px] text-muted-foreground mt-1">Choose subjects, questions count, and time</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Choose subjects, questions, topics, year, and time</p>
           </button>
           {showCustom && (
             <div className="space-y-3 pt-2">
-              <div className="flex gap-2 flex-wrap">
-                {(['mathematics', 'physics', 'chemistry', 'english'] as Subject[]).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setCustomSubjects(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])}
-                    className={`px-3 py-1.5 rounded text-xs font-bold tracking-wider transition-colors ${
-                      customSubjects.includes(s) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {SUBJECT_LABELS[s]}
-                  </button>
-                ))}
+              {/* Subject selection */}
+              <div>
+                <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">SUBJECTS</label>
+                <div className="flex gap-2 flex-wrap">
+                  {(['mathematics', 'physics', 'chemistry', 'english'] as Subject[]).map(s => (
+                    <button key={s}
+                      onClick={() => {
+                        setCustomSubjects(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+                        setCustomTopics([]);
+                      }}
+                      className={`px-3 py-1.5 rounded text-xs font-bold tracking-wider transition-colors ${
+                        customSubjects.includes(s) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                      }`}>{SUBJECT_LABELS[s]}</button>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">QUESTIONS / SUBJECT</label>
-                  <input type="number" value={customQPerSubject} onChange={e => setCustomQPerSubject(Math.max(1, parseInt(e.target.value) || 1))} min={1} max={60}
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">Q PER SUBJECT</label>
+                  <input type="number" value={customQPerSubject}
+                    onChange={e => setCustomQPerSubject(Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1} max={200}
                     className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground" />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">TIME (MINUTES)</label>
-                  <input type="number" value={customTimeMin} onChange={e => setCustomTimeMin(Math.max(1, parseInt(e.target.value) || 1))} min={1} max={180}
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">TIME (MIN)</label>
+                  <input type="number" value={customTimeMin}
+                    onChange={e => setCustomTimeMin(Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1} max={300}
                     className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground" />
                 </div>
+                <div>
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">YEAR</label>
+                  <select value={customYear}
+                    onChange={e => setCustomYear(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                    className="w-full bg-muted border border-border rounded px-3 py-2 text-xs text-foreground">
+                    <option value="all">All Years</option>
+                    {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
               </div>
+
+              {/* Topic filter for custom */}
+              {customTopicsList.length > 0 && (
+                <div>
+                  <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">TOPICS (optional — leave empty for all)</label>
+                  <div className="flex gap-1.5 flex-wrap max-h-24 overflow-y-auto">
+                    {customTopicsList.map(t => (
+                      <button key={t}
+                        onClick={() => setCustomTopics(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])}
+                        className={`px-2 py-1 rounded text-[10px] font-bold transition-colors ${
+                          customTopics.includes(t) ? 'bg-secondary text-secondary-foreground' : 'bg-muted text-muted-foreground'
+                        }`}>{t}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button onClick={startCustomExam} disabled={customSubjects.length === 0}
                 className="w-full py-2.5 bg-secondary text-secondary-foreground rounded text-xs font-bold tracking-wider hover:bg-secondary/80 transition-colors disabled:opacity-40">
                 🎯 START CUSTOM CBT ({customSubjects.length * customQPerSubject} Q • {customTimeMin} MIN)
@@ -304,18 +327,11 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
           )}
         </div>
 
-        {/* JAMB Keyboard Guide */}
+        {/* Keyboard Shortcuts */}
         <div className="border border-border rounded-lg p-4">
           <p className="text-[10px] text-muted-foreground tracking-widest mb-3">⌨️ KEYBOARD SHORTCUTS (SAME AS REAL JAMB)</p>
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {[
-              ['A, B, C, D', 'Select answer'],
-              ['N / →', 'Next question'],
-              ['P / ←', 'Previous question'],
-              ['S', 'Submit exam'],
-              ['Y', 'Confirm submit'],
-              ['R', 'Return (cancel submit)'],
-            ].map(([key, desc]) => (
+            {[['A, B, C, D', 'Select answer'], ['N / →', 'Next question'], ['P / ←', 'Previous question'], ['S', 'Submit exam'], ['Y', 'Confirm submit'], ['R', 'Return (cancel submit)']].map(([key, desc]) => (
               <div key={key} className="flex items-center gap-2">
                 <kbd className="px-2 py-0.5 bg-muted rounded text-[10px] font-mono text-foreground border border-border">{key}</kbd>
                 <span className="text-muted-foreground">{desc}</span>
@@ -354,20 +370,14 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
     return (
       <div className="space-y-6">
-        {/* Score Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center border border-border rounded-lg p-8 space-y-4"
-        >
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          className="text-center border border-border rounded-lg p-8 space-y-4">
           <p className="text-xs tracking-widest text-muted-foreground">EXAMINATION COMPLETED</p>
           <p className={`text-6xl font-black ${pct >= 70 ? 'text-primary glow-green' : pct >= 50 ? 'text-secondary glow-amber' : 'text-destructive'}`}>
             {score}/{questions.length}
           </p>
           <p className="text-2xl font-bold text-foreground">{pct}%</p>
-          <p className={`text-sm font-bold tracking-wider ${
-            pct >= 80 ? 'text-primary' : pct >= 60 ? 'text-secondary' : 'text-destructive'
-          }`}>
+          <p className={`text-sm font-bold tracking-wider ${pct >= 80 ? 'text-primary' : pct >= 60 ? 'text-secondary' : 'text-destructive'}`}>
             {pct >= 80 ? '🔥 EXCELLENT! TARGET 300+ ACHIEVABLE!' :
              pct >= 60 ? '⚡ GOOD EFFORT. PUSH HARDER!' :
              pct >= 40 ? '⚠️ NEEDS MORE WORK. REVIEW YOUR MISTAKES.' :
@@ -388,10 +398,8 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
                 <div key={sub} className="flex items-center gap-3">
                   <span className="text-xs font-bold tracking-wider w-28 text-muted-foreground">{SUBJECT_LABELS[sub]}</span>
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all ${subPct >= 70 ? 'bg-primary' : subPct >= 50 ? 'bg-secondary' : 'bg-destructive'}`}
-                      style={{ width: `${subPct}%` }}
-                    />
+                    <div className={`h-full rounded-full transition-all ${subPct >= 70 ? 'bg-primary' : subPct >= 50 ? 'bg-secondary' : 'bg-destructive'}`}
+                      style={{ width: `${subPct}%` }} />
                   </div>
                   <span className="text-xs font-bold text-foreground w-16 text-right">{subScore}/{subQs.length}</span>
                 </div>
@@ -427,142 +435,87 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
         </div>
 
         <div className="flex gap-3">
-          <button
-            onClick={() => setMode('setup')}
-            className="flex-1 py-3 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors"
-          >
-            ← BACK TO MENU
-          </button>
-          <button
-            onClick={() => startExam(examType)}
-            className="flex-1 py-3 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors"
-          >
-            RETAKE EXAM →
-          </button>
+          <button onClick={() => setMode('setup')}
+            className="flex-1 py-3 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors">← BACK TO MENU</button>
+          <button onClick={() => startExam(examType)}
+            className="flex-1 py-3 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors">RETAKE EXAM →</button>
         </div>
       </div>
     );
   }
 
-  // ============== EXAM SCREEN (THE REAL JAMB CBT INTERFACE) ==============
+  // ============== EXAM SCREEN ==============
   const currentQuestion = questions[currentQ];
   const answered = Object.keys(answers).length;
   const unanswered = questions.length - answered;
-  const isTimeWarning = timeLeft < 300; // 5 min warning
+  const isTimeWarning = timeLeft < 300;
   const filteredIndices = getFilteredIndices();
-
-  // Get current subject section label
-  const getSubjectLabel = (idx: number) => {
-    const q = questions[idx];
-    if (!q) return '';
-    return SUBJECT_LABELS[q.subject];
-  };
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
-      {/* ===== TOP BAR (Like real JAMB) ===== */}
+      {/* TOP BAR */}
       <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-bold tracking-widest text-foreground">
-              JAMB UTME CBT {examType === 'general' ? '— FULL SIMULATION' : '— DAILY TEST'}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] font-bold tracking-widest text-foreground">
+            JAMB UTME CBT {examType === 'general' ? '— FULL SIMULATION' : '— DAILY TEST'}
+          </span>
         </div>
         <div className="flex items-center gap-4">
-          {/* Timer */}
           <div className={`font-mono text-lg font-bold ${isTimeWarning ? 'text-destructive animate-pulse' : 'text-foreground'}`}>
             ⏱ {formatTime(timeLeft)}
           </div>
-          {/* Calculator button */}
           <div className="relative">
-            <button
-              onClick={() => setShowCalc(!showCalc)}
-              className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors border border-border"
-            >
-              🧮 CALC
-            </button>
+            <button onClick={() => setShowCalc(!showCalc)}
+              className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors border border-border">🧮 CALC</button>
             <Calculator isOpen={showCalc} onClose={() => setShowCalc(false)} />
           </div>
         </div>
       </div>
 
-      {/* ===== SUBJECT TABS ===== */}
+      {/* SUBJECT TABS */}
       <div className="bg-card/50 border-b border-border px-4 py-1.5 flex items-center gap-1 shrink-0 overflow-x-auto">
-        <button
-          onClick={() => setSubjectFilter('all')}
+        <button onClick={() => setSubjectFilter('all')}
           className={`px-3 py-1 rounded text-[10px] font-bold tracking-wider transition-colors shrink-0 ${
             subjectFilter === 'all' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          ALL ({questions.length})
-        </button>
+          }`}>ALL ({questions.length})</button>
         {(['english', 'mathematics', 'physics', 'chemistry'] as Subject[]).map(sub => {
           const count = questions.filter(q => q.subject === sub).length;
           if (count === 0) return null;
           return (
-            <button
-              key={sub}
-              onClick={() => setSubjectFilter(sub)}
+            <button key={sub} onClick={() => setSubjectFilter(sub)}
               className={`px-3 py-1 rounded text-[10px] font-bold tracking-wider transition-colors shrink-0 ${
                 subjectFilter === sub ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {SUBJECT_LABELS[sub]} ({count})
-            </button>
+              }`}>{SUBJECT_LABELS[sub]} ({count})</button>
           );
         })}
       </div>
 
-      {/* ===== MAIN QUESTION AREA ===== */}
+      {/* MAIN QUESTION AREA */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto">
-          {/* Question header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono px-2 py-1 bg-muted rounded text-muted-foreground">
-                Q{currentQ + 1} of {questions.length}
-              </span>
-              <span className="text-[10px] font-bold tracking-widest text-muted-foreground">
-                {getSubjectLabel(currentQ)}
-              </span>
-              {currentQuestion && (
-                <span className="text-[10px] text-muted-foreground">
-                  {currentQuestion.topic} • {currentQuestion.year}
-                </span>
-              )}
+              <span className="text-xs font-mono px-2 py-1 bg-muted rounded text-muted-foreground">Q{currentQ + 1} of {questions.length}</span>
+              <span className="text-[10px] font-bold tracking-widest text-muted-foreground">{SUBJECT_LABELS[currentQuestion?.subject]}</span>
+              {currentQuestion && <span className="text-[10px] text-muted-foreground">{currentQuestion.topic} • {currentQuestion.year}</span>}
             </div>
           </div>
 
-          {/* Question text */}
           {currentQuestion && (
             <div className="space-y-6">
-              <p className="text-base text-foreground leading-relaxed font-medium">
-                {currentQuestion.question}
-              </p>
-
-              {/* Options A-D */}
+              <p className="text-base text-foreground leading-relaxed font-medium">{currentQuestion.question}</p>
               <div className="space-y-2">
                 {(['A', 'B', 'C', 'D'] as const).map(opt => {
                   const isSelected = answers[currentQuestion.id] === opt;
                   return (
-                    <button
-                      key={opt}
-                      onClick={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: opt }))}
+                    <button key={opt} onClick={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: opt }))}
                       className={`w-full flex items-center gap-4 p-4 rounded-lg border text-left transition-all ${
-                        isSelected
-                          ? 'border-primary bg-primary/10 text-foreground'
-                          : 'border-border hover:border-muted-foreground/50 text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${
-                        isSelected
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-border text-muted-foreground'
+                        isSelected ? 'border-primary bg-primary/10 text-foreground' : 'border-border hover:border-muted-foreground/50 text-foreground hover:bg-muted/50'
                       }`}>
-                        {opt}
-                      </span>
+                      <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${
+                        isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground'
+                      }`}>{opt}</span>
                       <span className="text-sm">{currentQuestion.options[opt]}</span>
                     </button>
                   );
@@ -571,38 +524,22 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
             </div>
           )}
 
-          {/* Navigation buttons */}
           <div className="flex items-center justify-between mt-8">
-            <button
-              onClick={() => setCurrentQ(prev => Math.max(prev - 1, 0))}
-              disabled={currentQ === 0}
-              className="px-6 py-2.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground disabled:opacity-30 transition-colors"
-            >
-              ← PREVIOUS
-            </button>
-            <div className="text-xs text-muted-foreground">
-              {answered} answered • {unanswered} remaining
-            </div>
+            <button onClick={() => setCurrentQ(prev => Math.max(prev - 1, 0))} disabled={currentQ === 0}
+              className="px-6 py-2.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground disabled:opacity-30 transition-colors">← PREVIOUS</button>
+            <div className="text-xs text-muted-foreground">{answered} answered • {unanswered} remaining</div>
             {currentQ < questions.length - 1 ? (
-              <button
-                onClick={() => setCurrentQ(prev => Math.min(prev + 1, questions.length - 1))}
-                className="px-6 py-2.5 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors"
-              >
-                NEXT →
-              </button>
+              <button onClick={() => setCurrentQ(prev => Math.min(prev + 1, questions.length - 1))}
+                className="px-6 py-2.5 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors">NEXT →</button>
             ) : (
-              <button
-                onClick={() => setShowSubmitConfirm(true)}
-                className="px-6 py-2.5 bg-secondary text-secondary-foreground rounded text-xs font-bold tracking-wider hover:bg-secondary/80 transition-colors"
-              >
-                END EXAM
-              </button>
+              <button onClick={() => setShowSubmitConfirm(true)}
+                className="px-6 py-2.5 bg-secondary text-secondary-foreground rounded text-xs font-bold tracking-wider hover:bg-secondary/80 transition-colors">END EXAM</button>
             )}
           </div>
         </div>
       </div>
 
-      {/* ===== QUESTION NUMBER GRID (Bottom - Like real JAMB) ===== */}
+      {/* QUESTION GRID */}
       <div className="border-t border-border bg-card px-4 py-3 shrink-0">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
@@ -612,75 +549,45 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
               <span className="w-3 h-3 rounded-sm border-2 border-foreground ml-2" /> <span className="text-muted-foreground">Current</span>
             </div>
             <div className="flex-1" />
-            <button
-              onClick={() => setShowSubmitConfirm(true)}
-              className="px-4 py-1.5 bg-destructive/20 text-destructive rounded text-[10px] font-bold tracking-wider hover:bg-destructive/30 transition-colors"
-            >
-              SUBMIT EXAM (S)
-            </button>
+            <button onClick={() => setShowSubmitConfirm(true)}
+              className="px-4 py-1.5 bg-destructive/20 text-destructive rounded text-[10px] font-bold tracking-wider hover:bg-destructive/30 transition-colors">SUBMIT (S)</button>
           </div>
           <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
             {filteredIndices.map(idx => {
               const isAnswered = !!answers[questions[idx].id];
               const isCurrent = idx === currentQ;
               return (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentQ(idx)}
+                <button key={idx} onClick={() => setCurrentQ(idx)}
                   className={`w-8 h-8 rounded text-[10px] font-bold transition-all ${
-                    isCurrent
-                      ? 'border-2 border-foreground bg-muted text-foreground'
-                      : isAnswered
-                      ? 'bg-primary/20 border border-primary/40 text-foreground'
-                      : 'bg-muted border border-border text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {idx + 1}
-                </button>
+                    isCurrent ? 'border-2 border-foreground bg-muted text-foreground'
+                    : isAnswered ? 'bg-primary/20 border border-primary/40 text-foreground'
+                    : 'bg-muted border border-border text-muted-foreground hover:text-foreground'
+                  }`}>{idx + 1}</button>
               );
             })}
           </div>
         </div>
       </div>
 
-      {/* ===== SUBMIT CONFIRMATION MODAL ===== */}
+      {/* SUBMIT CONFIRM */}
       <AnimatePresence>
         {showSubmitConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-card border border-border rounded-lg p-8 max-w-md w-full space-y-4 text-center"
-            >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+              className="bg-card border border-border rounded-lg p-8 max-w-md w-full space-y-4 text-center">
               <p className="text-lg font-bold text-foreground tracking-wider">SUBMIT EXAMINATION?</p>
               <div className="text-sm text-muted-foreground space-y-1">
                 <p>Answered: <span className="text-foreground font-bold">{answered}</span> / {questions.length}</p>
                 <p>Unanswered: <span className="text-destructive font-bold">{unanswered}</span></p>
                 <p>Time remaining: <span className="text-foreground font-bold">{formatTime(timeLeft)}</span></p>
               </div>
-              {unanswered > 0 && (
-                <p className="text-xs text-destructive font-bold">⚠️ You have {unanswered} unanswered question{unanswered > 1 ? 's' : ''}!</p>
-              )}
-              <p className="text-[10px] text-muted-foreground tracking-widest">ONCE SUBMITTED, YOU CANNOT GO BACK.</p>
+              {unanswered > 0 && <p className="text-xs text-destructive font-bold">⚠️ You have {unanswered} unanswered question{unanswered > 1 ? 's' : ''}!</p>}
               <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => setShowSubmitConfirm(false)}
-                  className="flex-1 py-3 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors"
-                >
-                  RETURN (R)
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="flex-1 py-3 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors"
-                >
-                  CONFIRM (Y)
-                </button>
+                <button onClick={() => setShowSubmitConfirm(false)}
+                  className="flex-1 py-3 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground transition-colors">RETURN (R)</button>
+                <button onClick={handleSubmit}
+                  className="flex-1 py-3 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors">CONFIRM (Y)</button>
               </div>
             </motion.div>
           </motion.div>
