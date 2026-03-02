@@ -45,8 +45,8 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          { src: "/favicon.ico", sizes: "64x64", type: "image/x-icon" },
-          { src: "/placeholder.svg", sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+          { src: "/logo-192.jpg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
+          { src: "/logo-512.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" },
         ],
       },
     }),

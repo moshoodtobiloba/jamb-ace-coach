@@ -1209,13 +1209,18 @@ export function generateCustomExam(config: {
   subjects: Subject[];
   questionsPerSubject: number;
   topics?: string[];
+  year?: number;
 }): Question[] {
   let allQs: Question[] = [];
   for (const sub of config.subjects) {
     let qs = getQuestionsBySubject(sub);
+    if (config.year) {
+      qs = qs.filter(q => q.year === config.year);
+    }
     if (config.topics && config.topics.length > 0) {
       qs = qs.filter(q => config.topics!.includes(q.topic));
     }
+    // No cap — take as many as requested, up to available
     allQs.push(...shuffleArray(qs).slice(0, config.questionsPerSubject));
   }
   return shuffleArray(allQs);
