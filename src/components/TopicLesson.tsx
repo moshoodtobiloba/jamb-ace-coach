@@ -41,38 +41,67 @@ export default function TopicLesson({ topic, onClose, onMarkMastered, isMastered
     setLesson('');
     setScrolledToEnd(false);
 
-    const prompt = `Teach the JAMB UTME topic "${topic.name}" under ${SUBJECT_LABELS[topic.subject]} (${topic.category}).
+    const prompt = `You are teaching the JAMB UTME topic "${topic.name}" under ${SUBJECT_LABELS[topic.subject]} (${topic.category}).
+
+USE THE "NEW GENERAL MATHEMATICS" TEXTBOOK TEACHING APPROACH:
+- Start from absolute zero like teaching a child
+- Define every term in ONE clear sentence with a real-life analogy
+- Build understanding layer by layer, never skip steps
+- Show FULLY worked examples with EVERY step written out (like NGM textbook style)
+- Include practice exercises at the end
 
 STRUCTURE YOUR LESSON EXACTLY LIKE THIS:
 
 ## ${topic.name}
 
-### 🔰 Baby Level (The Basics)
-Start from absolute zero. Define every term simply. Use everyday analogies. Make it impossible not to understand.
+### 📖 What Is This? (Foundation)
+Define the topic in ONE sentence a 10-year-old would understand. Give a real-life analogy from everyday Nigerian life. List the key terms/vocabulary with simple definitions.
 
-### 📈 Building Up
-Introduce the core concepts, rules, and formulas. Explain each one with a clear worked example.
+### 🔰 Baby Steps (Core Concepts)
+Teach every rule, law, formula, or principle from scratch. For EACH concept:
+- State the rule/formula clearly in a box-like format
+- Explain WHY it works (not just what it is)
+- Give a simple numerical example immediately after stating it
+- Show the calculation step by step: formula → substitution → simplification → answer
 
-### 🎯 JAMB Level
-Show how JAMB asks questions on this topic. Include:
-- Common question patterns
-- Traps and tricks JAMB uses
-- Shortcuts for speed
+### 📈 Building Up (Intermediate)
+Now combine concepts. Show how rules connect. Solve 2-3 slightly harder problems:
+- State the problem
+- Identify what type of problem it is
+- Choose the right formula and explain WHY
+- Solve step-by-step with clear arithmetic
+- Box/highlight the final answer
 
-### ✍️ Worked Examples
-Solve 3-4 JAMB-style problems step by step. Show the formula, the substitution, and the answer clearly.
+### 🎯 JAMB Standard (Exam Level)
+Show exactly how JAMB frames questions on this topic:
+- 3 real JAMB-style MCQs with options A, B, C, D
+- Solve each one showing the working
+- Point out the TRAP in each question (the wrong answer JAMB wants you to pick)
+- Teach the SHORTCUT method for speed
+- Explain how to RECOGNIZE this question type in 5 seconds
 
-### ⚡ Key Points to Remember
-Bullet-point summary of everything critical. Include mnemonics if useful.
+### ⚡ Cheat Sheet
+Bullet-point summary of:
+- Every formula used (numbered)
+- Common mistakes to avoid
+- Memory tricks / mnemonics
+- Speed hacks for exam day
 
-### 🧠 Quick Test
-Give 3 practice questions (with answers at the end) to test understanding.
+### 🧠 Practice Exercises
+Give 5 practice questions (increasing difficulty):
+- Questions 1-2: Basic (test if you understood the foundation)
+- Questions 3-4: Intermediate (test if you can combine concepts)  
+- Question 5: JAMB-hard (test exam readiness)
+- Put detailed answers with full working at the very end
 
-RULES:
-- Be thorough but not wordy. Every sentence must add value.
-- Use clear formatting with headers, bullets, and numbered steps.
-- Include real numbers and examples, not vague descriptions.
-- Write as if teaching a student who needs to score 300+ in JAMB.`;
+CRITICAL RULES:
+- Write EVERY calculation step. Never say "simplifying, we get..." — show the actual simplification.
+- Use real numbers in every example, never generic "let x = ..."  without computing.
+- If it's a formula-based topic, derive or explain the formula before using it.
+- Teach like the student has ZERO prior knowledge.
+- Keep language simple but precise. Use Nigerian English naturally.
+- For English/Literature topics: give direct quotes, character analysis, and theme breakdowns.
+- Make this lesson so complete that reading it alone is enough to answer ANY JAMB question on this topic.`;
 
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tutor-chat`;
