@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
+import MathMarkdown from '@/components/MathMarkdown';
 
 interface AskTutorPopupProps {
   disabled?: boolean; // true during CBT exams
@@ -132,9 +132,9 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
             <div className="flex-1 overflow-y-auto p-4">
               {loading && !response && <span className="text-sm text-muted-foreground animate-pulse">Thinking...</span>}
               {response && (
-                <div className="prose prose-sm prose-invert max-w-none text-sm [&_p]:my-1">
-                  <ReactMarkdown>{response}</ReactMarkdown>
-                </div>
+                <MathMarkdown className="prose prose-sm prose-invert max-w-none text-sm [&_p]:my-1">
+                  {response}
+                </MathMarkdown>
               )}
             </div>
           </motion.div>
