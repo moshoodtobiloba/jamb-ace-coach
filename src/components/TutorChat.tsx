@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
+import MathMarkdown from '@/components/MathMarkdown';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -258,9 +258,9 @@ export default function TutorChat() {
                 : 'bg-muted text-foreground'
             }`}>
               {msg.role === 'assistant' ? (
-                <div className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:bg-background/50 [&_code]:px-1 [&_code]:rounded">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                </div>
+                <MathMarkdown className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:bg-background/50 [&_code]:px-1 [&_code]:rounded">
+                  {msg.content}
+                </MathMarkdown>
               ) : (
                 <p>{msg.content}</p>
               )}
