@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MathMarkdown from '@/components/MathMarkdown';
 import { Question, generateExam, generateCustomExam, getQuestionsBySubject, getAvailableYears, getSubjectTopics } from '@/data/questions';
 import { Subject, SUBJECT_LABELS } from '@/data/syllabus';
 import Calculator from './Calculator';
@@ -22,6 +23,9 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [examStartTime, setExamStartTime] = useState(0);
   const [subjectFilter, setSubjectFilter] = useState<Subject | 'all'>('all');
+  const [reviewTab, setReviewTab] = useState<'summary' | 'detail' | 'topic'>('summary');
+  const [timePerQuestion, setTimePerQuestion] = useState<Record<string, number>>({});
+  const lastQChangeTime = useRef(Date.now());
 
   // Practice mode filters
   const [practiceSubject, setPracticeSubject] = useState<Subject>('mathematics');
@@ -51,6 +55,21 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     return () => clearInterval(t);
   }, [mode, timeLeft]);
 
+  // Track time per question when switching
+  const trackTimeOnQ = useCallback((fromIdx: number) => {
+    const now = Date.now();
+    const spent = Math.round((now - lastQChangeTime.current) / 1000);
+    if (questions[fromIdx]) {
+      setTimePerQuestion(prev => ({ ...prev, [questions[fromIdx].id]: (prev[questions[fromIdx].id] || 0) + spent }));
+    }
+    lastQChangeTime.current = now;
+  }, [questions]);
+
+  const changeQuestion = useCallback((newIdx: number) => {
+    trackTimeOnQ(currentQ);
+    setCurrentQ(newIdx);
+  }, [currentQ, trackTimeOnQ]);
+
   // Keyboard shortcuts
   useEffect(() => {
     if (mode !== 'exam') return;
@@ -59,9 +78,9 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
       if (['A', 'B', 'C', 'D'].includes(key)) {
         setAnswers(prev => ({ ...prev, [questions[currentQ].id]: key as 'A' | 'B' | 'C' | 'D' }));
       } else if (key === 'N' || e.key === 'ArrowRight') {
-        setCurrentQ(prev => Math.min(prev + 1, questions.length - 1));
+        changeQuestion(Math.min(currentQ + 1, questions.length - 1));
       } else if (key === 'P' || e.key === 'ArrowLeft') {
-        setCurrentQ(prev => Math.max(prev - 1, 0));
+        changeQuestion(Math.max(currentQ - 1, 0));
       } else if (key === 'S') {
         setShowSubmitConfirm(true);
       } else if (key === 'Y' && showSubmitConfirm) {
@@ -72,7 +91,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [mode, currentQ, questions, showSubmitConfirm]);
+  }, [mode, currentQ, questions, showSubmitConfirm, changeQuestion]);
 
   const startExam = (type: 'daily' | 'general') => {
     setExamType(type);
@@ -82,8 +101,11 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     setCurrentQ(0);
     setTimeLeft(type === 'general' ? 120 * 60 : 30 * 60);
     setExamStartTime(Date.now());
+    lastQChangeTime.current = Date.now();
+    setTimePerQuestion({});
     setMode('exam');
     setSubjectFilter('all');
+    setReviewTab('summary');
   };
 
   const startPractice = () => {
@@ -91,16 +113,18 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     if (practiceTopic !== 'all') qs = qs.filter(q => q.topic === practiceTopic);
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
-    // Shuffle for randomness
     qs = [...qs].sort(() => Math.random() - 0.5);
     setQuestions(qs);
     setAnswers({});
     setCurrentQ(0);
     setTimeLeft(qs.length * 90);
     setExamStartTime(Date.now());
+    lastQChangeTime.current = Date.now();
+    setTimePerQuestion({});
     setMode('exam');
     setExamType('daily');
     setSubjectFilter('all');
+    setReviewTab('summary');
   };
 
   const startCustomExam = () => {
@@ -117,13 +141,17 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     setCurrentQ(0);
     setTimeLeft(customTimeMin * 60);
     setExamStartTime(Date.now());
+    lastQChangeTime.current = Date.now();
+    setTimePerQuestion({});
     setMode('exam');
     setExamType('daily');
     setSubjectFilter('all');
     setShowCustom(false);
+    setReviewTab('summary');
   };
 
   const handleSubmit = useCallback(() => {
+    trackTimeOnQ(currentQ); // track last question time
     const duration = Math.floor((Date.now() - examStartTime) / 1000);
     let score = 0;
     questions.forEach(q => {
@@ -138,7 +166,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     });
     setMode('review');
     setShowSubmitConfirm(false);
-  }, [answers, questions, examStartTime, examType, onSessionComplete]);
+  }, [answers, questions, examStartTime, examType, onSessionComplete, currentQ, trackTimeOnQ]);
 
   const formatTime = (s: number) => {
     const h = Math.floor(s / 3600);
@@ -362,77 +390,211 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     );
   }
 
-  // ============== REVIEW SCREEN ==============
+  // ============== REVIEW SCREEN (ExamGuide-style) ==============
   if (mode === 'review') {
     let score = 0;
     questions.forEach(q => { if (answers[q.id] === q.answer) score++; });
     const pct = Math.round((score / questions.length) * 100);
+    const totalTimeUsed = Object.values(timePerQuestion).reduce((a, b) => a + b, 0);
+
+    // Build topic-level breakdown
+    const topicMap: Record<string, { total: number; correct: number; subject: Subject; timeSpent: number }> = {};
+    questions.forEach(q => {
+      const key = `${q.subject}::${q.topic}`;
+      if (!topicMap[key]) topicMap[key] = { total: 0, correct: 0, subject: q.subject, timeSpent: 0 };
+      topicMap[key].total++;
+      if (answers[q.id] === q.answer) topicMap[key].correct++;
+      topicMap[key].timeSpent += timePerQuestion[q.id] || 0;
+    });
+    const topicEntries = Object.entries(topicMap).sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total));
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
+        {/* Score Header */}
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-          className="text-center border border-border rounded-lg p-8 space-y-4">
+          className="text-center border border-border rounded-lg p-6 space-y-3">
           <p className="text-xs tracking-widest text-muted-foreground">EXAMINATION COMPLETED</p>
-          <p className={`text-6xl font-black ${pct >= 70 ? 'text-primary glow-green' : pct >= 50 ? 'text-secondary glow-amber' : 'text-destructive'}`}>
+          <p className={`text-5xl font-black ${pct >= 70 ? 'text-primary glow-green' : pct >= 50 ? 'text-secondary glow-amber' : 'text-destructive'}`}>
             {score}/{questions.length}
           </p>
-          <p className="text-2xl font-bold text-foreground">{pct}%</p>
-          <p className={`text-sm font-bold tracking-wider ${pct >= 80 ? 'text-primary' : pct >= 60 ? 'text-secondary' : 'text-destructive'}`}>
+          <p className="text-xl font-bold text-foreground">{pct}%</p>
+          <p className={`text-xs font-bold tracking-wider ${pct >= 80 ? 'text-primary' : pct >= 60 ? 'text-secondary' : 'text-destructive'}`}>
             {pct >= 80 ? '🔥 EXCELLENT! TARGET 300+ ACHIEVABLE!' :
              pct >= 60 ? '⚡ GOOD EFFORT. PUSH HARDER!' :
-             pct >= 40 ? '⚠️ NEEDS MORE WORK. REVIEW YOUR MISTAKES.' :
+             pct >= 40 ? '⚠️ NEEDS MORE WORK. REVIEW MISTAKES.' :
              '🚨 CRITICAL. FOCUS ON WEAK AREAS.'}
           </p>
+          <p className="text-[10px] text-muted-foreground">Time used: {formatTime(totalTimeUsed)} • Avg: {questions.length > 0 ? Math.round(totalTimeUsed / questions.length) : 0}s/question</p>
         </motion.div>
 
-        {/* Subject Breakdown */}
-        <div className="border border-border rounded-lg p-4">
-          <p className="text-[10px] text-muted-foreground tracking-widest mb-3">SUBJECT BREAKDOWN</p>
-          <div className="space-y-3">
-            {(['english', 'mathematics', 'physics', 'chemistry'] as Subject[]).map(sub => {
-              const subQs = questions.filter(q => q.subject === sub);
-              if (subQs.length === 0) return null;
-              const subScore = subQs.filter(q => answers[q.id] === q.answer).length;
-              const subPct = Math.round((subScore / subQs.length) * 100);
-              return (
-                <div key={sub} className="flex items-center gap-3">
-                  <span className="text-xs font-bold tracking-wider w-28 text-muted-foreground">{SUBJECT_LABELS[sub]}</span>
-                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${subPct >= 70 ? 'bg-primary' : subPct >= 50 ? 'bg-secondary' : 'bg-destructive'}`}
-                      style={{ width: `${subPct}%` }} />
-                  </div>
-                  <span className="text-xs font-bold text-foreground w-16 text-right">{subScore}/{subQs.length}</span>
-                </div>
-              );
-            })}
-          </div>
+        {/* Tab Navigation (ExamGuide style: Summary | Detail | Result By Topic) */}
+        <div className="flex border border-border rounded-lg overflow-hidden">
+          {(['summary', 'detail', 'topic'] as const).map(tab => (
+            <button key={tab} onClick={() => setReviewTab(tab)}
+              className={`flex-1 py-2.5 text-xs font-bold tracking-wider transition-colors ${
+                reviewTab === tab ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'
+              }`}>
+              {tab === 'summary' ? 'SUMMARY' : tab === 'detail' ? 'DETAIL' : 'BY TOPIC'}
+            </button>
+          ))}
         </div>
 
-        {/* Question Review */}
-        <div className="border border-border rounded-lg p-4 space-y-3">
-          <p className="text-[10px] text-muted-foreground tracking-widest">REVIEW ANSWERS</p>
-          <div className="max-h-96 overflow-y-auto space-y-3 pr-2">
-            {questions.map((q, i) => {
-              const userAns = answers[q.id];
-              const isCorrect = userAns === q.answer;
-              return (
-                <div key={q.id} className={`p-3 rounded border ${isCorrect ? 'border-primary/30 bg-primary/5' : 'border-destructive/30 bg-destructive/5'}`}>
-                  <div className="flex items-start gap-2 mb-2">
-                    <span className="text-[10px] font-mono text-muted-foreground shrink-0">Q{i + 1}</span>
-                    <p className="text-xs text-foreground">{q.question}</p>
+        {/* SUMMARY TAB */}
+        {reviewTab === 'summary' && (
+          <div className="space-y-4">
+            {/* Subject Breakdown */}
+            <div className="border border-border rounded-lg p-4">
+              <p className="text-[10px] text-muted-foreground tracking-widest mb-3">SUBJECT PERFORMANCE</p>
+              <div className="space-y-3">
+                {(['english', 'mathematics', 'physics', 'chemistry'] as Subject[]).map(sub => {
+                  const subQs = questions.filter(q => q.subject === sub);
+                  if (subQs.length === 0) return null;
+                  const subScore = subQs.filter(q => answers[q.id] === q.answer).length;
+                  const subPct = Math.round((subScore / subQs.length) * 100);
+                  const subTime = subQs.reduce((acc, q) => acc + (timePerQuestion[q.id] || 0), 0);
+                  return (
+                    <div key={sub} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold tracking-wider text-muted-foreground">{SUBJECT_LABELS[sub]}</span>
+                        <span className="text-xs text-muted-foreground">{formatTime(subTime)}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full transition-all ${subPct >= 70 ? 'bg-primary' : subPct >= 50 ? 'bg-secondary' : 'bg-destructive'}`}
+                            style={{ width: `${subPct}%` }} />
+                        </div>
+                        <span className={`text-xs font-bold w-20 text-right ${subPct >= 70 ? 'text-primary' : subPct >= 50 ? 'text-secondary' : 'text-destructive'}`}>
+                          {subScore}/{subQs.length} ({subPct}%)
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="border border-border rounded-lg p-3 text-center">
+                <p className="text-[10px] text-muted-foreground tracking-widest">CORRECT</p>
+                <p className="text-lg font-black text-primary">{score}</p>
+              </div>
+              <div className="border border-border rounded-lg p-3 text-center">
+                <p className="text-[10px] text-muted-foreground tracking-widest">WRONG</p>
+                <p className="text-lg font-black text-destructive">{questions.length - score - questions.filter(q => !answers[q.id]).length}</p>
+              </div>
+              <div className="border border-border rounded-lg p-3 text-center">
+                <p className="text-[10px] text-muted-foreground tracking-widest">SKIPPED</p>
+                <p className="text-lg font-black text-secondary">{questions.filter(q => !answers[q.id]).length}</p>
+              </div>
+            </div>
+
+            {/* Weakest Topics */}
+            {topicEntries.length > 0 && (
+              <div className="border border-destructive/30 bg-destructive/5 rounded-lg p-4">
+                <p className="text-[10px] text-destructive tracking-widest font-bold mb-3">⚠️ WEAKEST AREAS — FOCUS HERE</p>
+                <div className="space-y-2">
+                  {topicEntries.slice(0, 5).filter(([, v]) => v.correct / v.total < 0.7).map(([key, v]) => {
+                    const topicName = key.split('::')[1];
+                    const topicPct = Math.round((v.correct / v.total) * 100);
+                    return (
+                      <div key={key} className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{topicName}</span>
+                        <span className={`text-xs font-bold ${topicPct >= 50 ? 'text-secondary' : 'text-destructive'}`}>
+                          {v.correct}/{v.total} ({topicPct}%)
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* DETAIL TAB — Question by question with explanations */}
+        {reviewTab === 'detail' && (
+          <div className="border border-border rounded-lg p-4 space-y-3">
+            <p className="text-[10px] text-muted-foreground tracking-widest">ALL ANSWERS WITH EXPLANATIONS</p>
+            <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-1">
+              {questions.map((q, i) => {
+                const userAns = answers[q.id];
+                const isCorrect = userAns === q.answer;
+                const qTime = timePerQuestion[q.id] || 0;
+                return (
+                  <div key={q.id} className={`p-3 rounded border ${isCorrect ? 'border-primary/30 bg-primary/5' : 'border-destructive/30 bg-destructive/5'}`}>
+                    <div className="flex items-start gap-2 mb-2">
+                      <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded ${isCorrect ? 'bg-primary/20 text-primary' : 'bg-destructive/20 text-destructive'}`}>Q{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground">{q.question}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{SUBJECT_LABELS[q.subject]} • {q.topic} • {q.year} • {qTime}s</p>
+                      </div>
+                    </div>
+                    {/* Options display */}
+                    <div className="ml-6 space-y-1 mb-2">
+                      {(['A', 'B', 'C', 'D'] as const).map(opt => {
+                        const isUserChoice = userAns === opt;
+                        const isCorrectOpt = q.answer === opt;
+                        return (
+                          <div key={opt} className={`flex items-center gap-2 text-[11px] px-2 py-0.5 rounded ${
+                            isCorrectOpt ? 'bg-primary/10 text-primary font-bold' : isUserChoice && !isCorrect ? 'bg-destructive/10 text-destructive line-through' : 'text-muted-foreground'
+                          }`}>
+                            <span className="font-mono w-4">{opt}.</span>
+                            <span>{q.options[opt]}</span>
+                            {isCorrectOpt && <span className="ml-auto text-[9px]">✓</span>}
+                            {isUserChoice && !isCorrect && <span className="ml-auto text-[9px]">✗</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {/* Explanation */}
+                    <div className="ml-6 border-t border-border/50 pt-2">
+                      <p className="text-[10px] text-muted-foreground font-bold tracking-wider mb-1">💡 EXPLANATION</p>
+                      <MathMarkdown className="text-[11px] text-muted-foreground [&_p]:my-0.5">
+                        {q.explanation}
+                      </MathMarkdown>
+                    </div>
                   </div>
-                  <div className="ml-6 space-y-1">
-                    <p className="text-[10px] text-muted-foreground">
-                      Your answer: <span className={isCorrect ? 'text-primary font-bold' : 'text-destructive font-bold'}>{userAns || 'Not answered'}</span>
-                      {!isCorrect && <> • Correct: <span className="text-primary font-bold">{q.answer}</span></>}
-                    </p>
-                    {!isCorrect && <p className="text-[10px] text-muted-foreground italic">{q.explanation}</p>}
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* BY TOPIC TAB — ExamGuide "Result By Topic" */}
+        {reviewTab === 'topic' && (
+          <div className="space-y-4">
+            {(['english', 'mathematics', 'physics', 'chemistry'] as Subject[]).map(sub => {
+              const subTopics = topicEntries.filter(([key]) => key.startsWith(`${sub}::`));
+              if (subTopics.length === 0) return null;
+              return (
+                <div key={sub} className="border border-border rounded-lg p-4">
+                  <p className="text-xs font-bold tracking-widest text-primary mb-3">{SUBJECT_LABELS[sub]}</p>
+                  <div className="space-y-2">
+                    {subTopics.map(([key, v]) => {
+                      const topicName = key.split('::')[1];
+                      const topicPct = Math.round((v.correct / v.total) * 100);
+                      return (
+                        <div key={key} className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] text-foreground">{topicName}</span>
+                            <span className={`text-[11px] font-bold ${topicPct >= 70 ? 'text-primary' : topicPct >= 50 ? 'text-secondary' : 'text-destructive'}`}>
+                              {v.correct}/{v.total} • {formatTime(v.timeSpent)}
+                            </span>
+                          </div>
+                          <div className="h-2 bg-muted rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${topicPct >= 70 ? 'bg-primary' : topicPct >= 50 ? 'bg-secondary' : 'bg-destructive'}`}
+                              style={{ width: `${topicPct}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        )}
 
         <div className="flex gap-3">
           <button onClick={() => setMode('setup')}
@@ -525,11 +687,11 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
           )}
 
           <div className="flex items-center justify-between mt-8">
-            <button onClick={() => setCurrentQ(prev => Math.max(prev - 1, 0))} disabled={currentQ === 0}
+            <button onClick={() => changeQuestion(Math.max(currentQ - 1, 0))} disabled={currentQ === 0}
               className="px-6 py-2.5 bg-muted hover:bg-muted/80 rounded text-xs font-bold tracking-wider text-foreground disabled:opacity-30 transition-colors">← PREVIOUS</button>
             <div className="text-xs text-muted-foreground">{answered} answered • {unanswered} remaining</div>
             {currentQ < questions.length - 1 ? (
-              <button onClick={() => setCurrentQ(prev => Math.min(prev + 1, questions.length - 1))}
+              <button onClick={() => changeQuestion(Math.min(currentQ + 1, questions.length - 1))}
                 className="px-6 py-2.5 bg-primary text-primary-foreground rounded text-xs font-bold tracking-wider hover:bg-primary/80 transition-colors">NEXT →</button>
             ) : (
               <button onClick={() => setShowSubmitConfirm(true)}
@@ -557,7 +719,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
               const isAnswered = !!answers[questions[idx].id];
               const isCurrent = idx === currentQ;
               return (
-                <button key={idx} onClick={() => setCurrentQ(idx)}
+                <button key={idx} onClick={() => changeQuestion(idx)}
                   className={`w-8 h-8 rounded text-[10px] font-bold transition-all ${
                     isCurrent ? 'border-2 border-foreground bg-muted text-foreground'
                     : isAnswered ? 'bg-primary/20 border border-primary/40 text-foreground'
