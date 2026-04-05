@@ -1,4 +1,5 @@
 import { Subject } from './syllabus';
+import { ALL_YEARLY_QUESTIONS } from './yearlyQuestions';
 
 export interface Question {
   id: string;
@@ -1160,15 +1161,15 @@ export const QUESTION_BANK: Question[] = [
 
 // Helper functions
 export function getQuestionsBySubject(subject: Subject): Question[] {
-  return QUESTION_BANK.filter(q => q.subject === subject);
+  return ALL_QUESTIONS.filter(q => q.subject === subject);
 }
 
 export function getQuestionsByTopic(subject: Subject, topic: string): Question[] {
-  return QUESTION_BANK.filter(q => q.subject === subject && q.topic === topic);
+  return ALL_QUESTIONS.filter(q => q.subject === subject && q.topic === topic);
 }
 
 export function getQuestionsByYear(year: number): Question[] {
-  return QUESTION_BANK.filter(q => q.year === year);
+  return ALL_QUESTIONS.filter(q => q.year === year);
 }
 
 export function generateExam(mode: 'daily' | 'general'): Question[] {
@@ -1226,7 +1227,13 @@ export function generateCustomExam(config: {
   return shuffleArray(allQs);
 }
 
+// Merge original + yearly questions, removing duplicates by id
+const mergedMap = new Map<string, Question>();
+for (const q of QUESTION_BANK) mergedMap.set(q.id, q);
+for (const q of ALL_YEARLY_QUESTIONS) mergedMap.set(q.id, q);
+export const ALL_QUESTIONS: Question[] = Array.from(mergedMap.values());
+
 export function getSubjectTopics(subject: Subject): string[] {
-  const topics = new Set(QUESTION_BANK.filter(q => q.subject === subject).map(q => q.topic));
+  const topics = new Set(ALL_QUESTIONS.filter(q => q.subject === subject).map(q => q.topic));
   return Array.from(topics);
 }
