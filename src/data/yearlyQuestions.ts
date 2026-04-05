@@ -1,4 +1,4 @@
-import { Question } from './questions';
+import type { Question } from './questions';
 
 // ==================== 2013 ====================
 export const QUESTIONS_2013: Question[] = [
