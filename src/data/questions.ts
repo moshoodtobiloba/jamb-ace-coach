@@ -1161,15 +1161,15 @@ export const QUESTION_BANK: Question[] = [
 
 // Helper functions
 export function getQuestionsBySubject(subject: Subject): Question[] {
-  return QUESTION_BANK.filter(q => q.subject === subject);
+  return ALL_QUESTIONS.filter(q => q.subject === subject);
 }
 
 export function getQuestionsByTopic(subject: Subject, topic: string): Question[] {
-  return QUESTION_BANK.filter(q => q.subject === subject && q.topic === topic);
+  return ALL_QUESTIONS.filter(q => q.subject === subject && q.topic === topic);
 }
 
 export function getQuestionsByYear(year: number): Question[] {
-  return QUESTION_BANK.filter(q => q.year === year);
+  return ALL_QUESTIONS.filter(q => q.year === year);
 }
 
 export function generateExam(mode: 'daily' | 'general'): Question[] {
