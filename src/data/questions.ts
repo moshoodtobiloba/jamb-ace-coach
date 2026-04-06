@@ -1250,8 +1250,8 @@ export function generateCustomExam(config: {
     if (config.topics && config.topics.length > 0) {
       qs = qs.filter(q => config.topics!.includes(q.topic));
     }
-    // No cap — take as many as requested, up to available
-    allQs.push(...shuffleArray(qs).slice(0, config.questionsPerSubject));
+    // Anti-repetition: prioritize unseen questions
+    allQs.push(...prioritizeUnseen(qs, config.questionsPerSubject));
   }
   return shuffleArray(allQs);
 }
