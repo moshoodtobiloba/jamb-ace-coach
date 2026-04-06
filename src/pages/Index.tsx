@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Dashboard from '@/components/Dashboard';
 import SyllabusTracker from '@/components/SyllabusTracker';
@@ -11,6 +11,7 @@ import { InstallButton } from '@/components/InstallBanner';
 import { useJambStore } from '@/hooks/useJambStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { SYLLABUS } from '@/data/syllabus';
+import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
 
@@ -24,10 +25,13 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [showTheme, setShowTheme] = useState(false);
   const store = useJambStore();
   const { signOut, user } = useAuth();
 
-  const isInExam = activeTab === 'cbt'; // Disable ask-tutor during CBT
+  useEffect(() => { initTheme(); }, []);
+
+  const isInExam = activeTab === 'cbt';
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -45,6 +49,12 @@ const Index = () => {
             <span className="text-sm font-black tracking-widest text-foreground">JAMB MACHINE</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowTheme(true)}
+              className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"
+            >
+              🎨
+            </button>
             <button
               onClick={store.toggleRestMode}
               className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"

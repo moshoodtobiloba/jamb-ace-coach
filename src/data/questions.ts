@@ -1172,20 +1172,49 @@ export function getQuestionsByYear(year: number): Question[] {
   return ALL_QUESTIONS.filter(q => q.year === year);
 }
 
+// Anti-repetition: prioritize unseen questions
+const SEEN_KEY = 'jamb-seen-questions';
+
+function getSeenIds(): Set<string> {
+  try {
+    const stored = localStorage.getItem(SEEN_KEY);
+    if (stored) return new Set(JSON.parse(stored));
+  } catch {}
+  return new Set();
+}
+
+function markSeen(ids: string[]) {
+  const seen = getSeenIds();
+  ids.forEach(id => seen.add(id));
+  // Keep max 5000 entries to avoid localStorage bloat
+  const arr = Array.from(seen);
+  if (arr.length > 5000) arr.splice(0, arr.length - 5000);
+  localStorage.setItem(SEEN_KEY, JSON.stringify(arr));
+}
+
+function prioritizeUnseen(questions: Question[], count: number): Question[] {
+  const seen = getSeenIds();
+  const unseen = questions.filter(q => !seen.has(q.id));
+  const seenQs = questions.filter(q => seen.has(q.id));
+  // Take unseen first, then fill with seen (shuffled)
+  const pool = [...shuffleArray(unseen), ...shuffleArray(seenQs)];
+  const selected = pool.slice(0, count);
+  markSeen(selected.map(q => q.id));
+  return selected;
+}
+
 export function generateExam(mode: 'daily' | 'general'): Question[] {
   if (mode === 'general') {
-    // Full JAMB simulation: 60 English + 40 each for 3 subjects = 180
-    const english = shuffleArray(getQuestionsBySubject('english')).slice(0, 60);
-    const maths = shuffleArray(getQuestionsBySubject('mathematics')).slice(0, 40);
-    const physics = shuffleArray(getQuestionsBySubject('physics')).slice(0, 40);
-    const chemistry = shuffleArray(getQuestionsBySubject('chemistry')).slice(0, 40);
+    const english = prioritizeUnseen(getQuestionsBySubject('english'), 60);
+    const maths = prioritizeUnseen(getQuestionsBySubject('mathematics'), 40);
+    const physics = prioritizeUnseen(getQuestionsBySubject('physics'), 40);
+    const chemistry = prioritizeUnseen(getQuestionsBySubject('chemistry'), 40);
     return [...english, ...maths, ...physics, ...chemistry];
   } else {
-    // Daily mini-test: 15 per subject = 60 questions
-    const english = shuffleArray(getQuestionsBySubject('english')).slice(0, 15);
-    const maths = shuffleArray(getQuestionsBySubject('mathematics')).slice(0, 15);
-    const physics = shuffleArray(getQuestionsBySubject('physics')).slice(0, 15);
-    const chemistry = shuffleArray(getQuestionsBySubject('chemistry')).slice(0, 15);
+    const english = prioritizeUnseen(getQuestionsBySubject('english'), 15);
+    const maths = prioritizeUnseen(getQuestionsBySubject('mathematics'), 15);
+    const physics = prioritizeUnseen(getQuestionsBySubject('physics'), 15);
+    const chemistry = prioritizeUnseen(getQuestionsBySubject('chemistry'), 15);
     return [...english, ...maths, ...physics, ...chemistry];
   }
 }
