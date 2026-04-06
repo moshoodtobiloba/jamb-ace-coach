@@ -526,7 +526,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
                     <div className="flex items-start gap-2 mb-2">
                       <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded ${isCorrect ? 'bg-primary/20 text-primary' : 'bg-destructive/20 text-destructive'}`}>Q{i + 1}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-foreground">{q.question}</p>
+                        <MathMarkdown className="text-xs [&_p]:my-0">{q.question}</MathMarkdown>
                         <p className="text-[10px] text-muted-foreground mt-1">{SUBJECT_LABELS[q.subject]} • {q.topic} • {q.year} • {qTime}s</p>
                       </div>
                     </div>
@@ -666,7 +666,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
           {currentQuestion && (
             <div className="space-y-6">
-              <p className="text-base text-foreground leading-relaxed font-medium">{currentQuestion.question}</p>
+              <MathMarkdown className="text-base leading-relaxed font-medium [&_p]:my-0">{currentQuestion.question}</MathMarkdown>
               <div className="space-y-2">
                 {(['A', 'B', 'C', 'D'] as const).map(opt => {
                   const isSelected = answers[currentQuestion.id] === opt;

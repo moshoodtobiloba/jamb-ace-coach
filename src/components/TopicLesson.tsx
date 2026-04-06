@@ -101,7 +101,14 @@ CRITICAL RULES:
 - Teach like the student has ZERO prior knowledge.
 - Keep language simple but precise. Use Nigerian English naturally.
 - For English/Literature topics: give direct quotes, character analysis, and theme breakdowns.
-- Make this lesson so complete that reading it alone is enough to answer ANY JAMB question on this topic.`;
+- Make this lesson so complete that reading it alone is enough to answer ANY JAMB question on this topic.
+- IMPORTANT: For ALL mathematical expressions, use LaTeX with dollar sign delimiters:
+  - Use $...$ for inline math (e.g., $x^2 + 3x = 5$, $\\frac{1}{2}$, $\\sqrt{3}$)
+  - Use $$...$$ for display/block math (e.g., $$a^2 + b^2 = c^2$$)
+  - Use $\\cdot$ for multiplication dot, $\\frac{a}{b}$ for fractions
+  - Use subscripts like $234_5$ for number bases
+  - NEVER write bare LaTeX like \\cdot or \\frac outside of $ delimiters
+  - NEVER use \\( \\) or \\[ \\] delimiters — ONLY use $ and $$`;
 
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tutor-chat`;
