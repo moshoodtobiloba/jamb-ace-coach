@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MathMarkdown from '@/components/MathMarkdown';
-import { Question, generateExam, generateCustomExam, getQuestionsBySubject, getAvailableYears, getSubjectTopics } from '@/data/questions';
+import { Question, generateExam, generateCustomExam, getAvailableYears, getQuestionsBySubject, getQuestionsForTopic, getSubjectTopics } from '@/data/questions';
 import { Subject, SUBJECT_LABELS } from '@/data/syllabus';
 import Calculator from './Calculator';
 
@@ -110,7 +110,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
   const startPractice = () => {
     let qs = getQuestionsBySubject(practiceSubject);
-    if (practiceTopic !== 'all') qs = qs.filter(q => q.topic === practiceTopic);
+    if (practiceTopic !== 'all') qs = getQuestionsForTopic(practiceSubject, practiceTopic);
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
     qs = [...qs].sort(() => Math.random() - 0.5);
@@ -540,7 +540,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
                             isCorrectOpt ? 'bg-primary/10 text-primary font-bold' : isUserChoice && !isCorrect ? 'bg-destructive/10 text-destructive line-through' : 'text-muted-foreground'
                           }`}>
                             <span className="font-mono w-4">{opt}.</span>
-                            <span>{q.options[opt]}</span>
+                            <MathMarkdown className="flex-1 text-[11px] [&_p]:my-0">{q.options[opt]}</MathMarkdown>
                             {isCorrectOpt && <span className="ml-auto text-[9px]">✓</span>}
                             {isUserChoice && !isCorrect && <span className="ml-auto text-[9px]">✗</span>}
                           </div>
@@ -678,7 +678,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
                       <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold shrink-0 transition-colors ${
                         isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground'
                       }`}>{opt}</span>
-                      <span className="text-sm">{currentQuestion.options[opt]}</span>
+                      <MathMarkdown className="flex-1 text-sm [&_p]:my-0">{currentQuestion.options[opt]}</MathMarkdown>
                     </button>
                   );
                 })}
