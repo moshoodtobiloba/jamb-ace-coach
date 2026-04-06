@@ -1,4 +1,4 @@
-import { Subject } from './syllabus';
+import { SYLLABUS, Subject } from './syllabus';
 import { ALL_YEARLY_QUESTIONS } from './yearlyQuestions';
 
 export interface Question {
@@ -10,6 +10,67 @@ export interface Question {
   options: { A: string; B: string; C: string; D: string };
   answer: 'A' | 'B' | 'C' | 'D';
   explanation: string;
+}
+
+const TOPIC_ALIASES: Partial<Record<Subject, Record<string, string[]>>> = {
+  mathematics: {
+    'Arithmetic Progression (AP)': ['Sequences & Series'],
+    'Geometric Progression (GP)': ['Sequences & Series'],
+    'Statistics (Mean, Median, Mode)': ['Statistics & Probability'],
+    Probability: ['Statistics & Probability'],
+    'Permutation & Combination': ['Statistics & Probability'],
+  },
+  physics: {
+    'Measurements & Units': ['Motion & Forces'],
+    'Scalars & Vectors': ['Motion & Forces'],
+    'Motion (Speed, Velocity, Acceleration)': ['Motion & Forces'],
+    "Newton's Laws of Motion": ['Motion & Forces'],
+    Friction: ['Motion & Forces'],
+    'Simple Machines': ['Energy & Work'],
+    'Work, Energy & Power': ['Energy & Work'],
+    'Pressure (Solid, Liquid, Gas)': ['Gravitation & Pressure'],
+    'Equilibrium of Forces': ['Motion & Forces'],
+    'Linear Momentum & Collisions': ['Motion & Forces'],
+    'Temperature & Thermometry': ['Heat & Thermodynamics'],
+    'Heat Transfer (Conduction, Convection, Radiation)': ['Heat & Thermodynamics'],
+    'Gas Laws': ['Heat & Thermodynamics'],
+    'Waves (Properties & Types)': ['Waves & Sound'],
+    'Sound Waves': ['Waves & Sound'],
+    'Light (Reflection & Refraction)': ['Optics'],
+    'Lenses & Optical Instruments': ['Optics'],
+    'Electromagnetic Waves': ['Electromagnetic Field'],
+    Electrostatics: ['Electricity', 'Electromagnetic Field'],
+    "Current Electricity (Ohm's Law, Circuits)": ['Electricity'],
+    'Electrical Energy & Power': ['Electricity'],
+    'Electromagnetic Induction': ['Electromagnetic Field'],
+    'Electronics (Diodes, Transistors)': ['Modern Physics'],
+    'Atomic & Nuclear Physics': ['Modern Physics'],
+  },
+  chemistry: {
+    'Atomic Structure & Bonding': ['Atomic Structure', 'Chemical Bonding'],
+    'Periodic Table & Periodicity': ['Periodic Table'],
+    'States of Matter & Gas Laws': ['Gas Laws'],
+    'Stoichiometry & Chemical Calculations': ['Stoichiometry'],
+    'Hydrocarbons (Alkanes, Alkenes, Alkynes)': ['Organic Chemistry'],
+    'Alcohols & Ethers': ['Organic Chemistry'],
+    'Ketones & Aldehydes': ['Organic Chemistry'],
+    'Carboxylic Acids & Esters': ['Organic Chemistry'],
+  },
+  english: {
+    'Vowel Sounds (Monophthongs & Diphthongs)': ['Oral English - Vowels'],
+    'Consonant Sounds': ['Oral English - Consonants'],
+    'Stress Patterns (Word & Sentence)': ['Oral English - Stress'],
+    'Comprehension & Summary': ['Comprehension'],
+    'Synonyms & Antonyms': ['Lexis - Synonyms & Antonyms'],
+    'Tenses & Sentence Construction': ['Grammar - Tenses'],
+    'Register & Vocabulary': ['Register & Varieties'],
+    'The Lekki Headmaster – Garba Alabi': ['The Lekki Headmaster'],
+  },
+};
+
+function getTopicPool(subject: Subject, topic: string): Set<string> {
+  const aliases = TOPIC_ALIASES[subject]?.[topic] ?? [];
+  return new Set([topic, ...aliases]);
 }
 
 // Real JAMB UTME past questions and JAMB-standard model questions
@@ -1165,8 +1226,11 @@ export function getQuestionsBySubject(subject: Subject): Question[] {
 }
 
 export function getQuestionsByTopic(subject: Subject, topic: string): Question[] {
-  return ALL_QUESTIONS.filter(q => q.subject === subject && q.topic === topic);
+  const topicPool = getTopicPool(subject, topic);
+  return ALL_QUESTIONS.filter(q => q.subject === subject && topicPool.has(q.topic));
 }
+
+export const getQuestionsForTopic = getQuestionsByTopic;
 
 export function getQuestionsByYear(year: number): Question[] {
   return ALL_QUESTIONS.filter(q => q.year === year);
@@ -1248,7 +1312,8 @@ export function generateCustomExam(config: {
       qs = qs.filter(q => q.year === config.year);
     }
     if (config.topics && config.topics.length > 0) {
-      qs = qs.filter(q => config.topics!.includes(q.topic));
+      const topicPool = new Set(config.topics.flatMap(topic => Array.from(getTopicPool(sub, topic))));
+      qs = qs.filter(q => topicPool.has(q.topic));
     }
     // Anti-repetition: prioritize unseen questions
     allQs.push(...prioritizeUnseen(qs, config.questionsPerSubject));
@@ -1263,6 +1328,5 @@ for (const q of ALL_YEARLY_QUESTIONS) mergedMap.set(q.id, q);
 export const ALL_QUESTIONS: Question[] = Array.from(mergedMap.values());
 
 export function getSubjectTopics(subject: Subject): string[] {
-  const topics = new Set(ALL_QUESTIONS.filter(q => q.subject === subject).map(q => q.topic));
-  return Array.from(topics);
+  return SYLLABUS.filter(topic => topic.subject === subject).map(topic => topic.name);
 }
