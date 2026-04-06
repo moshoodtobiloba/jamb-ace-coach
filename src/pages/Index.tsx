@@ -35,6 +35,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Theme Settings */}
+      <ThemeSettings isOpen={showTheme} onClose={() => setShowTheme(false)} />
+      
       {/* Ask Tutor on text selection (disabled during CBT) */}
       <AskTutorPopup disabled={isInExam} />
       
