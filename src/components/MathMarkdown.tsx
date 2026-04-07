@@ -16,6 +16,11 @@ interface MathMarkdownProps {
  */
 function preprocessMath(text: string): string {
   if (!text) return '';
+
+  const containsMathSyntax = (value: string) => /\\[a-zA-Z]+|[_^]/.test(value);
+  const wrapInlineTail = (line: string) => line.replace(/:\s*\((.+)\)\s*$/, (match, inner) => (
+    containsMathSyntax(inner) ? `: $${inner.trim()}$` : match
+  ));
   
   // 1. Convert \( ... \) to $ ... $ (inline math)
   let result = text.replace(/\\\((.+?)\\\)/gs, (_, inner) => `$${inner.trim()}$`);
@@ -29,6 +34,24 @@ function preprocessMath(text: string): string {
   
   // 4. Convert [ ... ] blocks containing LaTeX commands to display math
   result = result.replace(/(?<!\$)\[([^\[\]]*\\(?:cdot|boxed|frac|sqrt|sum|prod|int|times|div|pm)[^\[\]]*)\](?!\$)/g, (_, inner) => `$$${inner}$$`);
+
+  result = result
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.includes('$')) return line;
+
+      if (containsMathSyntax(trimmed) && /^\((.+)\)$/.test(trimmed)) {
+        return line.replace(trimmed, `$${trimmed.slice(1, -1).trim()}$`);
+      }
+
+      if (containsMathSyntax(trimmed) && /^\[(.+)\]$/.test(trimmed)) {
+        return line.replace(trimmed, `$$${trimmed.slice(1, -1).trim()}$$`);
+      }
+
+      return wrapInlineTail(line);
+    })
+    .join('\n');
   
   return result;
 }

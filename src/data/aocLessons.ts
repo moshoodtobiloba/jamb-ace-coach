@@ -1,6 +1,6 @@
 import type { Topic } from './syllabus';
 import { SUBJECT_LABELS } from './syllabus';
-import { getQuestionsBySubject, getQuestionsForTopic, type Question } from './questions';
+import { AOC_SEEN_KEY, getQuestionsBySubject, getQuestionsForTopic, selectQuestionsForSession, type Question } from './questions';
 
 function unique<T>(items: T[]): T[] {
   return Array.from(new Set(items));
@@ -19,7 +19,7 @@ function formatOptions(question: Question): string {
 }
 
 export function getOfflinePracticeQuestions(topic: Topic, count = 10): Question[] {
-  return getLocalQuestions(topic).slice(0, count);
+  return selectQuestionsForSession(getLocalQuestions(topic), count, AOC_SEEN_KEY);
 }
 
 export function buildOfflineLessonMarkdown(topic: Topic): string {

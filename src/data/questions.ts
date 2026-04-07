@@ -1237,34 +1237,58 @@ export function getQuestionsByYear(year: number): Question[] {
 }
 
 // Anti-repetition: prioritize unseen questions
-const SEEN_KEY = 'jamb-seen-questions';
+export const EXAM_SEEN_KEY = 'jamb-seen-questions';
+export const AOC_SEEN_KEY = 'jamb-seen-aoc-questions';
 
-function getSeenIds(): Set<string> {
+function getSeenIds(storageKey = EXAM_SEEN_KEY): Set<string> {
   try {
-    const stored = localStorage.getItem(SEEN_KEY);
+    const stored = localStorage.getItem(storageKey);
     if (stored) return new Set(JSON.parse(stored));
   } catch {}
   return new Set();
 }
 
-function markSeen(ids: string[]) {
-  const seen = getSeenIds();
+function markSeen(ids: string[], storageKey = EXAM_SEEN_KEY) {
+  const seen = getSeenIds(storageKey);
   ids.forEach(id => seen.add(id));
   // Keep max 5000 entries to avoid localStorage bloat
   const arr = Array.from(seen);
   if (arr.length > 5000) arr.splice(0, arr.length - 5000);
-  localStorage.setItem(SEEN_KEY, JSON.stringify(arr));
+  localStorage.setItem(storageKey, JSON.stringify(arr));
 }
 
-function prioritizeUnseen(questions: Question[], count: number): Question[] {
-  const seen = getSeenIds();
-  const unseen = questions.filter(q => !seen.has(q.id));
-  const seenQs = questions.filter(q => seen.has(q.id));
+function normalizeQuestionKey(question: Question): string {
+  return `${question.subject}|${question.topic}|${question.question}`
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[^a-z0-9|]+/g, ' ')
+    .trim();
+}
+
+function dedupeQuestions(questions: Question[]): Question[] {
+  const seenKeys = new Set<string>();
+  return questions.filter((question) => {
+    const key = normalizeQuestionKey(question);
+    if (seenKeys.has(key)) return false;
+    seenKeys.add(key);
+    return true;
+  });
+}
+
+export function selectQuestionsForSession(questions: Question[], count: number, storageKey = EXAM_SEEN_KEY): Question[] {
+  const uniqueQuestions = dedupeQuestions(questions);
+  const seen = getSeenIds(storageKey);
+  const unseen = uniqueQuestions.filter(q => !seen.has(q.id));
+  const seenQs = uniqueQuestions.filter(q => seen.has(q.id));
   // Take unseen first, then fill with seen (shuffled)
   const pool = [...shuffleArray(unseen), ...shuffleArray(seenQs)];
   const selected = pool.slice(0, count);
-  markSeen(selected.map(q => q.id));
+  markSeen(selected.map(q => q.id), storageKey);
   return selected;
+}
+
+function prioritizeUnseen(questions: Question[], count: number): Question[] {
+  return selectQuestionsForSession(questions, count, EXAM_SEEN_KEY);
 }
 
 export function generateExam(mode: 'daily' | 'general'): Question[] {
