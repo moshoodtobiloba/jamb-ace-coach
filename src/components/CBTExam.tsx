@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MathMarkdown from '@/components/MathMarkdown';
-import { Question, generateExam, generateCustomExam, getAvailableYears, getQuestionsBySubject, getQuestionsForTopic, getSubjectTopics } from '@/data/questions';
+import { EXAM_SEEN_KEY, Question, generateExam, generateCustomExam, getAvailableYears, getQuestionsBySubject, getQuestionsForTopic, getSubjectTopics, selectQuestionsForSession } from '@/data/questions';
 import { Subject, SUBJECT_LABELS } from '@/data/syllabus';
 import Calculator from './Calculator';
 
@@ -113,7 +113,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     if (practiceTopic !== 'all') qs = getQuestionsForTopic(practiceSubject, practiceTopic);
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
-    qs = [...qs].sort(() => Math.random() - 0.5);
+    qs = selectQuestionsForSession(qs, qs.length, EXAM_SEEN_KEY);
     setQuestions(qs);
     setAnswers({});
     setCurrentQ(0);
