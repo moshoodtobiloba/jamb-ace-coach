@@ -31,18 +31,28 @@ export default function Auth() {
     }
   };
 
+  const handleOfflineAccess = () => {
+    // Set offline flag and navigate
+    try {
+      localStorage.setItem('jamb-offline-access', 'true');
+      localStorage.setItem('jamb-guest-name', name || 'Student');
+    } catch {}
+    navigate('/');
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm space-y-8"
+        className="w-full max-w-sm space-y-6"
       >
         {/* Logo */}
         <div className="text-center space-y-3">
-          <span className="text-4xl">🤖</span>
-          <h1 className="text-2xl font-black tracking-wider text-foreground glow-green">JAMB MACHINE</h1>
-          <p className="text-xs text-muted-foreground tracking-widest">TARGET 360+ • BE DIFFERENT • 2026</p>
+          <img src="/logo-192.png" alt="ACE COACH" className="w-16 h-16 mx-auto" />
+          <h1 className="text-2xl font-black tracking-wider text-foreground glow-green">JAMB ACE COACH</h1>
+          <p className="text-xs text-muted-foreground tracking-widest">FREE UTME PREP • TARGET 300+ • 2026</p>
         </div>
 
         {/* Form */}
@@ -55,7 +65,7 @@ export default function Auth() {
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. Tobi"
-                className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
+                className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
           )}
@@ -67,7 +77,7 @@ export default function Auth() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
             />
           </div>
           <div>
@@ -79,18 +89,31 @@ export default function Auth() {
               required
               minLength={6}
               placeholder="••••••••"
-              className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
+              className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground rounded font-bold tracking-wider text-sm hover:bg-primary/80 transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-bold tracking-wider text-sm hover:bg-primary/80 transition-colors disabled:opacity-50"
           >
-            {loading ? '⚡ PROCESSING...' : isLogin ? '⚡ ACTIVATE MACHINE' : '⚡ CREATE ACCOUNT'}
+            {loading ? '⏳ PROCESSING...' : isLogin ? '⚡ SIGN IN' : '⚡ CREATE ACCOUNT'}
           </button>
         </form>
+
+        {/* Offline / Guest Access */}
+        <div className="border-t border-border pt-4">
+          <button
+            onClick={handleOfflineAccess}
+            className="w-full py-3 border border-border rounded-lg text-sm font-bold tracking-wider text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+          >
+            📱 CONTINUE OFFLINE (No Data Needed)
+          </button>
+          <p className="text-[10px] text-muted-foreground text-center mt-2 tracking-wider">
+            Use the app without signing in. Your progress saves locally.
+          </p>
+        </div>
 
         <p className="text-center text-xs text-muted-foreground">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
@@ -100,7 +123,7 @@ export default function Auth() {
         </p>
 
         <p className="text-center text-[10px] text-muted-foreground tracking-widest pulse-slow">
-          SUCCESS IS NOT OPTIONAL. IT'S THE PLAN.
+          YOUR SUCCESS IS THE PLAN. LET'S GO.
         </p>
       </motion.div>
     </div>
