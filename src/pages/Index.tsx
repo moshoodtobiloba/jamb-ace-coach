@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Dashboard from '@/components/Dashboard';
 import SyllabusTracker from '@/components/SyllabusTracker';
 import CBTExam from '@/components/CBTExam';
@@ -8,6 +8,8 @@ import TutorChat from '@/components/TutorChat';
 import AskTutorPopup from '@/components/AskTutorPopup';
 import InstallBanner from '@/components/InstallBanner';
 import { InstallButton } from '@/components/InstallBanner';
+import ContactForm from '@/components/ContactForm';
+import FeedbackSurvey from '@/components/FeedbackSurvey';
 import { useJambStore } from '@/hooks/useJambStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { SYLLABUS } from '@/data/syllabus';
@@ -26,53 +28,70 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showTheme, setShowTheme] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const store = useJambStore();
   const { signOut, user } = useAuth();
 
   useEffect(() => { initTheme(); }, []);
 
   const isInExam = activeTab === 'cbt';
+  const displayName = user?.user_metadata?.display_name || 'Student';
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Theme Settings */}
       <ThemeSettings isOpen={showTheme} onClose={() => setShowTheme(false)} />
-      
-      {/* Ask Tutor on text selection (disabled during CBT) */}
       <AskTutorPopup disabled={isInExam} />
-      
-      {/* Install Banner */}
       <InstallBanner />
+      <FeedbackSurvey />
+      <ContactForm isOpen={showContact} onClose={() => setShowContact(false)} />
 
       {/* Top Bar */}
       {!store.restMode && (
         <header className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-40">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🤖</span>
-            <span className="text-sm font-black tracking-widest text-foreground">JAMB MACHINE</span>
+            <img src="/logo-192.png" alt="ACE" className="w-7 h-7" />
+            <span className="text-sm font-black tracking-widest text-foreground">ACE COACH</span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Hamburger Menu */}
             <button
-              onClick={() => setShowTheme(true)}
-              className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"
+              onClick={() => setShowMenu(!showMenu)}
+              className="text-lg px-2 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
             >
-              🎨
-            </button>
-            <button
-              onClick={store.toggleRestMode}
-              className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"
-            >
-              😴 REST
-            </button>
-            <button
-              onClick={signOut}
-              className="text-xs px-3 py-1 border border-destructive/30 rounded text-destructive/70 hover:text-destructive hover:border-destructive transition-colors tracking-wider"
-            >
-              EXIT
+              ☰
             </button>
           </div>
         </header>
       )}
+
+      {/* Slide-down menu */}
+      <AnimatePresence>
+        {showMenu && !store.restMode && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-b border-border bg-background/98 sticky top-[52px] z-30"
+          >
+            <div className="p-4 space-y-2 max-w-2xl mx-auto">
+              <p className="text-xs text-muted-foreground tracking-widest mb-2">👋 Hi, {displayName}</p>
+              <button onClick={() => { setShowTheme(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
+                🎨 <span>Theme & Display</span>
+              </button>
+              <button onClick={() => { setShowContact(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
+                📧 <span>Contact / Get Help</span>
+              </button>
+              <button onClick={() => { store.toggleRestMode(); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
+                😴 <span>Rest Mode</span>
+              </button>
+              <button onClick={signOut} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-destructive/10 transition-colors text-sm text-destructive/70 flex items-center gap-3">
+                🚪 <span>Sign Out</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto p-4 pb-24">
@@ -92,7 +111,6 @@ const Index = () => {
                 totalTopics={SYLLABUS.length}
                 revisionsDue={store.getRevisionsDue().length}
               />
-              {/* Install button in HQ */}
               <div className="mt-6">
                 <InstallButton />
               </div>
@@ -130,7 +148,7 @@ const Index = () => {
             {TABS.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); setShowMenu(false); }}
                 className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === tab.id
                     ? 'text-foreground'

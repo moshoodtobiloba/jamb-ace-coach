@@ -20,7 +20,6 @@ export default function InstallBanner() {
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', () => { setInstalled(true); setShowBanner(false); });
     
-    // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setInstalled(true);
     }
@@ -51,14 +50,14 @@ export default function InstallBanner() {
           <div className="flex items-start gap-3">
             <span className="text-2xl">📱</span>
             <div className="flex-1">
-              <p className="text-sm font-bold text-foreground tracking-wider">INSTALL JAMB MACHINE</p>
+              <p className="text-sm font-bold text-foreground tracking-wider">INSTALL ACE COACH</p>
               <p className="text-xs text-muted-foreground mt-1">Access offline. No browser needed. Like a real app.</p>
             </div>
             <button onClick={() => setShowBanner(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
           </div>
           <button
             onClick={handleInstall}
-            className="w-full mt-3 py-2.5 bg-primary text-primary-foreground rounded font-bold text-xs tracking-wider hover:bg-primary/80 transition-colors"
+            className="w-full mt-3 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold text-xs tracking-wider hover:bg-primary/80 transition-colors"
           >
             ⚡ INSTALL NOW
           </button>
@@ -93,7 +92,7 @@ export function InstallButton() {
 
   if (installed) {
     return (
-      <div className="border border-primary/30 rounded p-4 text-center">
+      <div className="border border-primary/30 rounded-lg p-4 text-center">
         <p className="text-xs text-primary font-bold tracking-wider">✓ APP INSTALLED</p>
       </div>
     );
@@ -103,7 +102,7 @@ export function InstallButton() {
     <button
       onClick={handleInstall}
       disabled={!deferredPrompt}
-      className="w-full py-3 border border-border rounded text-xs font-bold tracking-wider text-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      className="w-full py-3 border border-border rounded-lg text-xs font-bold tracking-wider text-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     >
       📱 DOWNLOAD APP {!deferredPrompt && '(Open in browser)'}
     </button>

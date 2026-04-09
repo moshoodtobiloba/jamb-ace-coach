@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "placeholder.svg", "logo-192.jpg", "logo-512.jpg"],
+      includeAssets: ["favicon.ico", "placeholder.svg", "logo-192.png", "logo-512.png"],
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
@@ -38,9 +38,9 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: "JAMB Mastery Machine",
-        short_name: "JAMB Machine",
-        description: "Target 360+ • JAMB UTME 2026 Preparation • CBT • AI Tutor",
+        name: "JAMB ACE COACH",
+        short_name: "ACE COACH",
+        description: "Free JAMB UTME 2026 Preparation • CBT • AI Tutor • Offline",
         theme_color: "#0d1117",
         background_color: "#0d1117",
         display: "standalone",
@@ -48,8 +48,8 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          { src: "/logo-192.jpg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
-          { src: "/logo-512.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" },
+          { src: "/logo-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "/logo-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
         ],
       },
     }),
