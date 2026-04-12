@@ -143,7 +143,7 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto p-4 pb-24">
+      <main className="max-w-2xl mx-auto p-4 pb-8">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, y: 10 }}
@@ -189,35 +189,6 @@ const Index = () => {
           )}
         </motion.div>
       </main>
-
-      {/* Bottom Navigation - 3 key tabs only */}
-      {!store.restMode && !showMenu && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-40">
-          <div className="max-w-2xl mx-auto flex">
-            {[
-              { id: 'dashboard' as Tab, label: 'HQ', icon: '⚡' },
-              { id: 'cbt' as Tab, label: 'CBT', icon: '🖥️' },
-              { id: 'tutor' as Tab, label: 'TUTOR', icon: '🤖' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => navigateTo(tab.id)}
-                className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${
-                  activeTab === tab.id
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <span className="text-lg">{tab.icon}</span>
-                <span className="text-[10px] font-bold tracking-widest">{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div layoutId="nav-indicator" className="w-6 h-0.5 bg-primary rounded-full" />
-                )}
-              </button>
-            ))}
-          </div>
-        </nav>
-      )}
     </div>
   );
 };
