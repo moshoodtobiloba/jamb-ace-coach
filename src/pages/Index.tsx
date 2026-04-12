@@ -10,9 +10,12 @@ import InstallBanner from '@/components/InstallBanner';
 import { InstallButton } from '@/components/InstallBanner';
 import ContactForm from '@/components/ContactForm';
 import FeedbackSurvey from '@/components/FeedbackSurvey';
+import OnboardingTour from '@/components/OnboardingTour';
+import NotificationManager from '@/components/NotificationManager';
+import EditableTimetable from '@/components/EditableTimetable';
 import { useJambStore } from '@/hooks/useJambStore';
 import { useAuth } from '@/contexts/AuthContext';
-import { SYLLABUS } from '@/data/syllabus';
+import { SYLLABUS, getDailySchedule, getTodaySubjects } from '@/data/syllabus';
 import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
@@ -22,6 +25,7 @@ const Index = () => {
   const [showTheme, setShowTheme] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showTimetable, setShowTimetable] = useState(false);
   const store = useJambStore();
   const { signOut, user } = useAuth();
 
@@ -29,6 +33,9 @@ const Index = () => {
 
   const isInExam = activeTab === 'cbt';
   const displayName = user?.user_metadata?.display_name || localStorage.getItem('jamb-guest-name') || 'Student';
+
+  const subjects = getTodaySubjects(new Date());
+  const schedule = getDailySchedule(subjects);
 
   const navigateTo = (tab: Tab) => {
     setActiveTab(tab);
@@ -41,6 +48,7 @@ const Index = () => {
     { id: 'cbt', label: 'CBT Practice', icon: '🖥️' },
     { id: 'tutor', label: 'AI Tutor', icon: '🤖' },
     { id: 'mistakes', label: 'Mistake Log', icon: '📝' },
+    { id: 'timetable', label: 'Edit Timetable', icon: '📅', action: () => { setShowTimetable(true); setShowMenu(false); } },
     { id: 'theme', label: 'Theme & Display', icon: '🎨', action: () => { setShowTheme(true); setShowMenu(false); } },
     { id: 'contact', label: 'Contact / Help', icon: '📧', action: () => { setShowContact(true); setShowMenu(false); } },
     { id: 'rest', label: 'Rest Mode', icon: '😴', action: () => { store.toggleRestMode(); setShowMenu(false); } },
@@ -52,7 +60,10 @@ const Index = () => {
       <AskTutorPopup disabled={isInExam} />
       <InstallBanner />
       <FeedbackSurvey />
+      <OnboardingTour />
+      <NotificationManager schedule={schedule} />
       <ContactForm isOpen={showContact} onClose={() => setShowContact(false)} />
+      <EditableTimetable isOpen={showTimetable} onClose={() => setShowTimetable(false)} />
 
       {/* Top Bar */}
       {!store.restMode && (
@@ -61,14 +72,12 @@ const Index = () => {
             <img src="/logo-192.png" alt="ACE" className="w-7 h-7" />
             <span className="text-sm font-black tracking-widest text-foreground">ACE COACH</span>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="text-lg px-2 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
-            >
-              ☰
-            </button>
-          </div>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="text-lg px-2 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+          >
+            ☰
+          </button>
         </header>
       )}
 
@@ -119,7 +128,7 @@ const Index = () => {
                 ))}
               </div>
 
-              {/* Sign Out - separate at bottom */}
+              {/* Sign Out */}
               <button
                 onClick={() => { signOut(); setShowMenu(false); }}
                 className="w-full flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:bg-destructive/10 transition-colors"
@@ -128,7 +137,6 @@ const Index = () => {
                 <span className="text-xs font-bold tracking-wider text-destructive/70">Sign Out</span>
               </button>
 
-              {/* Contact info */}
               <div className="mt-4 p-3 rounded-lg bg-muted/50 text-center">
                 <p className="text-[10px] text-muted-foreground tracking-wider">Need help? Email us at</p>
                 <p className="text-xs text-primary font-bold">moshoodabdulmujib9@gmail.com</p>
