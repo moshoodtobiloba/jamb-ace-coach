@@ -34,7 +34,6 @@ export default function FeedbackSurvey() {
   useEffect(() => {
     const done = localStorage.getItem(SURVEY_DONE_KEY) === 'true';
     if (!done) {
-      // Show after 3 seconds
       const t = setTimeout(() => setShow(true), 3000);
       return () => clearTimeout(t);
     }
@@ -66,7 +65,6 @@ export default function FeedbackSurvey() {
         completed: true,
       });
     } catch (e) {
-      // Store offline
       const offline = JSON.parse(localStorage.getItem('jamb-offline-surveys') || '[]');
       offline.push({ user_id: userId, responses: finalAnswers, comment, created_at: new Date().toISOString() });
       localStorage.setItem('jamb-offline-surveys', JSON.stringify(offline));
@@ -83,12 +81,13 @@ export default function FeedbackSurvey() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-background/98 flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        style={{ backgroundColor: 'hsl(var(--background))' }}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-md"
+          className="w-full max-w-md bg-card border border-border rounded-2xl p-6 shadow-2xl"
         >
           {submitted ? (
             <div className="text-center space-y-4 py-12">
@@ -103,12 +102,13 @@ export default function FeedbackSurvey() {
                 <span className="text-3xl">📝</span>
                 <h2 className="text-lg font-black tracking-wider text-foreground mt-2">QUICK FEEDBACK</h2>
                 <p className="text-xs text-muted-foreground tracking-wider mt-1">Help us improve • {step + 1}/{QUESTIONS.length}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">This is required to continue using the app</p>
               </div>
 
               {/* Progress bar */}
-              <div className="w-full bg-muted rounded-full h-1.5 mb-6">
+              <div className="w-full bg-muted rounded-full h-2 mb-6">
                 <motion.div
-                  className="bg-primary h-1.5 rounded-full"
+                  className="bg-primary h-2 rounded-full"
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.3 }}
                 />
@@ -126,12 +126,12 @@ export default function FeedbackSurvey() {
                   <p className="text-sm font-bold text-foreground">{currentQ.text}</p>
 
                   {currentQ.type === 'rating' && (
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex gap-3 justify-center">
                       {[1, 2, 3, 4, 5].map(n => (
                         <button
                           key={n}
                           onClick={() => handleAnswer(String(n))}
-                          className={`w-12 h-12 rounded-lg border text-lg font-bold transition-all ${
+                          className={`w-14 h-14 rounded-xl border-2 text-lg font-bold transition-all ${
                             answers[currentQ.id] === String(n)
                               ? 'bg-primary text-primary-foreground border-primary scale-110'
                               : 'border-border text-muted-foreground hover:border-primary hover:text-foreground'
@@ -149,10 +149,10 @@ export default function FeedbackSurvey() {
                         <button
                           key={opt}
                           onClick={() => handleAnswer(opt)}
-                          className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all ${
+                          className={`w-full text-left px-4 py-4 rounded-xl border-2 text-sm font-medium transition-all ${
                             answers[currentQ.id] === opt
                               ? 'bg-primary/20 border-primary text-foreground'
-                              : 'border-border text-muted-foreground hover:border-primary hover:text-foreground'
+                              : 'border-border text-foreground hover:border-primary hover:bg-muted'
                           }`}
                         >
                           {opt}
@@ -162,17 +162,17 @@ export default function FeedbackSurvey() {
                   )}
 
                   {currentQ.type === 'text' && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <textarea
                         value={comment}
                         onChange={e => setComment(e.target.value)}
                         placeholder="Tell us what you think... your honest feedback matters!"
                         rows={4}
-                        className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none"
+                        className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none"
                       />
                       <button
                         onClick={handleSubmit}
-                        className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-bold text-sm tracking-wider hover:bg-primary/80 transition-colors"
+                        className="w-full py-4 bg-primary text-primary-foreground rounded-xl font-bold text-sm tracking-wider hover:bg-primary/80 transition-colors"
                       >
                         ✅ SUBMIT FEEDBACK
                       </button>
@@ -187,16 +187,16 @@ export default function FeedbackSurvey() {
                   <button
                     onClick={() => setStep(s => Math.max(0, s - 1))}
                     disabled={step === 0}
-                    className="text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+                    className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors rounded-lg hover:bg-muted"
                   >
                     ← Back
                   </button>
                   {answers[currentQ.id] && (
                     <button
                       onClick={() => isLast ? setStep(QUESTIONS.length - 1) : setStep(s => s + 1)}
-                      className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                      className="px-4 py-2 text-sm text-primary font-bold hover:text-primary/80 transition-colors rounded-lg hover:bg-primary/10"
                     >
-                      {isLast ? 'Next →' : 'Next →'}
+                      Next →
                     </button>
                   )}
                 </div>
