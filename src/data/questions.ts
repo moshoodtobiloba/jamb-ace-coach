@@ -1275,14 +1275,39 @@ function dedupeQuestions(questions: Question[]): Question[] {
   });
 }
 
+// Randomize option positions so answer isn't always in same slot
+function randomizeOptions(q: Question): Question {
+  const keys: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
+  const shuffledKeys = shuffleArray(keys);
+  const originalAnswer = q.options[q.answer];
+  const newOptions: Record<string, string> = {};
+  let newAnswer: 'A' | 'B' | 'C' | 'D' = 'A';
+  shuffledKeys.forEach((origKey, i) => {
+    const newKey = keys[i];
+    newOptions[newKey] = q.options[origKey];
+    if (q.options[origKey] === originalAnswer) newAnswer = newKey;
+  });
+  return { ...q, options: newOptions as any, answer: newAnswer };
+}
+
 export function selectQuestionsForSession(questions: Question[], count: number, storageKey = EXAM_SEEN_KEY): Question[] {
   const uniqueQuestions = dedupeQuestions(questions);
   const seen = getSeenIds(storageKey);
   const unseen = uniqueQuestions.filter(q => !seen.has(q.id));
   const seenQs = uniqueQuestions.filter(q => seen.has(q.id));
+
+  // If all seen, reset the seen list to allow fresh cycle
+  if (unseen.length === 0 && seenQs.length > 0) {
+    localStorage.removeItem(storageKey);
+    const pool = shuffleArray(seenQs);
+    const selected = pool.slice(0, count).map(randomizeOptions);
+    markSeen(selected.map(q => q.id), storageKey);
+    return selected;
+  }
+
   // Take unseen first, then fill with seen (shuffled)
   const pool = [...shuffleArray(unseen), ...shuffleArray(seenQs)];
-  const selected = pool.slice(0, count);
+  const selected = pool.slice(0, count).map(randomizeOptions);
   markSeen(selected.map(q => q.id), storageKey);
   return selected;
 }

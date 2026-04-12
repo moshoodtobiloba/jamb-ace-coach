@@ -17,14 +17,6 @@ import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'dashboard', label: 'HQ', icon: '⚡' },
-  { id: 'syllabus', label: 'AOC', icon: '📋' },
-  { id: 'cbt', label: 'CBT', icon: '🖥️' },
-  { id: 'tutor', label: 'TUTOR', icon: '🤖' },
-  { id: 'mistakes', label: 'LOG', icon: '📝' },
-];
-
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showTheme, setShowTheme] = useState(false);
@@ -36,7 +28,23 @@ const Index = () => {
   useEffect(() => { initTheme(); }, []);
 
   const isInExam = activeTab === 'cbt';
-  const displayName = user?.user_metadata?.display_name || 'Student';
+  const displayName = user?.user_metadata?.display_name || localStorage.getItem('jamb-guest-name') || 'Student';
+
+  const navigateTo = (tab: Tab) => {
+    setActiveTab(tab);
+    setShowMenu(false);
+  };
+
+  const MENU_ITEMS: { id: Tab | string; label: string; icon: string; action?: () => void }[] = [
+    { id: 'dashboard', label: 'HQ Dashboard', icon: '⚡' },
+    { id: 'syllabus', label: 'AOC Syllabus', icon: '📋' },
+    { id: 'cbt', label: 'CBT Practice', icon: '🖥️' },
+    { id: 'tutor', label: 'AI Tutor', icon: '🤖' },
+    { id: 'mistakes', label: 'Mistake Log', icon: '📝' },
+    { id: 'theme', label: 'Theme & Display', icon: '🎨', action: () => { setShowTheme(true); setShowMenu(false); } },
+    { id: 'contact', label: 'Contact / Help', icon: '📧', action: () => { setShowContact(true); setShowMenu(false); } },
+    { id: 'rest', label: 'Rest Mode', icon: '😴', action: () => { store.toggleRestMode(); setShowMenu(false); } },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -54,7 +62,6 @@ const Index = () => {
             <span className="text-sm font-black tracking-widest text-foreground">ACE COACH</span>
           </div>
           <div className="flex items-center gap-2">
-            {/* Hamburger Menu */}
             <button
               onClick={() => setShowMenu(!showMenu)}
               className="text-lg px-2 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
@@ -65,29 +72,71 @@ const Index = () => {
         </header>
       )}
 
-      {/* Slide-down menu */}
+      {/* Full-screen Facebook-style Menu */}
       <AnimatePresence>
         {showMenu && !store.restMode && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-b border-border bg-background/98 sticky top-[52px] z-30"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[80] bg-background overflow-y-auto"
+            style={{ top: '52px' }}
           >
-            <div className="p-4 space-y-2 max-w-2xl mx-auto">
-              <p className="text-xs text-muted-foreground tracking-widest mb-2">👋 Hi, {displayName}</p>
-              <button onClick={() => { setShowTheme(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
-                🎨 <span>Theme & Display</span>
+            <div className="p-4 max-w-2xl mx-auto">
+              {/* Profile Header */}
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-border bg-card mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-xl">
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">{displayName}</p>
+                  <p className="text-[10px] text-muted-foreground tracking-widest">JAMB 2026 CANDIDATE</p>
+                </div>
+              </div>
+
+              {/* Grid Menu Items */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {MENU_ITEMS.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      if (item.action) {
+                        item.action();
+                      } else {
+                        navigateTo(item.id as Tab);
+                      }
+                    }}
+                    className={`flex flex-col items-start gap-2 p-4 rounded-xl border transition-all text-left ${
+                      activeTab === item.id && !item.action
+                        ? 'bg-primary/10 border-primary text-foreground'
+                        : 'border-border bg-card hover:bg-muted text-foreground'
+                    }`}
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                    <span className="text-xs font-bold tracking-wider">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Sign Out - separate at bottom */}
+              <button
+                onClick={() => { signOut(); setShowMenu(false); }}
+                className="w-full flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:bg-destructive/10 transition-colors"
+              >
+                <span className="text-2xl">🚪</span>
+                <span className="text-xs font-bold tracking-wider text-destructive/70">Sign Out</span>
               </button>
-              <button onClick={() => { setShowContact(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
-                📧 <span>Contact / Get Help</span>
-              </button>
-              <button onClick={() => { store.toggleRestMode(); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm flex items-center gap-3">
-                😴 <span>Rest Mode</span>
-              </button>
-              <button onClick={signOut} className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-destructive/10 transition-colors text-sm text-destructive/70 flex items-center gap-3">
-                🚪 <span>Sign Out</span>
-              </button>
+
+              {/* Contact info */}
+              <div className="mt-4 p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-[10px] text-muted-foreground tracking-wider">Need help? Email us at</p>
+                <p className="text-xs text-primary font-bold">moshoodabdulmujib9@gmail.com</p>
+              </div>
+
+              <div className="mt-3">
+                <InstallButton />
+              </div>
             </div>
           </motion.div>
         )}
@@ -141,14 +190,18 @@ const Index = () => {
         </motion.div>
       </main>
 
-      {/* Bottom Navigation */}
-      {!store.restMode && (
+      {/* Bottom Navigation - 3 key tabs only */}
+      {!store.restMode && !showMenu && (
         <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-40">
           <div className="max-w-2xl mx-auto flex">
-            {TABS.map(tab => (
+            {[
+              { id: 'dashboard' as Tab, label: 'HQ', icon: '⚡' },
+              { id: 'cbt' as Tab, label: 'CBT', icon: '🖥️' },
+              { id: 'tutor' as Tab, label: 'TUTOR', icon: '🤖' },
+            ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setShowMenu(false); }}
+                onClick={() => navigateTo(tab.id)}
                 className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${
                   activeTab === tab.id
                     ? 'text-foreground'
