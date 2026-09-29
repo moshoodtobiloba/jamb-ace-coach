@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,95 +17,34 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (isLogin) {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password, name || 'Student');
-      }
-      navigate('/');
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); setLoading(true);
+    try { if (isLogin) await signIn(email, password); else await signUp(email, password, name || 'Student'); navigate('/'); }
+    catch (error) { toast({ title: 'Unable to continue', description: error instanceof Error ? error.message : 'Please try again.', variant: 'destructive' }); }
+    finally { setLoading(false); }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm space-y-8"
-      >
-        {/* Logo */}
-        <div className="text-center space-y-3">
-          <span className="text-4xl">🤖</span>
-          <h1 className="text-2xl font-black tracking-wider text-foreground glow-green">JAMB MACHINE</h1>
-          <p className="text-xs text-muted-foreground tracking-widest">TARGET 360+ • BE DIFFERENT • 2026</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div>
-              <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">YOUR NAME</label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="e.g. Tobi"
-                className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
-              />
-            </div>
-          )}
-          <div>
-            <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">EMAIL</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              placeholder="you@example.com"
-              className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground tracking-widest block mb-1">PASSWORD</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              minLength={6}
-              placeholder="••••••••"
-              className="w-full bg-muted border border-border rounded px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground rounded font-bold tracking-wider text-sm hover:bg-primary/80 transition-colors disabled:opacity-50"
-          >
-            {loading ? '⚡ PROCESSING...' : isLogin ? '⚡ ACTIVATE MACHINE' : '⚡ CREATE ACCOUNT'}
-          </button>
-        </form>
-
-        <p className="text-center text-xs text-muted-foreground">
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
-          <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline font-bold">
-            {isLogin ? 'SIGN UP' : 'LOG IN'}
-          </button>
-        </p>
-
-        <p className="text-center text-[10px] text-muted-foreground tracking-widest pulse-slow">
-          SUCCESS IS NOT OPTIONAL. IT'S THE PLAN.
-        </p>
-      </motion.div>
-    </div>
+    <main className="grid min-h-screen bg-background lg:grid-cols-[1.05fr_.95fr]">
+      <section className="hidden border-r border-border px-12 py-10 lg:flex lg:flex-col lg:justify-between">
+        <div><p className="font-serif text-2xl">EXAMGUIDE</p><p className="page-kicker mt-1">UTME 2027</p></div>
+        <div className="max-w-xl"><p className="page-kicker">A serious place to prepare</p><h1 className="mt-5 text-7xl leading-[1.02]">Know the work.<br />Own the result.</h1><p className="mt-7 max-w-md text-base leading-7 text-muted-foreground">Syllabus guidance, realistic CBT practice, clear explanations and your progress—together in one focused study space.</p></div>
+        <p className="text-xs text-muted-foreground">Built for students preparing early for 2027.</p>
+      </section>
+      <section className="flex items-center justify-center px-5 py-12 sm:px-10">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+          <div className="mb-12 lg:hidden"><p className="font-serif text-2xl">EXAMGUIDE</p><p className="page-kicker mt-1">UTME 2027</p></div>
+          <p className="page-kicker">{isLogin ? 'Welcome back' : 'Begin preparation'}</p>
+          <h2 className="mt-3 text-4xl">{isLogin ? 'Continue where you stopped.' : 'Create your study account.'}</h2>
+          <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+            {!isLogin && <label className="block text-sm font-medium">Your name<Input value={name} onChange={e => setName(e.target.value)} className="mt-2 h-12 rounded-sm bg-background" placeholder="How should we address you?" /></label>}
+            <label className="block text-sm font-medium">Email address<Input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="mt-2 h-12 rounded-sm bg-background" placeholder="you@example.com" /></label>
+            <label className="block text-sm font-medium">Password<Input type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required className="mt-2 h-12 rounded-sm bg-background" placeholder="At least 6 characters" /></label>
+            <Button type="submit" disabled={loading} className="h-12 w-full justify-between">{loading ? 'Please wait…' : isLogin ? 'Sign in' : 'Create account'}<ArrowRight /></Button>
+          </form>
+          <button onClick={() => setIsLogin(!isLogin)} className="mt-7 text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground">{isLogin ? 'New here? Create an account' : 'Already registered? Sign in'}</button>
+        </motion.div>
+      </section>
+    </main>
   );
 }
