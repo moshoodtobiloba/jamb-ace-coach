@@ -17,12 +17,9 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "placeholder.svg", "logo-192.png", "logo-512.png"],
+      includeAssets: ["favicon.ico", "placeholder.svg"],
       workbox: {
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true,
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2,ttf}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallbackDenylist: [/^\/~oauth/],
         runtimeCaching: [
           {
@@ -38,9 +35,9 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: "JAMB ACE COACH",
-        short_name: "ACE COACH",
-        description: "Free JAMB UTME 2026 Preparation • CBT • AI Tutor • Offline",
+        name: "JAMB Mastery Machine",
+        short_name: "JAMB Machine",
+        description: "Target 360+ • JAMB UTME 2026 Preparation • CBT • AI Tutor",
         theme_color: "#0d1117",
         background_color: "#0d1117",
         display: "standalone",
@@ -48,8 +45,8 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          { src: "/logo-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: "/logo-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+          { src: "/logo-192.jpg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
+          { src: "/logo-512.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" },
         ],
       },
     }),

@@ -1,5 +1,4 @@
-import { SYLLABUS, Subject } from './syllabus';
-import { ALL_YEARLY_QUESTIONS } from './yearlyQuestions';
+import { Subject } from './syllabus';
 
 export interface Question {
   id: string;
@@ -10,67 +9,6 @@ export interface Question {
   options: { A: string; B: string; C: string; D: string };
   answer: 'A' | 'B' | 'C' | 'D';
   explanation: string;
-}
-
-const TOPIC_ALIASES: Partial<Record<Subject, Record<string, string[]>>> = {
-  mathematics: {
-    'Arithmetic Progression (AP)': ['Sequences & Series'],
-    'Geometric Progression (GP)': ['Sequences & Series'],
-    'Statistics (Mean, Median, Mode)': ['Statistics & Probability'],
-    Probability: ['Statistics & Probability'],
-    'Permutation & Combination': ['Statistics & Probability'],
-  },
-  physics: {
-    'Measurements & Units': ['Motion & Forces'],
-    'Scalars & Vectors': ['Motion & Forces'],
-    'Motion (Speed, Velocity, Acceleration)': ['Motion & Forces'],
-    "Newton's Laws of Motion": ['Motion & Forces'],
-    Friction: ['Motion & Forces'],
-    'Simple Machines': ['Energy & Work'],
-    'Work, Energy & Power': ['Energy & Work'],
-    'Pressure (Solid, Liquid, Gas)': ['Gravitation & Pressure'],
-    'Equilibrium of Forces': ['Motion & Forces'],
-    'Linear Momentum & Collisions': ['Motion & Forces'],
-    'Temperature & Thermometry': ['Heat & Thermodynamics'],
-    'Heat Transfer (Conduction, Convection, Radiation)': ['Heat & Thermodynamics'],
-    'Gas Laws': ['Heat & Thermodynamics'],
-    'Waves (Properties & Types)': ['Waves & Sound'],
-    'Sound Waves': ['Waves & Sound'],
-    'Light (Reflection & Refraction)': ['Optics'],
-    'Lenses & Optical Instruments': ['Optics'],
-    'Electromagnetic Waves': ['Electromagnetic Field'],
-    Electrostatics: ['Electricity', 'Electromagnetic Field'],
-    "Current Electricity (Ohm's Law, Circuits)": ['Electricity'],
-    'Electrical Energy & Power': ['Electricity'],
-    'Electromagnetic Induction': ['Electromagnetic Field'],
-    'Electronics (Diodes, Transistors)': ['Modern Physics'],
-    'Atomic & Nuclear Physics': ['Modern Physics'],
-  },
-  chemistry: {
-    'Atomic Structure & Bonding': ['Atomic Structure', 'Chemical Bonding'],
-    'Periodic Table & Periodicity': ['Periodic Table'],
-    'States of Matter & Gas Laws': ['Gas Laws'],
-    'Stoichiometry & Chemical Calculations': ['Stoichiometry'],
-    'Hydrocarbons (Alkanes, Alkenes, Alkynes)': ['Organic Chemistry'],
-    'Alcohols & Ethers': ['Organic Chemistry'],
-    'Ketones & Aldehydes': ['Organic Chemistry'],
-    'Carboxylic Acids & Esters': ['Organic Chemistry'],
-  },
-  english: {
-    'Vowel Sounds (Monophthongs & Diphthongs)': ['Oral English - Vowels'],
-    'Consonant Sounds': ['Oral English - Consonants'],
-    'Stress Patterns (Word & Sentence)': ['Oral English - Stress'],
-    'Comprehension & Summary': ['Comprehension'],
-    'Synonyms & Antonyms': ['Lexis - Synonyms & Antonyms'],
-    'Tenses & Sentence Construction': ['Grammar - Tenses'],
-    'Register & Vocabulary': ['Register & Varieties'],
-    'The Lekki Headmaster – Garba Alabi': ['The Lekki Headmaster'],
-  },
-};
-
-function getTopicPool(subject: Subject, topic: string): Set<string> {
-  const aliases = TOPIC_ALIASES[subject]?.[topic] ?? [];
-  return new Set([topic, ...aliases]);
 }
 
 // Real JAMB UTME past questions and JAMB-standard model questions
@@ -85,20 +23,20 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q2', subject: 'mathematics', topic: 'Quadratic Equations', year: 2019,
     question: 'Find the roots of the equation x² - 5x + 6 = 0',
-    options: { A: 'x = -1 or x = -6', B: 'x = -2 or x = -3', C: 'x = 1 or x = 6', D: 'x = 2 or x = 3' },
-    answer: 'D', explanation: 'Factoring: (x-2)(x-3) = 0, so x = 2 or x = 3'
+    options: { A: 'x = 2 or x = 3', B: 'x = -2 or x = -3', C: 'x = 1 or x = 6', D: 'x = -1 or x = -6' },
+    answer: 'A', explanation: 'Factoring: (x-2)(x-3) = 0, so x = 2 or x = 3'
   },
   {
     id: 'math-q3', subject: 'mathematics', topic: 'Surds', year: 2021,
     question: 'Simplify √75 - √27',
-    options: { A: '4√3', B: '3√2', C: '√48', D: '2√3' },
-    answer: 'D', explanation: '√75 = 5√3, √27 = 3√3, so 5√3 - 3√3 = 2√3'
+    options: { A: '2√3', B: '3√2', C: '√48', D: '4√3' },
+    answer: 'A', explanation: '√75 = 5√3, √27 = 3√3, so 5√3 - 3√3 = 2√3'
   },
   {
     id: 'math-q4', subject: 'mathematics', topic: 'Sets', year: 2018,
     question: 'In a class of 50 students, 30 offer Mathematics and 25 offer Physics. If 10 offer both, how many offer neither?',
-    options: { A: '20', B: '10', C: '15', D: '5' },
-    answer: 'D', explanation: 'n(M∪P) = 30 + 25 - 10 = 45. Neither = 50 - 45 = 5'
+    options: { A: '5', B: '10', C: '15', D: '20' },
+    answer: 'A', explanation: 'n(M∪P) = 30 + 25 - 10 = 45. Neither = 50 - 45 = 5'
   },
   {
     id: 'math-q5', subject: 'mathematics', topic: 'Algebra – Polynomials', year: 2022,
@@ -109,38 +47,38 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q6', subject: 'mathematics', topic: 'Simultaneous Equations', year: 2017,
     question: 'Solve: 2x + y = 7, x - y = 2',
-    options: { A: 'x=4, y=-1', B: 'x=2, y=3', C: 'x=3, y=1', D: 'x=1, y=5' },
-    answer: 'C', explanation: 'Adding: 3x = 9, x = 3. Then y = 7 - 6 = 1'
+    options: { A: 'x=3, y=1', B: 'x=2, y=3', C: 'x=4, y=-1', D: 'x=1, y=5' },
+    answer: 'A', explanation: 'Adding: 3x = 9, x = 3. Then y = 7 - 6 = 1'
   },
   {
     id: 'math-q7', subject: 'mathematics', topic: 'Matrices & Determinants', year: 2020,
     question: 'Find the determinant of the matrix |2 3; 1 4|',
-    options: { A: '11', B: '8', C: '5', D: '-1' },
-    answer: 'C', explanation: 'det = (2×4) - (3×1) = 8 - 3 = 5'
+    options: { A: '5', B: '8', C: '11', D: '-1' },
+    answer: 'A', explanation: 'det = (2×4) - (3×1) = 8 - 3 = 5'
   },
   {
     id: 'math-q8', subject: 'mathematics', topic: 'Arithmetic Progression (AP)', year: 2019,
     question: 'The 10th term of the AP: 3, 7, 11, 15, ... is',
-    options: { A: '47', B: '43', C: '35', D: '39' },
-    answer: 'D', explanation: 'a = 3, d = 4. T₁₀ = 3 + (10-1)×4 = 3 + 36 = 39'
+    options: { A: '39', B: '43', C: '35', D: '47' },
+    answer: 'A', explanation: 'a = 3, d = 4. T₁₀ = 3 + (10-1)×4 = 3 + 36 = 39'
   },
   {
     id: 'math-q9', subject: 'mathematics', topic: 'Geometric Progression (GP)', year: 2021,
     question: 'Find the sum of the first 4 terms of the GP: 2, 6, 18, 54',
-    options: { A: '72', B: '80', C: '66', D: '90' },
-    answer: 'B', explanation: 'S₄ = 2(3⁴ - 1)/(3 - 1) = 2(80)/2 = 80'
+    options: { A: '80', B: '72', C: '66', D: '90' },
+    answer: 'A', explanation: 'S₄ = 2(3⁴ - 1)/(3 - 1) = 2(80)/2 = 80'
   },
   {
     id: 'math-q10', subject: 'mathematics', topic: 'Differentiation', year: 2022,
     question: 'Differentiate y = 3x⁴ - 2x² + 5x with respect to x',
-    options: { A: '12x⁴ - 4x² + 5', B: '12x³ - 4x', C: '3x³ - 2x + 5', D: '12x³ - 4x + 5' },
-    answer: 'D', explanation: 'dy/dx = 12x³ - 4x + 5'
+    options: { A: '12x³ - 4x + 5', B: '12x³ - 4x', C: '3x³ - 2x + 5', D: '12x⁴ - 4x² + 5' },
+    answer: 'A', explanation: 'dy/dx = 12x³ - 4x + 5'
   },
   {
     id: 'math-q11', subject: 'mathematics', topic: 'Integration', year: 2018,
     question: 'Evaluate ∫(4x³ + 2x)dx',
-    options: { A: '12x² + 2 + C', B: 'x⁴ + x² + C', C: '4x⁴ + x² + C', D: 'x⁴ + x + C' },
-    answer: 'B', explanation: '∫4x³dx = x⁴, ∫2xdx = x², so x⁴ + x² + C'
+    options: { A: 'x⁴ + x² + C', B: '12x² + 2 + C', C: '4x⁴ + x² + C', D: 'x⁴ + x + C' },
+    answer: 'A', explanation: '∫4x³dx = x⁴, ∫2xdx = x², so x⁴ + x² + C'
   },
   {
     id: 'math-q12', subject: 'mathematics', topic: 'Probability', year: 2020,
@@ -151,8 +89,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q13', subject: 'mathematics', topic: 'Statistics (Mean, Median, Mode)', year: 2019,
     question: 'Find the mean of: 2, 5, 7, 8, 3',
-    options: { A: '4', B: '6', C: '7', D: '5' },
-    answer: 'D', explanation: 'Mean = (2+5+7+8+3)/5 = 25/5 = 5'
+    options: { A: '5', B: '6', C: '7', D: '4' },
+    answer: 'A', explanation: 'Mean = (2+5+7+8+3)/5 = 25/5 = 5'
   },
   {
     id: 'math-q14', subject: 'mathematics', topic: 'Trigonometry', year: 2021,
@@ -163,26 +101,26 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q15', subject: 'mathematics', topic: 'Coordinate Geometry', year: 2018,
     question: 'Find the distance between points A(1,2) and B(4,6)',
-    options: { A: '7', B: '5', C: '√13', D: '√20' },
-    answer: 'B', explanation: 'd = √((4-1)² + (6-2)²) = √(9+16) = √25 = 5'
+    options: { A: '5', B: '7', C: '√13', D: '√20' },
+    answer: 'A', explanation: 'd = √((4-1)² + (6-2)²) = √(9+16) = √25 = 5'
   },
   {
     id: 'math-q16', subject: 'mathematics', topic: 'Number Bases', year: 2022,
     question: 'Convert 101101₂ to base 10',
-    options: { A: '43', B: '45', C: '41', D: '47' },
-    answer: 'B', explanation: '32 + 0 + 8 + 4 + 0 + 1 = 45'
+    options: { A: '45', B: '43', C: '41', D: '47' },
+    answer: 'A', explanation: '32 + 0 + 8 + 4 + 0 + 1 = 45'
   },
   {
     id: 'math-q17', subject: 'mathematics', topic: 'Variation (Direct/Inverse/Joint)', year: 2017,
     question: 'If y varies directly as x and y = 12 when x = 4, find y when x = 7',
-    options: { A: '28', B: '24', C: '21', D: '18' },
-    answer: 'C', explanation: 'y = kx, 12 = 4k, k = 3. When x = 7, y = 3(7) = 21'
+    options: { A: '21', B: '24', C: '28', D: '18' },
+    answer: 'A', explanation: 'y = kx, 12 = 4k, k = 3. When x = 7, y = 3(7) = 21'
   },
   {
     id: 'math-q18', subject: 'mathematics', topic: 'Binary Operations', year: 2020,
     question: 'If a*b = a² + b² - ab, find 3*2',
-    options: { A: '9', B: '13', C: '7', D: '5' },
-    answer: 'C', explanation: '3*2 = 9 + 4 - 6 = 7'
+    options: { A: '7', B: '13', C: '9', D: '5' },
+    answer: 'A', explanation: '3*2 = 9 + 4 - 6 = 7'
   },
   {
     id: 'math-q19', subject: 'mathematics', topic: 'Inequalities', year: 2019,
@@ -193,8 +131,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q20', subject: 'mathematics', topic: 'Permutation & Combination', year: 2021,
     question: 'In how many ways can 5 people be arranged in a row?',
-    options: { A: '24', B: '60', C: '120', D: '720' },
-    answer: 'C', explanation: '5! = 5 × 4 × 3 × 2 × 1 = 120'
+    options: { A: '120', B: '60', C: '24', D: '720' },
+    answer: 'A', explanation: '5! = 5 × 4 × 3 × 2 × 1 = 120'
   },
   {
     id: 'math-q21', subject: 'mathematics', topic: 'Fractions, Decimals & Approximation', year: 2018,
@@ -205,57 +143,57 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q22', subject: 'mathematics', topic: 'Mensuration (Area, Volume)', year: 2022,
     question: 'Find the volume of a cylinder with radius 7cm and height 10cm (Take π = 22/7)',
-    options: { A: '1340 cm³', B: '1440 cm³', C: '1540 cm³', D: '1640 cm³' },
-    answer: 'C', explanation: 'V = πr²h = (22/7)(49)(10) = 1540 cm³'
+    options: { A: '1540 cm³', B: '1440 cm³', C: '1340 cm³', D: '1640 cm³' },
+    answer: 'A', explanation: 'V = πr²h = (22/7)(49)(10) = 1540 cm³'
   },
   // Extra math questions for full 40
   {
     id: 'math-q23', subject: 'mathematics', topic: 'Quadratic Equations', year: 2023,
     question: 'The sum and product of the roots of 2x² - 6x + 4 = 0 are respectively',
-    options: { A: '-3 and 2', B: '6 and 4', C: '3 and 2', D: '3 and -2' },
-    answer: 'C', explanation: 'Sum = -b/a = 6/2 = 3, Product = c/a = 4/2 = 2'
+    options: { A: '3 and 2', B: '6 and 4', C: '-3 and 2', D: '3 and -2' },
+    answer: 'A', explanation: 'Sum = -b/a = 6/2 = 3, Product = c/a = 4/2 = 2'
   },
   {
     id: 'math-q24', subject: 'mathematics', topic: 'Indices & Logarithms', year: 2015,
     question: 'Simplify 27^(2/3)',
-    options: { A: '27', B: '3', C: '9', D: '81' },
-    answer: 'C', explanation: '27^(2/3) = (27^(1/3))² = 3² = 9'
+    options: { A: '9', B: '3', C: '27', D: '81' },
+    answer: 'A', explanation: '27^(2/3) = (27^(1/3))² = 3² = 9'
   },
   {
     id: 'math-q25', subject: 'mathematics', topic: 'Sets', year: 2016,
     question: 'If P = {1,2,3,4,5} and Q = {2,4,6,8}, find P ∩ Q',
-    options: { A: '{1, 2, 3, 4, 5, 6, 8}', B: '{1, 3, 5}', C: '{6, 8}', D: '{2, 4}' },
-    answer: 'D', explanation: 'P ∩ Q contains elements common to both sets = {2, 4}'
+    options: { A: '{2, 4}', B: '{1, 3, 5}', C: '{6, 8}', D: '{1, 2, 3, 4, 5, 6, 8}' },
+    answer: 'A', explanation: 'P ∩ Q contains elements common to both sets = {2, 4}'
   },
   {
     id: 'math-q26', subject: 'mathematics', topic: 'Trigonometry', year: 2017,
     question: 'Find the value of tan 45°',
-    options: { A: '√2', B: '0', C: '1', D: '1/√2' },
-    answer: 'C', explanation: 'tan 45° = sin 45°/cos 45° = 1'
+    options: { A: '1', B: '0', C: '√2', D: '1/√2' },
+    answer: 'A', explanation: 'tan 45° = sin 45°/cos 45° = 1'
   },
   {
     id: 'math-q27', subject: 'mathematics', topic: 'Differentiation', year: 2016,
     question: 'If y = (3x + 1)², find dy/dx',
-    options: { A: '3(3x + 1)', B: '2(3x + 1)', C: '9(3x + 1)', D: '6(3x + 1)' },
-    answer: 'D', explanation: 'Using chain rule: dy/dx = 2(3x+1) × 3 = 6(3x+1)'
+    options: { A: '6(3x + 1)', B: '2(3x + 1)', C: '9(3x + 1)', D: '3(3x + 1)' },
+    answer: 'A', explanation: 'Using chain rule: dy/dx = 2(3x+1) × 3 = 6(3x+1)'
   },
   {
     id: 'math-q28', subject: 'mathematics', topic: 'Probability', year: 2023,
     question: 'A bag contains 4 red and 6 blue balls. What is the probability of picking a red ball?',
-    options: { A: '1/4', B: '3/5', C: '2/5', D: '4/6' },
-    answer: 'C', explanation: 'P(red) = 4/10 = 2/5'
+    options: { A: '2/5', B: '3/5', C: '1/4', D: '4/6' },
+    answer: 'A', explanation: 'P(red) = 4/10 = 2/5'
   },
   {
     id: 'math-q29', subject: 'mathematics', topic: 'Coordinate Geometry', year: 2015,
     question: 'Find the midpoint of (2, 4) and (6, 8)',
-    options: { A: '(8, 12)', B: '(3, 5)', C: '(4, 6)', D: '(2, 2)' },
-    answer: 'C', explanation: 'Midpoint = ((2+6)/2, (4+8)/2) = (4, 6)'
+    options: { A: '(4, 6)', B: '(3, 5)', C: '(8, 12)', D: '(2, 2)' },
+    answer: 'A', explanation: 'Midpoint = ((2+6)/2, (4+8)/2) = (4, 6)'
   },
   {
     id: 'math-q30', subject: 'mathematics', topic: 'Arithmetic Progression (AP)', year: 2014,
     question: 'The sum of the first 20 terms of the AP 4, 7, 10, 13, ... is',
-    options: { A: '670', B: '610', C: '650', D: '630' },
-    answer: 'C', explanation: 'a=4, d=3, S₂₀ = 20/2[2(4) + 19(3)] = 10[8+57] = 10(65) = 650'
+    options: { A: '650', B: '610', C: '670', D: '630' },
+    answer: 'A', explanation: 'a=4, d=3, S₂₀ = 20/2[2(4) + 19(3)] = 10[8+57] = 10(65) = 650'
   },
   {
     id: 'math-q31', subject: 'mathematics', topic: 'Matrices & Determinants', year: 2023,
@@ -266,8 +204,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q32', subject: 'mathematics', topic: 'Integration', year: 2022,
     question: 'Evaluate ∫₀² (3x²)dx',
-    options: { A: '4', B: '6', C: '12', D: '8' },
-    answer: 'D', explanation: '∫3x²dx = x³. [x³]₀² = 8 - 0 = 8'
+    options: { A: '8', B: '6', C: '12', D: '4' },
+    answer: 'A', explanation: '∫3x²dx = x³. [x³]₀² = 8 - 0 = 8'
   },
   {
     id: 'math-q33', subject: 'mathematics', topic: 'Number Bases', year: 2014,
@@ -278,14 +216,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q34', subject: 'mathematics', topic: 'Surds', year: 2013,
     question: 'Rationalize 1/(√5 - √3)',
-    options: { A: '2/(√5 + √3)', B: '(√5 - √3)/2', C: '√5 + √3', D: '(√5 + √3)/2' },
-    answer: 'D', explanation: 'Multiply by (√5+√3)/(√5+√3) = (√5+√3)/(5-3) = (√5+√3)/2'
+    options: { A: '(√5 + √3)/2', B: '(√5 - √3)/2', C: '√5 + √3', D: '2/(√5 + √3)' },
+    answer: 'A', explanation: 'Multiply by (√5+√3)/(√5+√3) = (√5+√3)/(5-3) = (√5+√3)/2'
   },
   {
     id: 'math-q35', subject: 'mathematics', topic: 'Statistics (Mean, Median, Mode)', year: 2015,
     question: 'Find the median of: 3, 7, 1, 9, 5',
-    options: { A: '1', B: '3', C: '7', D: '5' },
-    answer: 'D', explanation: 'Arranged: 1, 3, 5, 7, 9. Middle value = 5'
+    options: { A: '5', B: '3', C: '7', D: '1' },
+    answer: 'A', explanation: 'Arranged: 1, 3, 5, 7, 9. Middle value = 5'
   },
   {
     id: 'math-q36', subject: 'mathematics', topic: 'Geometric Progression (GP)', year: 2016,
@@ -296,8 +234,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q37', subject: 'mathematics', topic: 'Permutation & Combination', year: 2019,
     question: 'Find ⁶C₂',
-    options: { A: '30', B: '15', C: '12', D: '720' },
-    answer: 'B', explanation: '⁶C₂ = 6!/(2!4!) = (6×5)/(2×1) = 15'
+    options: { A: '15', B: '30', C: '12', D: '720' },
+    answer: 'A', explanation: '⁶C₂ = 6!/(2!4!) = (6×5)/(2×1) = 15'
   },
   {
     id: 'math-q38', subject: 'mathematics', topic: 'Variation (Direct/Inverse/Joint)', year: 2020,
@@ -308,14 +246,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'math-q39', subject: 'mathematics', topic: 'Mensuration (Area, Volume)', year: 2021,
     question: 'Find the area of a triangle with base 10cm and height 8cm',
-    options: { A: '20 cm²', B: '80 cm²', C: '18 cm²', D: '40 cm²' },
-    answer: 'D', explanation: 'Area = ½ × base × height = ½ × 10 × 8 = 40 cm²'
+    options: { A: '40 cm²', B: '80 cm²', C: '18 cm²', D: '20 cm²' },
+    answer: 'A', explanation: 'Area = ½ × base × height = ½ × 10 × 8 = 40 cm²'
   },
   {
     id: 'math-q40', subject: 'mathematics', topic: 'Binary Operations', year: 2018,
     question: 'A binary operation * is defined on the set of real numbers by a*b = a + b + ab. Find 2*3',
-    options: { A: '8', B: '11', C: '6', D: '12' },
-    answer: 'B', explanation: '2*3 = 2 + 3 + (2)(3) = 2 + 3 + 6 = 11'
+    options: { A: '11', B: '8', C: '6', D: '12' },
+    answer: 'A', explanation: '2*3 = 2 + 3 + (2)(3) = 2 + 3 + 6 = 11'
   },
 
   // ==================== PHYSICS ====================
@@ -328,38 +266,38 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q2', subject: 'physics', topic: "Newton's Laws of Motion", year: 2019,
     question: 'A force of 10N acts on a body of mass 2kg. What is the acceleration?',
-    options: { A: '12 m/s²', B: '20 m/s²', C: '5 m/s²', D: '0.2 m/s²' },
-    answer: 'C', explanation: 'F = ma, a = F/m = 10/2 = 5 m/s²'
+    options: { A: '5 m/s²', B: '20 m/s²', C: '12 m/s²', D: '0.2 m/s²' },
+    answer: 'A', explanation: 'F = ma, a = F/m = 10/2 = 5 m/s²'
   },
   {
     id: 'phy-q3', subject: 'physics', topic: 'Work, Energy & Power', year: 2021,
     question: 'A force of 50N moves a body through a distance of 10m in the direction of the force. Calculate the work done.',
-    options: { A: '60 J', B: '500 J', C: '5 J', D: '250 J' },
-    answer: 'B', explanation: 'W = F × d = 50 × 10 = 500 J'
+    options: { A: '500 J', B: '60 J', C: '5 J', D: '250 J' },
+    answer: 'A', explanation: 'W = F × d = 50 × 10 = 500 J'
   },
   {
     id: 'phy-q4', subject: 'physics', topic: 'Waves (Properties & Types)', year: 2018,
     question: 'A wave has a frequency of 200Hz and a wavelength of 1.5m. Find the velocity of the wave.',
-    options: { A: '400 m/s', B: '133 m/s', C: '200 m/s', D: '300 m/s' },
-    answer: 'D', explanation: 'v = fλ = 200 × 1.5 = 300 m/s'
+    options: { A: '300 m/s', B: '133 m/s', C: '200 m/s', D: '400 m/s' },
+    answer: 'A', explanation: 'v = fλ = 200 × 1.5 = 300 m/s'
   },
   {
     id: 'phy-q5', subject: 'physics', topic: 'Current Electricity (Ohm\'s Law, Circuits)', year: 2022,
     question: 'A current of 3A flows through a resistor of 4Ω. Find the voltage across the resistor.',
-    options: { A: '1.3 V', B: '7 V', C: '12 V', D: '0.75 V' },
-    answer: 'C', explanation: 'V = IR = 3 × 4 = 12 V'
+    options: { A: '12 V', B: '7 V', C: '1.3 V', D: '0.75 V' },
+    answer: 'A', explanation: 'V = IR = 3 × 4 = 12 V'
   },
   {
     id: 'phy-q6', subject: 'physics', topic: 'Measurements & Units', year: 2017,
     question: 'The S.I. unit of energy is',
-    options: { A: 'Watt', B: 'Newton', C: 'Joule', D: 'Pascal' },
-    answer: 'C', explanation: 'Energy is measured in Joules (J) in the SI system'
+    options: { A: 'Joule', B: 'Newton', C: 'Watt', D: 'Pascal' },
+    answer: 'A', explanation: 'Energy is measured in Joules (J) in the SI system'
   },
   {
     id: 'phy-q7', subject: 'physics', topic: 'Pressure (Solid, Liquid, Gas)', year: 2020,
     question: 'A block of weight 100N stands on an area of 2m². What is the pressure exerted?',
-    options: { A: '25 Pa', B: '200 Pa', C: '100 Pa', D: '50 Pa' },
-    answer: 'D', explanation: 'P = F/A = 100/2 = 50 Pa'
+    options: { A: '50 Pa', B: '200 Pa', C: '100 Pa', D: '25 Pa' },
+    answer: 'A', explanation: 'P = F/A = 100/2 = 50 Pa'
   },
   {
     id: 'phy-q8', subject: 'physics', topic: 'Temperature & Thermometry', year: 2019,
@@ -370,62 +308,62 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q9', subject: 'physics', topic: 'Gas Laws', year: 2021,
     question: 'A gas occupies 500cm³ at 27°C. At what temperature will it occupy 600cm³ at constant pressure?',
-    options: { A: '32.4°C', B: '87°C', C: '127°C', D: '360°C' },
-    answer: 'B', explanation: 'V₁/T₁ = V₂/T₂, 500/300 = 600/T₂, T₂ = 360K = 87°C'
+    options: { A: '87°C', B: '32.4°C', C: '127°C', D: '360°C' },
+    answer: 'A', explanation: 'V₁/T₁ = V₂/T₂, 500/300 = 600/T₂, T₂ = 360K = 87°C'
   },
   {
     id: 'phy-q10', subject: 'physics', topic: 'Electrostatics', year: 2018,
     question: 'Two point charges of +2μC and +3μC are 0.5m apart. Find the force between them (k = 9 × 10⁹ Nm²/C²)',
-    options: { A: '1.08 N', B: '0.108 N', C: '0.216 N', D: '2.16 N' },
-    answer: 'C', explanation: 'F = kq₁q₂/r² = 9×10⁹ × 2×10⁻⁶ × 3×10⁻⁶ / 0.25 = 0.216 N'
+    options: { A: '0.216 N', B: '0.108 N', C: '1.08 N', D: '2.16 N' },
+    answer: 'A', explanation: 'F = kq₁q₂/r² = 9×10⁹ × 2×10⁻⁶ × 3×10⁻⁶ / 0.25 = 0.216 N'
   },
   {
     id: 'phy-q11', subject: 'physics', topic: 'Scalars & Vectors', year: 2022,
     question: 'Which of the following is a vector quantity?',
-    options: { A: 'Speed', B: 'Displacement', C: 'Mass', D: 'Temperature' },
-    answer: 'B', explanation: 'Displacement has both magnitude and direction, making it a vector'
+    options: { A: 'Displacement', B: 'Speed', C: 'Mass', D: 'Temperature' },
+    answer: 'A', explanation: 'Displacement has both magnitude and direction, making it a vector'
   },
   {
     id: 'phy-q12', subject: 'physics', topic: 'Friction', year: 2017,
     question: 'A block of mass 5kg rests on a rough surface. If μ = 0.4, find the frictional force (g = 10m/s²)',
-    options: { A: '50 N', B: '20 N', C: '2 N', D: '12.5 N' },
-    answer: 'B', explanation: 'f = μmg = 0.4 × 5 × 10 = 20 N'
+    options: { A: '20 N', B: '50 N', C: '2 N', D: '12.5 N' },
+    answer: 'A', explanation: 'f = μmg = 0.4 × 5 × 10 = 20 N'
   },
   {
     id: 'phy-q13', subject: 'physics', topic: 'Simple Machines', year: 2020,
     question: 'A machine has a velocity ratio of 5 and an efficiency of 80%. Find the mechanical advantage.',
-    options: { A: '6.25', B: '4', C: '3', D: '5' },
-    answer: 'B', explanation: 'Efficiency = (MA/VR) × 100. 80 = (MA/5) × 100, MA = 4'
+    options: { A: '4', B: '6.25', C: '3', D: '5' },
+    answer: 'A', explanation: 'Efficiency = (MA/VR) × 100. 80 = (MA/5) × 100, MA = 4'
   },
   {
     id: 'phy-q14', subject: 'physics', topic: 'Linear Momentum & Collisions', year: 2019,
     question: 'A body of mass 2kg moving at 3m/s collides with a stationary body of mass 1kg. If they stick together, find their common velocity.',
-    options: { A: '3 m/s', B: '2 m/s', C: '1 m/s', D: '6 m/s' },
-    answer: 'B', explanation: 'm₁u₁ = (m₁+m₂)v, 2(3) = 3v, v = 2 m/s'
+    options: { A: '2 m/s', B: '3 m/s', C: '1 m/s', D: '6 m/s' },
+    answer: 'A', explanation: 'm₁u₁ = (m₁+m₂)v, 2(3) = 3v, v = 2 m/s'
   },
   {
     id: 'phy-q15', subject: 'physics', topic: 'Sound Waves', year: 2021,
     question: 'The speed of sound in air is approximately',
-    options: { A: '1500 m/s', B: '3 × 10⁸ m/s', C: '340 m/s', D: '100 m/s' },
-    answer: 'C', explanation: 'The speed of sound in air at room temperature is approximately 340 m/s'
+    options: { A: '340 m/s', B: '3 × 10⁸ m/s', C: '1500 m/s', D: '100 m/s' },
+    answer: 'A', explanation: 'The speed of sound in air at room temperature is approximately 340 m/s'
   },
   {
     id: 'phy-q16', subject: 'physics', topic: 'Light (Reflection & Refraction)', year: 2018,
     question: 'The angle of incidence equals the angle of reflection. This is the law of',
-    options: { A: 'Diffraction', B: 'Refraction', C: 'Reflection', D: 'Interference' },
-    answer: 'C', explanation: 'The law of reflection states that the angle of incidence equals the angle of reflection'
+    options: { A: 'Reflection', B: 'Refraction', C: 'Diffraction', D: 'Interference' },
+    answer: 'A', explanation: 'The law of reflection states that the angle of incidence equals the angle of reflection'
   },
   {
     id: 'phy-q17', subject: 'physics', topic: 'Electrical Energy & Power', year: 2022,
     question: 'An electric heater rated 1000W is used for 2 hours. Calculate the energy consumed in kWh.',
-    options: { A: '0.5 kWh', B: '2 kWh', C: '2000 kWh', D: '500 kWh' },
-    answer: 'B', explanation: 'E = Pt = 1kW × 2h = 2 kWh'
+    options: { A: '2 kWh', B: '0.5 kWh', C: '2000 kWh', D: '500 kWh' },
+    answer: 'A', explanation: 'E = Pt = 1kW × 2h = 2 kWh'
   },
   {
     id: 'phy-q18', subject: 'physics', topic: 'Electromagnetic Induction', year: 2017,
     question: "Faraday's law of electromagnetic induction states that the induced e.m.f. is proportional to the",
-    options: { A: 'magnetic flux', B: 'rate of change of magnetic flux', C: 'area of the coil', D: 'resistance of the coil' },
-    answer: 'B', explanation: "Faraday's law: induced EMF = -dΦ/dt"
+    options: { A: 'rate of change of magnetic flux', B: 'magnetic flux', C: 'area of the coil', D: 'resistance of the coil' },
+    answer: 'A', explanation: "Faraday's law: induced EMF = -dΦ/dt"
   },
   {
     id: 'phy-q19', subject: 'physics', topic: 'Lenses & Optical Instruments', year: 2020,
@@ -436,14 +374,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q20', subject: 'physics', topic: 'Equilibrium of Forces', year: 2019,
     question: 'For a body in equilibrium, the sum of all forces acting on it is',
-    options: { A: 'Constant but not zero', B: 'Maximum', C: 'Minimum', D: 'Zero' },
-    answer: 'D', explanation: 'For equilibrium, ΣF = 0 (first condition of equilibrium)'
+    options: { A: 'Zero', B: 'Maximum', C: 'Minimum', D: 'Constant but not zero' },
+    answer: 'A', explanation: 'For equilibrium, ΣF = 0 (first condition of equilibrium)'
   },
   {
     id: 'phy-q21', subject: 'physics', topic: 'Heat Transfer (Conduction, Convection, Radiation)', year: 2021,
     question: 'Which method of heat transfer does not require a medium?',
-    options: { A: 'Conduction', B: 'Radiation', C: 'Convection', D: 'All require a medium' },
-    answer: 'B', explanation: 'Radiation can travel through a vacuum, unlike conduction and convection'
+    options: { A: 'Radiation', B: 'Conduction', C: 'Convection', D: 'All require a medium' },
+    answer: 'A', explanation: 'Radiation can travel through a vacuum, unlike conduction and convection'
   },
   {
     id: 'phy-q22', subject: 'physics', topic: 'Electromagnetic Waves', year: 2018,
@@ -454,14 +392,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q23', subject: 'physics', topic: 'Electronics (Diodes, Transistors)', year: 2022,
     question: 'A p-n junction diode allows current to flow easily when it is',
-    options: { A: 'Unbiased', B: 'Reverse biased', C: 'Forward biased', D: 'Short circuited' },
-    answer: 'C', explanation: 'A diode conducts when forward biased (p connected to +ve, n to -ve)'
+    options: { A: 'Forward biased', B: 'Reverse biased', C: 'Unbiased', D: 'Short circuited' },
+    answer: 'A', explanation: 'A diode conducts when forward biased (p connected to +ve, n to -ve)'
   },
   {
     id: 'phy-q24', subject: 'physics', topic: 'Atomic & Nuclear Physics', year: 2017,
     question: 'The number of protons in the nucleus of an atom is called the',
-    options: { A: 'Nucleon number', B: 'Mass number', C: 'Neutron number', D: 'Atomic number' },
-    answer: 'D', explanation: 'Atomic number (Z) = number of protons in the nucleus'
+    options: { A: 'Atomic number', B: 'Mass number', C: 'Neutron number', D: 'Nucleon number' },
+    answer: 'A', explanation: 'Atomic number (Z) = number of protons in the nucleus'
   },
   // Extra physics questions
   {
@@ -485,20 +423,20 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q28', subject: 'physics', topic: 'Waves (Properties & Types)', year: 2023,
     question: 'In which type of wave do particles vibrate perpendicular to the direction of wave propagation?',
-    options: { A: 'Sound wave', B: 'Longitudinal wave', C: 'Transverse wave', D: 'Compression wave' },
-    answer: 'C', explanation: 'In transverse waves, particle vibration is perpendicular to wave direction'
+    options: { A: 'Transverse wave', B: 'Longitudinal wave', C: 'Sound wave', D: 'Compression wave' },
+    answer: 'A', explanation: 'In transverse waves, particle vibration is perpendicular to wave direction'
   },
   {
     id: 'phy-q29', subject: 'physics', topic: 'Current Electricity (Ohm\'s Law, Circuits)', year: 2013,
     question: 'Three resistors of 2Ω, 3Ω and 6Ω are connected in parallel. Find the effective resistance.',
-    options: { A: '11 Ω', B: '1 Ω', C: '0.5 Ω', D: '3.67 Ω' },
-    answer: 'B', explanation: '1/R = 1/2 + 1/3 + 1/6 = 3/6 + 2/6 + 1/6 = 6/6 = 1. R = 1Ω'
+    options: { A: '1 Ω', B: '11 Ω', C: '0.5 Ω', D: '3.67 Ω' },
+    answer: 'A', explanation: '1/R = 1/2 + 1/3 + 1/6 = 3/6 + 2/6 + 1/6 = 6/6 = 1. R = 1Ω'
   },
   {
     id: 'phy-q30', subject: 'physics', topic: 'Pressure (Solid, Liquid, Gas)', year: 2016,
     question: 'Atmospheric pressure is approximately',
-    options: { A: '1.013 × 10³ Pa', B: '1.013 × 10⁵ Pa', C: '1.013 × 10⁷ Pa', D: '1.013 Pa' },
-    answer: 'B', explanation: 'Standard atmospheric pressure = 1.013 × 10⁵ Pa (101.3 kPa)'
+    options: { A: '1.013 × 10⁵ Pa', B: '1.013 × 10³ Pa', C: '1.013 × 10⁷ Pa', D: '1.013 Pa' },
+    answer: 'A', explanation: 'Standard atmospheric pressure = 1.013 × 10⁵ Pa (101.3 kPa)'
   },
   {
     id: 'phy-q31', subject: 'physics', topic: 'Gas Laws', year: 2015,
@@ -515,44 +453,44 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'phy-q33', subject: 'physics', topic: 'Scalars & Vectors', year: 2023,
     question: 'Two forces of 3N and 4N act at right angles. Find the resultant.',
-    options: { A: '12 N', B: '7 N', C: '1 N', D: '5 N' },
-    answer: 'D', explanation: 'R = √(3² + 4²) = √(9 + 16) = √25 = 5 N'
+    options: { A: '5 N', B: '7 N', C: '1 N', D: '12 N' },
+    answer: 'A', explanation: 'R = √(3² + 4²) = √(9 + 16) = √25 = 5 N'
   },
   {
     id: 'phy-q34', subject: 'physics', topic: 'Simple Machines', year: 2013,
     question: 'The velocity ratio of a screw jack with pitch 0.2cm and lever arm length 35cm is',
-    options: { A: '70', B: '175', C: '1100', D: '7' },
-    answer: 'C', explanation: 'VR = 2πl/p = 2π(35)/0.2 = 220π/0.2 ≈ 1100'
+    options: { A: '1100', B: '175', C: '70', D: '7' },
+    answer: 'A', explanation: 'VR = 2πl/p = 2π(35)/0.2 = 220π/0.2 ≈ 1100'
   },
   {
     id: 'phy-q35', subject: 'physics', topic: 'Friction', year: 2014,
     question: 'Which of the following reduces friction?',
-    options: { A: 'Increasing area', B: 'Increasing weight', C: 'Roughening surfaces', D: 'Lubrication' },
-    answer: 'D', explanation: 'Lubrication introduces a fluid layer between surfaces, reducing friction'
+    options: { A: 'Lubrication', B: 'Increasing weight', C: 'Roughening surfaces', D: 'Increasing area' },
+    answer: 'A', explanation: 'Lubrication introduces a fluid layer between surfaces, reducing friction'
   },
   {
     id: 'phy-q36', subject: 'physics', topic: 'Temperature & Thermometry', year: 2016,
     question: 'The boiling point of water on the Kelvin scale is',
-    options: { A: '212 K', B: '273 K', C: '100 K', D: '373 K' },
-    answer: 'D', explanation: '100°C + 273 = 373 K'
+    options: { A: '373 K', B: '273 K', C: '100 K', D: '212 K' },
+    answer: 'A', explanation: '100°C + 273 = 373 K'
   },
   {
     id: 'phy-q37', subject: 'physics', topic: 'Electrostatics', year: 2015,
     question: 'Like charges',
-    options: { A: 'Attract each other', B: 'Repel each other', C: 'Have no effect', D: 'Cancel out' },
-    answer: 'B', explanation: 'Like charges repel, unlike charges attract'
+    options: { A: 'Repel each other', B: 'Attract each other', C: 'Have no effect', D: 'Cancel out' },
+    answer: 'A', explanation: 'Like charges repel, unlike charges attract'
   },
   {
     id: 'phy-q38', subject: 'physics', topic: 'Electromagnetic Induction', year: 2023,
     question: "Lenz's law is a consequence of the conservation of",
-    options: { A: 'Mass', B: 'Momentum', C: 'Charge', D: 'Energy' },
-    answer: 'D', explanation: "Lenz's law ensures the induced current opposes the change causing it, conserving energy"
+    options: { A: 'Energy', B: 'Momentum', C: 'Charge', D: 'Mass' },
+    answer: 'A', explanation: "Lenz's law ensures the induced current opposes the change causing it, conserving energy"
   },
   {
     id: 'phy-q39', subject: 'physics', topic: 'Atomic & Nuclear Physics', year: 2022,
     question: 'An alpha particle consists of',
-    options: { A: '1 proton and 1 neutron', B: '2 protons and 2 neutrons', C: '1 electron', D: '2 electrons' },
-    answer: 'B', explanation: 'Alpha particle = helium nucleus = 2 protons + 2 neutrons'
+    options: { A: '2 protons and 2 neutrons', B: '1 proton and 1 neutron', C: '1 electron', D: '2 electrons' },
+    answer: 'A', explanation: 'Alpha particle = helium nucleus = 2 protons + 2 neutrons'
   },
   {
     id: 'phy-q40', subject: 'physics', topic: 'Linear Momentum & Collisions', year: 2021,
@@ -565,8 +503,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q1', subject: 'chemistry', topic: 'Atomic Structure & Bonding', year: 2020,
     question: 'The electronic configuration of sodium (Na, Z=11) is',
-    options: { A: '2, 1, 8', B: '2, 8, 2', C: '2, 8, 1', D: '8, 2, 1' },
-    answer: 'C', explanation: 'Na has 11 electrons: 2 in the first shell, 8 in the second, 1 in the third'
+    options: { A: '2, 8, 1', B: '2, 8, 2', C: '2, 1, 8', D: '8, 2, 1' },
+    answer: 'A', explanation: 'Na has 11 electrons: 2 in the first shell, 8 in the second, 1 in the third'
   },
   {
     id: 'chem-q2', subject: 'chemistry', topic: 'Stoichiometry & Chemical Calculations', year: 2019,
@@ -583,44 +521,44 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q4', subject: 'chemistry', topic: 'Redox Reactions', year: 2018,
     question: 'In the reaction 2Mg + O₂ → 2MgO, magnesium is',
-    options: { A: 'Reduced', B: 'Oxidized', C: 'Neither oxidized nor reduced', D: 'A catalyst' },
-    answer: 'B', explanation: 'Mg loses electrons (0 to +2), so it is oxidized'
+    options: { A: 'Oxidized', B: 'Reduced', C: 'Neither oxidized nor reduced', D: 'A catalyst' },
+    answer: 'A', explanation: 'Mg loses electrons (0 to +2), so it is oxidized'
   },
   {
     id: 'chem-q5', subject: 'chemistry', topic: 'Periodic Table & Periodicity', year: 2022,
     question: 'Group 1 elements are known as',
-    options: { A: 'Noble gases', B: 'Alkaline earth metals', C: 'Halogens', D: 'Alkali metals' },
-    answer: 'D', explanation: 'Group 1 elements (Li, Na, K, etc.) are called alkali metals'
+    options: { A: 'Alkali metals', B: 'Alkaline earth metals', C: 'Halogens', D: 'Noble gases' },
+    answer: 'A', explanation: 'Group 1 elements (Li, Na, K, etc.) are called alkali metals'
   },
   {
     id: 'chem-q6', subject: 'chemistry', topic: 'States of Matter & Gas Laws', year: 2017,
     question: 'At S.T.P., the molar volume of a gas is',
-    options: { A: '11.2 dm³', B: '44.8 dm³', C: '22.4 dm³', D: '2.24 dm³' },
-    answer: 'C', explanation: 'At STP (0°C, 1 atm), one mole of any gas occupies 22.4 dm³'
+    options: { A: '22.4 dm³', B: '44.8 dm³', C: '11.2 dm³', D: '2.24 dm³' },
+    answer: 'A', explanation: 'At STP (0°C, 1 atm), one mole of any gas occupies 22.4 dm³'
   },
   {
     id: 'chem-q7', subject: 'chemistry', topic: 'Electrochemistry', year: 2020,
     question: 'During electrolysis of dilute H₂SO₄, the gas collected at the cathode is',
-    options: { A: 'Sulphur dioxide', B: 'Oxygen', C: 'Hydrogen', D: 'Chlorine' },
-    answer: 'C', explanation: 'H⁺ ions migrate to the cathode and are discharged as hydrogen gas'
+    options: { A: 'Hydrogen', B: 'Oxygen', C: 'Sulphur dioxide', D: 'Chlorine' },
+    answer: 'A', explanation: 'H⁺ ions migrate to the cathode and are discharged as hydrogen gas'
   },
   {
     id: 'chem-q8', subject: 'chemistry', topic: 'Rates of Reaction & Equilibrium', year: 2019,
     question: 'Which of the following increases the rate of a chemical reaction?',
-    options: { A: 'Increase in volume', B: 'Decrease in concentration', C: 'Increase in temperature', D: 'Removal of catalyst' },
-    answer: 'C', explanation: 'Higher temperature increases kinetic energy, leading to more effective collisions'
+    options: { A: 'Increase in temperature', B: 'Decrease in concentration', C: 'Increase in volume', D: 'Removal of catalyst' },
+    answer: 'A', explanation: 'Higher temperature increases kinetic energy, leading to more effective collisions'
   },
   {
     id: 'chem-q9', subject: 'chemistry', topic: 'Hydrocarbons (Alkanes, Alkenes, Alkynes)', year: 2021,
     question: 'The general formula for alkanes is',
-    options: { A: 'CₙHₙ', B: 'CₙH₂ₙ', C: 'CₙH₂ₙ₋₂', D: 'CₙH₂ₙ₊₂' },
-    answer: 'D', explanation: 'Alkanes are saturated hydrocarbons with formula CₙH₂ₙ₊₂'
+    options: { A: 'CₙH₂ₙ₊₂', B: 'CₙH₂ₙ', C: 'CₙH₂ₙ₋₂', D: 'CₙHₙ' },
+    answer: 'A', explanation: 'Alkanes are saturated hydrocarbons with formula CₙH₂ₙ₊₂'
   },
   {
     id: 'chem-q10', subject: 'chemistry', topic: 'Alcohols & Ethers', year: 2018,
     question: 'The functional group in alcohols is',
-    options: { A: '-CHO', B: '-COOH', C: '-OH', D: '-CO-' },
-    answer: 'C', explanation: 'Alcohols contain the hydroxyl (-OH) functional group'
+    options: { A: '-OH', B: '-COOH', C: '-CHO', D: '-CO-' },
+    answer: 'A', explanation: 'Alcohols contain the hydroxyl (-OH) functional group'
   },
   {
     id: 'chem-q11', subject: 'chemistry', topic: 'Ketones & Aldehydes', year: 2022,
@@ -637,14 +575,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q13', subject: 'chemistry', topic: 'Energy Changes (Thermochemistry)', year: 2020,
     question: 'A reaction that absorbs heat from the surroundings is',
-    options: { A: 'Exothermic', B: 'Endothermic', C: 'Isothermal', D: 'Adiabatic' },
-    answer: 'B', explanation: 'Endothermic reactions absorb heat (ΔH is positive)'
+    options: { A: 'Endothermic', B: 'Exothermic', C: 'Isothermal', D: 'Adiabatic' },
+    answer: 'A', explanation: 'Endothermic reactions absorb heat (ΔH is positive)'
   },
   {
     id: 'chem-q14', subject: 'chemistry', topic: 'Water & Solution Chemistry', year: 2019,
     question: 'Hard water contains dissolved salts of',
-    options: { A: 'Lead and copper', B: 'Sodium and potassium', C: 'Iron and zinc', D: 'Calcium and magnesium' },
-    answer: 'D', explanation: 'Hard water contains dissolved Ca²⁺ and Mg²⁺ ions'
+    options: { A: 'Calcium and magnesium', B: 'Sodium and potassium', C: 'Iron and zinc', D: 'Lead and copper' },
+    answer: 'A', explanation: 'Hard water contains dissolved Ca²⁺ and Mg²⁺ ions'
   },
   {
     id: 'chem-q15', subject: 'chemistry', topic: 'Metals & Their Compounds', year: 2021,
@@ -655,20 +593,20 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q16', subject: 'chemistry', topic: 'Non-Metals & Their Compounds', year: 2018,
     question: 'The gas responsible for the depletion of the ozone layer is',
-    options: { A: 'Carbon dioxide', B: 'Chlorofluorocarbons (CFCs)', C: 'Nitrogen', D: 'Oxygen' },
-    answer: 'B', explanation: 'CFCs release chlorine atoms that catalytically destroy ozone molecules'
+    options: { A: 'Chlorofluorocarbons (CFCs)', B: 'Carbon dioxide', C: 'Nitrogen', D: 'Oxygen' },
+    answer: 'A', explanation: 'CFCs release chlorine atoms that catalytically destroy ozone molecules'
   },
   {
     id: 'chem-q17', subject: 'chemistry', topic: 'Polymers (Natural & Synthetic)', year: 2022,
     question: 'Starch is a natural polymer of',
-    options: { A: 'Fructose', B: 'Glucose', C: 'Amino acids', D: 'Nucleotides' },
-    answer: 'B', explanation: 'Starch is a polysaccharide made up of glucose monomers'
+    options: { A: 'Glucose', B: 'Fructose', C: 'Amino acids', D: 'Nucleotides' },
+    answer: 'A', explanation: 'Starch is a polysaccharide made up of glucose monomers'
   },
   {
     id: 'chem-q18', subject: 'chemistry', topic: 'Industrial Chemistry', year: 2017,
     question: 'The Haber process is used for the manufacture of',
-    options: { A: 'Nitric acid', B: 'Sulphuric acid', C: 'Sodium hydroxide', D: 'Ammonia' },
-    answer: 'D', explanation: 'Haber process: N₂ + 3H₂ ⇌ 2NH₃ (manufacture of ammonia)'
+    options: { A: 'Ammonia', B: 'Sulphuric acid', C: 'Sodium hydroxide', D: 'Nitric acid' },
+    answer: 'A', explanation: 'Haber process: N₂ + 3H₂ ⇌ 2NH₃ (manufacture of ammonia)'
   },
   {
     id: 'chem-q19', subject: 'chemistry', topic: 'Environmental Chemistry', year: 2020,
@@ -680,14 +618,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q20', subject: 'chemistry', topic: 'Atomic Structure & Bonding', year: 2016,
     question: 'An ionic bond is formed by',
-    options: { A: 'Delocalization of electrons', B: 'Sharing of electrons', C: 'Transfer of electrons', D: 'Nuclear fusion' },
-    answer: 'C', explanation: 'Ionic bonds form when electrons are transferred from a metal to a non-metal'
+    options: { A: 'Transfer of electrons', B: 'Sharing of electrons', C: 'Delocalization of electrons', D: 'Nuclear fusion' },
+    answer: 'A', explanation: 'Ionic bonds form when electrons are transferred from a metal to a non-metal'
   },
   {
     id: 'chem-q21', subject: 'chemistry', topic: 'Periodic Table & Periodicity', year: 2015,
     question: 'Electronegativity across a period',
-    options: { A: 'Decreases', B: 'Increases', C: 'Remains constant', D: 'First increases then decreases' },
-    answer: 'B', explanation: 'Electronegativity increases across a period due to increasing nuclear charge'
+    options: { A: 'Increases', B: 'Decreases', C: 'Remains constant', D: 'First increases then decreases' },
+    answer: 'A', explanation: 'Electronegativity increases across a period due to increasing nuclear charge'
   },
   {
     id: 'chem-q22', subject: 'chemistry', topic: 'Stoichiometry & Chemical Calculations', year: 2014,
@@ -698,26 +636,26 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q23', subject: 'chemistry', topic: 'Acids, Bases & Salts', year: 2023,
     question: 'Which indicator is used in the titration of a strong acid and strong base?',
-    options: { A: 'Litmus only', B: 'Methyl orange only', C: 'Phenolphthalein only', D: 'Any indicator' },
-    answer: 'D', explanation: 'For strong acid-strong base titration, any indicator works as the pH change is sharp'
+    options: { A: 'Any indicator', B: 'Methyl orange only', C: 'Phenolphthalein only', D: 'Litmus only' },
+    answer: 'A', explanation: 'For strong acid-strong base titration, any indicator works as the pH change is sharp'
   },
   {
     id: 'chem-q24', subject: 'chemistry', topic: 'Redox Reactions', year: 2016,
     question: 'The oxidation state of Mn in KMnO₄ is',
-    options: { A: '+2', B: '+5', C: '+4', D: '+7' },
-    answer: 'D', explanation: 'K(+1) + Mn(x) + 4O(-2) = 0. 1 + x - 8 = 0. x = +7'
+    options: { A: '+7', B: '+5', C: '+4', D: '+2' },
+    answer: 'A', explanation: 'K(+1) + Mn(x) + 4O(-2) = 0. 1 + x - 8 = 0. x = +7'
   },
   {
     id: 'chem-q25', subject: 'chemistry', topic: 'Electrochemistry', year: 2015,
     question: 'During electroplating, the object to be plated is the',
-    options: { A: 'Salt bridge', B: 'Anode', C: 'Electrolyte', D: 'Cathode' },
-    answer: 'D', explanation: 'The object to be plated is made the cathode so metal ions deposit on it'
+    options: { A: 'Cathode', B: 'Anode', C: 'Electrolyte', D: 'Salt bridge' },
+    answer: 'A', explanation: 'The object to be plated is made the cathode so metal ions deposit on it'
   },
   {
     id: 'chem-q26', subject: 'chemistry', topic: 'Rates of Reaction & Equilibrium', year: 2014,
     question: "According to Le Chatelier's principle, increasing pressure favors",
-    options: { A: 'The forward reaction always', B: 'The side with more gas molecules', C: 'The side with fewer gas molecules', D: 'The backward reaction always' },
-    answer: 'C', explanation: "Le Chatelier's principle: increased pressure shifts equilibrium to the side with fewer moles of gas"
+    options: { A: 'The side with fewer gas molecules', B: 'The side with more gas molecules', C: 'The forward reaction always', D: 'The backward reaction always' },
+    answer: 'A', explanation: "Le Chatelier's principle: increased pressure shifts equilibrium to the side with fewer moles of gas"
   },
   {
     id: 'chem-q27', subject: 'chemistry', topic: 'Hydrocarbons (Alkanes, Alkenes, Alkynes)', year: 2023,
@@ -728,14 +666,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q28', subject: 'chemistry', topic: 'Energy Changes (Thermochemistry)', year: 2013,
     question: "Hess's law states that the total enthalpy change is",
-    options: { A: 'Always positive', B: 'Dependent on temperature', C: 'Always negative', D: 'Independent of the route taken' },
-    answer: 'D', explanation: "Hess's law: total enthalpy change depends only on initial and final states, not the path"
+    options: { A: 'Independent of the route taken', B: 'Dependent on temperature', C: 'Always negative', D: 'Always positive' },
+    answer: 'A', explanation: "Hess's law: total enthalpy change depends only on initial and final states, not the path"
   },
   {
     id: 'chem-q29', subject: 'chemistry', topic: 'Metals & Their Compounds', year: 2023,
     question: 'Rusting of iron requires',
-    options: { A: 'Only water', B: 'Only oxygen', C: 'Oxygen and water', D: 'Carbon dioxide' },
-    answer: 'C', explanation: 'Rusting is the oxidation of iron in the presence of both oxygen and moisture'
+    options: { A: 'Oxygen and water', B: 'Only oxygen', C: 'Only water', D: 'Carbon dioxide' },
+    answer: 'A', explanation: 'Rusting is the oxidation of iron in the presence of both oxygen and moisture'
   },
   {
     id: 'chem-q30', subject: 'chemistry', topic: 'States of Matter & Gas Laws', year: 2013,
@@ -752,8 +690,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q32', subject: 'chemistry', topic: 'Non-Metals & Their Compounds', year: 2015,
     question: 'The allotropes of carbon include',
-    options: { A: 'Oxygen and ozone', B: 'Diamond and graphite', C: 'Red and white phosphorus', D: 'Rhombic and monoclinic sulphur' },
-    answer: 'B', explanation: 'Diamond and graphite are allotropes of carbon'
+    options: { A: 'Diamond and graphite', B: 'Oxygen and ozone', C: 'Red and white phosphorus', D: 'Rhombic and monoclinic sulphur' },
+    answer: 'A', explanation: 'Diamond and graphite are allotropes of carbon'
   },
   {
     id: 'chem-q33', subject: 'chemistry', topic: 'Polymers (Natural & Synthetic)', year: 2014,
@@ -770,8 +708,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q35', subject: 'chemistry', topic: 'Alcohols & Ethers', year: 2015,
     question: 'The product of the oxidation of ethanol is',
-    options: { A: 'Ethane', B: 'Ethanal (acetaldehyde)', C: 'Ethene', D: 'Methanol' },
-    answer: 'B', explanation: 'Mild oxidation of ethanol gives ethanal (CH₃CHO)'
+    options: { A: 'Ethanal (acetaldehyde)', B: 'Ethane', C: 'Ethene', D: 'Methanol' },
+    answer: 'A', explanation: 'Mild oxidation of ethanol gives ethanal (CH₃CHO)'
   },
   {
     id: 'chem-q36', subject: 'chemistry', topic: 'Ketones & Aldehydes', year: 2014,
@@ -782,20 +720,20 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'chem-q37', subject: 'chemistry', topic: 'Carboxylic Acids & Esters', year: 2013,
     question: 'Esters are formed by the reaction of',
-    options: { A: 'Two alcohols', B: 'Two acids', C: 'An acid and a base', D: 'An acid and an alcohol' },
-    answer: 'D', explanation: 'Esterification: acid + alcohol → ester + water'
+    options: { A: 'An acid and an alcohol', B: 'Two acids', C: 'An acid and a base', D: 'Two alcohols' },
+    answer: 'A', explanation: 'Esterification: acid + alcohol → ester + water'
   },
   {
     id: 'chem-q38', subject: 'chemistry', topic: 'Environmental Chemistry', year: 2023,
     question: 'The greenhouse gas that contributes most to global warming is',
-    options: { A: 'Nitrogen', B: 'Carbon dioxide', C: 'Oxygen', D: 'Hydrogen' },
-    answer: 'B', explanation: 'CO₂ is the most significant greenhouse gas contributing to global warming'
+    options: { A: 'Carbon dioxide', B: 'Nitrogen', C: 'Oxygen', D: 'Hydrogen' },
+    answer: 'A', explanation: 'CO₂ is the most significant greenhouse gas contributing to global warming'
   },
   {
     id: 'chem-q39', subject: 'chemistry', topic: 'Atomic Structure & Bonding', year: 2013,
     question: 'The shape of a methane molecule is',
-    options: { A: 'Octahedral', B: 'Linear', C: 'Trigonal planar', D: 'Tetrahedral' },
-    answer: 'D', explanation: 'CH₄ has 4 bonding pairs around carbon, giving it a tetrahedral shape'
+    options: { A: 'Tetrahedral', B: 'Linear', C: 'Trigonal planar', D: 'Octahedral' },
+    answer: 'A', explanation: 'CH₄ has 4 bonding pairs around carbon, giving it a tetrahedral shape'
   },
   {
     id: 'chem-q40', subject: 'chemistry', topic: 'Periodic Table & Periodicity', year: 2022,
@@ -808,135 +746,135 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q1', subject: 'english', topic: 'Comprehension & Summary', year: 2020,
     question: 'In the sentence "The boy ran quickly to school," the word "quickly" is a/an',
-    options: { A: 'Noun', B: 'Adjective', C: 'Verb', D: 'Adverb' },
-    answer: 'D', explanation: '"Quickly" modifies the verb "ran" and is therefore an adverb'
+    options: { A: 'Adverb', B: 'Adjective', C: 'Verb', D: 'Noun' },
+    answer: 'A', explanation: '"Quickly" modifies the verb "ran" and is therefore an adverb'
   },
   {
     id: 'eng-q2', subject: 'english', topic: 'Synonyms & Antonyms', year: 2019,
     question: 'Choose the word that is nearest in meaning to "benevolent"',
-    options: { A: 'Rich', B: 'Cruel', C: 'Lazy', D: 'Kind' },
-    answer: 'D', explanation: 'Benevolent means well-meaning and kindly'
+    options: { A: 'Kind', B: 'Cruel', C: 'Lazy', D: 'Rich' },
+    answer: 'A', explanation: 'Benevolent means well-meaning and kindly'
   },
   {
     id: 'eng-q3', subject: 'english', topic: 'Concord (Subject-Verb Agreement)', year: 2021,
     question: 'Choose the correct option: "The committee ____ decided to postpone the meeting."',
-    options: { A: 'are', B: 'have', C: 'has', D: 'were' },
-    answer: 'C', explanation: '"Committee" is a collective noun acting as a single unit, so it takes "has"'
+    options: { A: 'has', B: 'have', C: 'are', D: 'were' },
+    answer: 'A', explanation: '"Committee" is a collective noun acting as a single unit, so it takes "has"'
   },
   {
     id: 'eng-q4', subject: 'english', topic: 'Tenses & Sentence Construction', year: 2018,
     question: 'Select the correct sentence:',
-    options: { A: 'She had been working here since 2015.', B: 'She have been working here since 2015.', C: 'She has been working here since 2015.', D: 'She was been working here since 2015.' },
-    answer: 'C', explanation: 'Present perfect continuous: subject + has/have + been + verb-ing. "She" takes "has"'
+    options: { A: 'She has been working here since 2015.', B: 'She have been working here since 2015.', C: 'She had been working here since 2015.', D: 'She was been working here since 2015.' },
+    answer: 'A', explanation: 'Present perfect continuous: subject + has/have + been + verb-ing. "She" takes "has"'
   },
   {
     id: 'eng-q5', subject: 'english', topic: 'Idioms & Phrasal Verbs', year: 2022,
     question: 'The idiom "to burn the midnight oil" means to',
-    options: { A: 'Cook at night', B: 'Waste resources', C: 'Start a fire', D: 'Study or work late into the night' },
-    answer: 'D', explanation: 'To burn the midnight oil = to work or study late at night'
+    options: { A: 'Study or work late into the night', B: 'Waste resources', C: 'Start a fire', D: 'Cook at night' },
+    answer: 'A', explanation: 'To burn the midnight oil = to work or study late at night'
   },
   {
     id: 'eng-q6', subject: 'english', topic: 'Vowel Sounds (Monophthongs & Diphthongs)', year: 2017,
     question: 'The underlined letter in "caught" represents the sound',
-    options: { A: '/eɪ/', B: '/aʊ/', C: '/æ/', D: '/ɔː/' },
-    answer: 'D', explanation: 'The "au" in "caught" produces the long /ɔː/ sound'
+    options: { A: '/ɔː/', B: '/aʊ/', C: '/æ/', D: '/eɪ/' },
+    answer: 'A', explanation: 'The "au" in "caught" produces the long /ɔː/ sound'
   },
   {
     id: 'eng-q7', subject: 'english', topic: 'Consonant Sounds', year: 2020,
     question: 'The "ph" in "phone" represents the sound',
-    options: { A: '/h/', B: '/p/', C: '/f/', D: '/v/' },
-    answer: 'C', explanation: '"Ph" produces the /f/ sound in English'
+    options: { A: '/f/', B: '/p/', C: '/h/', D: '/v/' },
+    answer: 'A', explanation: '"Ph" produces the /f/ sound in English'
   },
   {
     id: 'eng-q8', subject: 'english', topic: 'Stress Patterns (Word & Sentence)', year: 2019,
     question: 'In the word "education," the primary stress falls on the syllable',
-    options: { A: 'First (ED)', B: 'Third (CA)', C: 'Second (U)', D: 'Fourth (TION)' },
-    answer: 'B', explanation: 'ed-u-CA-tion — the primary stress falls on the third syllable'
+    options: { A: 'Third (CA)', B: 'First (ED)', C: 'Second (U)', D: 'Fourth (TION)' },
+    answer: 'A', explanation: 'ed-u-CA-tion — the primary stress falls on the third syllable'
   },
   {
     id: 'eng-q9', subject: 'english', topic: 'Figures of Speech', year: 2021,
     question: '"Life is a journey" is an example of',
-    options: { A: 'Simile', B: 'Metaphor', C: 'Hyperbole', D: 'Personification' },
-    answer: 'B', explanation: 'A metaphor compares two things directly without using "like" or "as"'
+    options: { A: 'Metaphor', B: 'Simile', C: 'Hyperbole', D: 'Personification' },
+    answer: 'A', explanation: 'A metaphor compares two things directly without using "like" or "as"'
   },
   {
     id: 'eng-q10', subject: 'english', topic: 'Register & Vocabulary', year: 2018,
     question: 'In legal register, "plaintiff" means',
-    options: { A: 'The judge', B: 'The person who brings a case to court', C: 'The lawyer', D: 'The witness' },
-    answer: 'B', explanation: 'A plaintiff is the person who initiates a lawsuit'
+    options: { A: 'The person who brings a case to court', B: 'The judge', C: 'The lawyer', D: 'The witness' },
+    answer: 'A', explanation: 'A plaintiff is the person who initiates a lawsuit'
   },
   {
     id: 'eng-q11', subject: 'english', topic: 'Parts of Speech (Nouns, Verbs, Adverbs, etc.)', year: 2022,
     question: 'Identify the abstract noun: "His ____ was admired by all."',
-    options: { A: 'shirt', B: 'house', C: 'honesty', D: 'car' },
-    answer: 'C', explanation: '"Honesty" is an abstract noun — it cannot be seen or touched'
+    options: { A: 'honesty', B: 'house', C: 'shirt', D: 'car' },
+    answer: 'A', explanation: '"Honesty" is an abstract noun — it cannot be seen or touched'
   },
   {
     id: 'eng-q12', subject: 'english', topic: 'Active & Passive Voice', year: 2017,
     question: 'Change to passive voice: "The cat caught the mouse."',
-    options: { A: 'The mouse is caught by the cat.', B: 'The mouse caught by the cat.', C: 'The mouse was caught by the cat.', D: 'The cat was caught by the mouse.' },
-    answer: 'C', explanation: 'Passive: object + was/were + past participle + by + subject'
+    options: { A: 'The mouse was caught by the cat.', B: 'The mouse caught by the cat.', C: 'The mouse is caught by the cat.', D: 'The cat was caught by the mouse.' },
+    answer: 'A', explanation: 'Passive: object + was/were + past participle + by + subject'
   },
   {
     id: 'eng-q13', subject: 'english', topic: 'Direct & Indirect Speech', year: 2020,
     question: 'Change to indirect speech: He said, "I am going home."',
-    options: { A: 'He said that he is going home.', B: 'He said that I am going home.', C: 'He said that he was going home.', D: 'He says that he was going home.' },
-    answer: 'C', explanation: 'In indirect speech: "I am" → "he was", past tense shift'
+    options: { A: 'He said that he was going home.', B: 'He said that I am going home.', C: 'He said that he is going home.', D: 'He says that he was going home.' },
+    answer: 'A', explanation: 'In indirect speech: "I am" → "he was", past tense shift'
   },
   {
     id: 'eng-q14', subject: 'english', topic: 'The Life Changer – Khadija Abubakar Jalli', year: 2021,
     question: 'In "The Life Changer," the main character who narrates the story is',
-    options: { A: 'Bint', B: 'Ummi', C: 'Omar', D: 'Salma' },
-    answer: 'B', explanation: 'Ummi is the mother who narrates the story to her children'
+    options: { A: 'Ummi', B: 'Bint', C: 'Omar', D: 'Salma' },
+    answer: 'A', explanation: 'Ummi is the mother who narrates the story to her children'
   },
   {
     id: 'eng-q15', subject: 'english', topic: 'The Life Changer – Khadija Abubakar Jalli', year: 2022,
     question: 'In "The Life Changer," Salma gained admission into',
-    options: { A: 'University of Lagos', B: 'Kongo Campus of ABU', C: 'Bayero University', D: 'University of Ibadan' },
-    answer: 'B', explanation: 'Salma was admitted to the Kongo Campus of Ahmadu Bello University'
+    options: { A: 'Kongo Campus of ABU', B: 'University of Lagos', C: 'Bayero University', D: 'University of Ibadan' },
+    answer: 'A', explanation: 'Salma was admitted to the Kongo Campus of Ahmadu Bello University'
   },
   {
     id: 'eng-q16', subject: 'english', topic: 'Intonation & Rhythm', year: 2018,
     question: 'A rising intonation is typically used for',
-    options: { A: 'Statements', B: 'Yes/No questions', C: 'Commands', D: 'Wh-questions' },
-    answer: 'B', explanation: 'Yes/No questions typically end with a rising intonation pattern'
+    options: { A: 'Yes/No questions', B: 'Statements', C: 'Commands', D: 'Wh-questions' },
+    answer: 'A', explanation: 'Yes/No questions typically end with a rising intonation pattern'
   },
   {
     id: 'eng-q17', subject: 'english', topic: 'Rhymes & Sound Identification', year: 2019,
     question: 'Which pair of words rhyme?',
-    options: { A: 'Lead and bead', B: 'Cough and through', C: 'Caught and taught', D: 'Wind and find' },
-    answer: 'C', explanation: '"Caught" and "taught" both end with the /ɔːt/ sound'
+    options: { A: 'Caught and taught', B: 'Cough and through', C: 'Lead and bead', D: 'Wind and find' },
+    answer: 'A', explanation: '"Caught" and "taught" both end with the /ɔːt/ sound'
   },
   // Extra English questions
   {
     id: 'eng-q18', subject: 'english', topic: 'Synonyms & Antonyms', year: 2016,
     question: 'Choose the word opposite in meaning to "extravagant"',
-    options: { A: 'Wasteful', B: 'Lavish', C: 'Frugal', D: 'Generous' },
-    answer: 'C', explanation: 'Extravagant = wasteful/lavish. Frugal = economical/thrifty (opposite)'
+    options: { A: 'Frugal', B: 'Lavish', C: 'Wasteful', D: 'Generous' },
+    answer: 'A', explanation: 'Extravagant = wasteful/lavish. Frugal = economical/thrifty (opposite)'
   },
   {
     id: 'eng-q19', subject: 'english', topic: 'Concord (Subject-Verb Agreement)', year: 2015,
     question: 'Choose the correct option: "Neither the teacher nor the students ____ present."',
-    options: { A: 'has been', B: 'was', C: 'is', D: 'were' },
-    answer: 'D', explanation: 'With "neither...nor," the verb agrees with the nearer subject ("students" = plural = "were")'
+    options: { A: 'were', B: 'was', C: 'is', D: 'has been' },
+    answer: 'A', explanation: 'With "neither...nor," the verb agrees with the nearer subject ("students" = plural = "were")'
   },
   {
     id: 'eng-q20', subject: 'english', topic: 'Idioms & Phrasal Verbs', year: 2014,
     question: '"To let the cat out of the bag" means to',
-    options: { A: 'Start a fight', B: 'Release an animal', C: 'Reveal a secret', D: 'Give up' },
-    answer: 'C', explanation: 'To let the cat out of the bag = to reveal a secret accidentally'
+    options: { A: 'Reveal a secret', B: 'Release an animal', C: 'Start a fight', D: 'Give up' },
+    answer: 'A', explanation: 'To let the cat out of the bag = to reveal a secret accidentally'
   },
   {
     id: 'eng-q21', subject: 'english', topic: 'Figures of Speech', year: 2013,
     question: '"The wind whispered through the trees" is an example of',
-    options: { A: 'Irony', B: 'Simile', C: 'Hyperbole', D: 'Personification' },
-    answer: 'D', explanation: 'Personification gives human qualities (whispering) to non-human things (wind)'
+    options: { A: 'Personification', B: 'Simile', C: 'Hyperbole', D: 'Irony' },
+    answer: 'A', explanation: 'Personification gives human qualities (whispering) to non-human things (wind)'
   },
   {
     id: 'eng-q22', subject: 'english', topic: 'Tenses & Sentence Construction', year: 2023,
     question: 'Choose the correct option: "If I ____ you, I would apologize."',
-    options: { A: 'am', B: 'was', C: 'were', D: 'been' },
-    answer: 'C', explanation: 'In conditional (subjunctive mood), "were" is used for all persons: "If I were you"'
+    options: { A: 'were', B: 'was', C: 'am', D: 'been' },
+    answer: 'A', explanation: 'In conditional (subjunctive mood), "were" is used for all persons: "If I were you"'
   },
   {
     id: 'eng-q23', subject: 'english', topic: 'Register & Vocabulary', year: 2016,
@@ -959,8 +897,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q26', subject: 'english', topic: 'Stress Patterns (Word & Sentence)', year: 2013,
     question: 'Which of the following words has stress on the first syllable?',
-    options: { A: 'beLOW', B: 'TAble', C: 'aGREE', D: 'deCIDE' },
-    answer: 'B', explanation: '"Table" = TA-ble, stress falls on the first syllable'
+    options: { A: 'TAble', B: 'beLOW', C: 'aGREE', D: 'deCIDE' },
+    answer: 'A', explanation: '"Table" = TA-ble, stress falls on the first syllable'
   },
   {
     id: 'eng-q27', subject: 'english', topic: 'Active & Passive Voice', year: 2016,
@@ -971,44 +909,44 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q28', subject: 'english', topic: 'Direct & Indirect Speech', year: 2015,
     question: 'Change to direct speech: She said that she would come tomorrow.',
-    options: { A: 'She said, "I came tomorrow."', B: 'She said, "She will come tomorrow."', C: 'She said, "I would come tomorrow."', D: 'She said, "I will come tomorrow."' },
-    answer: 'D', explanation: 'Direct speech reverses the tense shift: "would" → "will", "she" → "I"'
+    options: { A: 'She said, "I will come tomorrow."', B: 'She said, "She will come tomorrow."', C: 'She said, "I would come tomorrow."', D: 'She said, "I came tomorrow."' },
+    answer: 'A', explanation: 'Direct speech reverses the tense shift: "would" → "will", "she" → "I"'
   },
   {
     id: 'eng-q29', subject: 'english', topic: 'The Life Changer – Khadija Abubakar Jalli', year: 2023,
     question: 'In "The Life Changer," what lesson does Ummi try to teach her children?',
-    options: { A: 'How to cook', B: 'How to make money', C: 'The importance of integrity and hard work', D: 'How to drive' },
-    answer: 'C', explanation: 'Ummi uses stories to teach her children about integrity, hard work, and moral values'
+    options: { A: 'The importance of integrity and hard work', B: 'How to make money', C: 'How to cook', D: 'How to drive' },
+    answer: 'A', explanation: 'Ummi uses stories to teach her children about integrity, hard work, and moral values'
   },
   {
     id: 'eng-q30', subject: 'english', topic: 'Consonant Sounds', year: 2016,
     question: 'The initial consonant sound in "knight" is',
-    options: { A: '/naɪ/', B: '/k/', C: '/kn/', D: '/n/' },
-    answer: 'D', explanation: 'The "k" in "knight" is silent, so it begins with the /n/ sound'
+    options: { A: '/n/', B: '/k/', C: '/kn/', D: '/naɪ/' },
+    answer: 'A', explanation: 'The "k" in "knight" is silent, so it begins with the /n/ sound'
   },
   {
     id: 'eng-q31', subject: 'english', topic: 'Comprehension & Summary', year: 2014,
     question: 'A good summary should be',
-    options: { A: 'Longer than the original', B: 'Brief and in your own words', C: 'A copy of the passage', D: 'Written in verse' },
-    answer: 'B', explanation: 'A summary condenses the main ideas in your own words, shorter than the original'
+    options: { A: 'Brief and in your own words', B: 'Longer than the original', C: 'A copy of the passage', D: 'Written in verse' },
+    answer: 'A', explanation: 'A summary condenses the main ideas in your own words, shorter than the original'
   },
   {
     id: 'eng-q32', subject: 'english', topic: 'Synonyms & Antonyms', year: 2023,
     question: 'Choose the word nearest in meaning to "obsolete"',
-    options: { A: 'Expensive', B: 'Modern', C: 'Outdated', D: 'Popular' },
-    answer: 'C', explanation: 'Obsolete = no longer in use = outdated'
+    options: { A: 'Outdated', B: 'Modern', C: 'Expensive', D: 'Popular' },
+    answer: 'A', explanation: 'Obsolete = no longer in use = outdated'
   },
   {
     id: 'eng-q33', subject: 'english', topic: 'Idioms & Phrasal Verbs', year: 2013,
     question: '"To call off" means to',
-    options: { A: 'Summon', B: 'Cancel', C: 'Phone', D: 'Shout' },
-    answer: 'B', explanation: 'To call off = to cancel an event or activity'
+    options: { A: 'Cancel', B: 'Summon', C: 'Phone', D: 'Shout' },
+    answer: 'A', explanation: 'To call off = to cancel an event or activity'
   },
   {
     id: 'eng-q34', subject: 'english', topic: 'Figures of Speech', year: 2023,
     question: '"She is as brave as a lion" is an example of',
-    options: { A: 'Metaphor', B: 'Simile', C: 'Irony', D: 'Oxymoron' },
-    answer: 'B', explanation: 'A simile compares using "as" or "like" — "as brave as a lion"'
+    options: { A: 'Simile', B: 'Metaphor', C: 'Irony', D: 'Oxymoron' },
+    answer: 'A', explanation: 'A simile compares using "as" or "like" — "as brave as a lion"'
   },
   {
     id: 'eng-q35', subject: 'english', topic: 'Concord (Subject-Verb Agreement)', year: 2014,
@@ -1019,8 +957,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q36', subject: 'english', topic: 'In Dependence – Sarah Ladipo Manyika', year: 2021,
     question: 'In "In Dependence," Tayo goes to study at',
-    options: { A: 'Harvard University', B: 'Cambridge University', C: 'Oxford University', D: 'University of Lagos' },
-    answer: 'C', explanation: 'Tayo Ajayi travels to Oxford University in England on a scholarship'
+    options: { A: 'Oxford University', B: 'Cambridge University', C: 'Harvard University', D: 'University of Lagos' },
+    answer: 'A', explanation: 'Tayo Ajayi travels to Oxford University in England on a scholarship'
   },
   {
     id: 'eng-q37', subject: 'english', topic: 'In Dependence – Sarah Ladipo Manyika', year: 2022,
@@ -1031,34 +969,34 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q38', subject: 'english', topic: 'Intonation & Rhythm', year: 2015,
     question: 'A falling intonation is typically used for',
-    options: { A: 'Exclamations only', B: 'Yes/No questions', C: 'Tag questions expecting agreement', D: 'Statements and Wh-questions' },
-    answer: 'D', explanation: 'Statements and Wh-questions typically end with a falling intonation'
+    options: { A: 'Statements and Wh-questions', B: 'Yes/No questions', C: 'Tag questions expecting agreement', D: 'Exclamations only' },
+    answer: 'A', explanation: 'Statements and Wh-questions typically end with a falling intonation'
   },
   {
     id: 'eng-q39', subject: 'english', topic: 'Register & Vocabulary', year: 2014,
     question: '"Cockpit" belongs to the register of',
-    options: { A: 'Medicine', B: 'Aviation', C: 'Law', D: 'Agriculture' },
-    answer: 'B', explanation: 'Cockpit is the area where pilots sit — aviation register'
+    options: { A: 'Aviation', B: 'Medicine', C: 'Law', D: 'Agriculture' },
+    answer: 'A', explanation: 'Cockpit is the area where pilots sit — aviation register'
   },
   {
     id: 'eng-q40', subject: 'english', topic: 'Rhymes & Sound Identification', year: 2013,
     question: 'The words "flour" and "flower" are examples of',
-    options: { A: 'Homonyms', B: 'Synonyms', C: 'Antonyms', D: 'Homophones' },
-    answer: 'D', explanation: 'Homophones are words that sound the same but have different meanings and spellings'
+    options: { A: 'Homophones', B: 'Synonyms', C: 'Antonyms', D: 'Homonyms' },
+    answer: 'A', explanation: 'Homophones are words that sound the same but have different meanings and spellings'
   },
 
   // ==================== THE LEKKI HEADMASTER ====================
   {
     id: 'lekki-q1', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
     question: 'In "The Lekki Headmaster," the central theme revolves around',
-    options: { A: 'Love and romance', B: 'Corruption and moral decay in society', C: 'Space exploration', D: 'Agricultural reform' },
-    answer: 'B', explanation: 'The Lekki Headmaster explores themes of corruption, moral decay, and the challenges of modern Nigerian society.'
+    options: { A: 'Corruption and moral decay in society', B: 'Love and romance', C: 'Space exploration', D: 'Agricultural reform' },
+    answer: 'A', explanation: 'The Lekki Headmaster explores themes of corruption, moral decay, and the challenges of modern Nigerian society.'
   },
   {
     id: 'lekki-q2', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
     question: 'The setting of "The Lekki Headmaster" is primarily in',
-    options: { A: 'Accra, Ghana', B: 'London, England', C: 'Lagos, Nigeria', D: 'Abuja, Nigeria' },
-    answer: 'C', explanation: 'The story is set in Lagos, specifically around the Lekki area, reflecting urban Nigerian life.'
+    options: { A: 'Lagos, Nigeria', B: 'London, England', C: 'Accra, Ghana', D: 'Abuja, Nigeria' },
+    answer: 'A', explanation: 'The story is set in Lagos, specifically around the Lekki area, reflecting urban Nigerian life.'
   },
   {
     id: 'lekki-q3', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
@@ -1075,14 +1013,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'lekki-q5', subject: 'english', topic: 'The Lekki Headmaster', year: 2025,
     question: 'A major lesson from "The Lekki Headmaster" is that',
-    options: { A: 'Education is unnecessary', B: 'Money solves all problems', C: 'Integrity should not be compromised for material gain', D: 'Violence is the answer' },
-    answer: 'C', explanation: 'The text teaches that integrity and moral uprightness should not be sacrificed for material wealth.'
+    options: { A: 'Integrity should not be compromised for material gain', B: 'Money solves all problems', C: 'Education is unnecessary', D: 'Violence is the answer' },
+    answer: 'A', explanation: 'The text teaches that integrity and moral uprightness should not be sacrificed for material wealth.'
   },
   {
     id: 'lekki-q6', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
     question: 'The literary device most prominently used in "The Lekki Headmaster" is',
-    options: { A: 'Onomatopoeia', B: 'Alliteration', C: 'Satire', D: 'Assonance' },
-    answer: 'C', explanation: 'The author uses satire to critique societal vices and moral failings in contemporary Nigeria.'
+    options: { A: 'Satire', B: 'Alliteration', C: 'Onomatopoeia', D: 'Assonance' },
+    answer: 'A', explanation: 'The author uses satire to critique societal vices and moral failings in contemporary Nigeria.'
   },
   {
     id: 'lekki-q7', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
@@ -1093,8 +1031,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'lekki-q8', subject: 'english', topic: 'The Lekki Headmaster', year: 2024,
     question: 'The conflict in "The Lekki Headmaster" can best be described as',
-    options: { A: 'Man vs. technology', B: 'Man vs. nature', C: 'Man vs. society', D: 'Man vs. self only' },
-    answer: 'C', explanation: 'The central conflict is between individuals and the corrupt societal systems they navigate.'
+    options: { A: 'Man vs. society', B: 'Man vs. nature', C: 'Man vs. technology', D: 'Man vs. self only' },
+    answer: 'A', explanation: 'The central conflict is between individuals and the corrupt societal systems they navigate.'
   },
 
   // ==================== USE OF ENGLISH (Extra 20 for the 60-question requirement) ====================
@@ -1107,26 +1045,26 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q42', subject: 'english', topic: 'Synonyms & Antonyms', year: 2019,
     question: 'Choose the word opposite in meaning to "transparent"',
-    options: { A: 'Visible', B: 'Clear', C: 'Opaque', D: 'Obvious' },
-    answer: 'C', explanation: 'Transparent = clear/see-through. Opaque = not transparent (opposite)'
+    options: { A: 'Opaque', B: 'Clear', C: 'Visible', D: 'Obvious' },
+    answer: 'A', explanation: 'Transparent = clear/see-through. Opaque = not transparent (opposite)'
   },
   {
     id: 'eng-q43', subject: 'english', topic: 'Tenses & Sentence Construction', year: 2018,
     question: 'Choose the correct option: "By this time tomorrow, I ____ the exam."',
-    options: { A: 'had written', B: 'shall be writing', C: 'wrote', D: 'shall have written' },
-    answer: 'D', explanation: 'Future perfect tense for an action that will be completed before a future time'
+    options: { A: 'shall have written', B: 'shall be writing', C: 'wrote', D: 'had written' },
+    answer: 'A', explanation: 'Future perfect tense for an action that will be completed before a future time'
   },
   {
     id: 'eng-q44', subject: 'english', topic: 'Parts of Speech (Nouns, Verbs, Adverbs, etc.)', year: 2017,
     question: 'In "The tall man spoke softly," the adjective is',
-    options: { A: 'man', B: 'tall', C: 'spoke', D: 'softly' },
-    answer: 'B', explanation: '"Tall" describes the noun "man" and is therefore an adjective'
+    options: { A: 'tall', B: 'man', C: 'spoke', D: 'softly' },
+    answer: 'A', explanation: '"Tall" describes the noun "man" and is therefore an adjective'
   },
   {
     id: 'eng-q45', subject: 'english', topic: 'Idioms & Phrasal Verbs', year: 2016,
     question: '"To turn down" means to',
-    options: { A: 'Rotate', B: 'Fold', C: 'Reject', D: 'Decrease' },
-    answer: 'C', explanation: 'To turn down = to refuse/reject an offer or request'
+    options: { A: 'Reject', B: 'Fold', C: 'Rotate', D: 'Decrease' },
+    answer: 'A', explanation: 'To turn down = to refuse/reject an offer or request'
   },
   {
     id: 'eng-q46', subject: 'english', topic: 'Consonant Sounds', year: 2015,
@@ -1137,8 +1075,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q47', subject: 'english', topic: 'Figures of Speech', year: 2014,
     question: '"I have told you a million times" is an example of',
-    options: { A: 'Metaphor', B: 'Hyperbole', C: 'Irony', D: 'Litotes' },
-    answer: 'B', explanation: 'Hyperbole is an intentional exaggeration for emphasis'
+    options: { A: 'Hyperbole', B: 'Metaphor', C: 'Irony', D: 'Litotes' },
+    answer: 'A', explanation: 'Hyperbole is an intentional exaggeration for emphasis'
   },
   {
     id: 'eng-q48', subject: 'english', topic: 'Comprehension & Summary', year: 2023,
@@ -1149,20 +1087,20 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q49', subject: 'english', topic: 'Stress Patterns (Word & Sentence)', year: 2022,
     question: 'In the word "photograph," the stress is on the',
-    options: { A: 'Second syllable (TO)', B: 'First syllable (PHO)', C: 'Third syllable (GRAPH)', D: 'None' },
-    answer: 'B', explanation: 'PHO-to-graph — primary stress on the first syllable'
+    options: { A: 'First syllable (PHO)', B: 'Second syllable (TO)', C: 'Third syllable (GRAPH)', D: 'None' },
+    answer: 'A', explanation: 'PHO-to-graph — primary stress on the first syllable'
   },
   {
     id: 'eng-q50', subject: 'english', topic: 'Active & Passive Voice', year: 2013,
     question: 'Which sentence is in the passive voice?',
-    options: { A: 'John wrote the letter.', B: 'The letter was written by John.', C: 'John is writing.', D: 'John writes daily.' },
-    answer: 'B', explanation: 'Passive voice: object becomes subject + "was/were" + past participle + "by" + agent'
+    options: { A: 'The letter was written by John.', B: 'John wrote the letter.', C: 'John is writing.', D: 'John writes daily.' },
+    answer: 'A', explanation: 'Passive voice: object becomes subject + "was/were" + past participle + "by" + agent'
   },
   {
     id: 'eng-q51', subject: 'english', topic: 'Vowel Sounds (Monophthongs & Diphthongs)', year: 2021,
     question: 'The vowel sound /aʊ/ is found in',
-    options: { A: 'Hat', B: 'Heat', C: 'Hit', D: 'House' },
-    answer: 'D', explanation: '"House" contains the diphthong /aʊ/'
+    options: { A: 'House', B: 'Heat', C: 'Hit', D: 'Hat' },
+    answer: 'A', explanation: '"House" contains the diphthong /aʊ/'
   },
   {
     id: 'eng-q52', subject: 'english', topic: 'Concord (Subject-Verb Agreement)', year: 2020,
@@ -1173,8 +1111,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q53', subject: 'english', topic: 'Direct & Indirect Speech', year: 2019,
     question: 'He said, "I will come tomorrow." In indirect speech:',
-    options: { A: 'He said that he will come tomorrow.', B: 'He said that he would come the following day.', C: 'He said that I would come tomorrow.', D: 'He says that he would come.' },
-    answer: 'B', explanation: '"will" → "would", "tomorrow" → "the following day", "I" → "he"'
+    options: { A: 'He said that he would come the following day.', B: 'He said that he will come tomorrow.', C: 'He said that I would come tomorrow.', D: 'He says that he would come.' },
+    answer: 'A', explanation: '"will" → "would", "tomorrow" → "the following day", "I" → "he"'
   },
   {
     id: 'eng-q54', subject: 'english', topic: 'The Life Changer – Khadija Abubakar Jalli', year: 2020,
@@ -1185,8 +1123,8 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q55', subject: 'english', topic: 'Register & Vocabulary', year: 2018,
     question: '"Defendant" belongs to the register of',
-    options: { A: 'Education', B: 'Medicine', C: 'Law', D: 'Sports' },
-    answer: 'C', explanation: 'Defendant is a legal term for the person being accused in court'
+    options: { A: 'Law', B: 'Medicine', C: 'Education', D: 'Sports' },
+    answer: 'A', explanation: 'Defendant is a legal term for the person being accused in court'
   },
   {
     id: 'eng-q56', subject: 'english', topic: 'Idioms & Phrasal Verbs', year: 2017,
@@ -1197,14 +1135,14 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q57', subject: 'english', topic: 'Parts of Speech (Nouns, Verbs, Adverbs, etc.)', year: 2016,
     question: 'A pronoun is a word that',
-    options: { A: 'Describes a verb', B: 'Takes the place of a noun', C: 'Joins two sentences', D: 'Shows action' },
-    answer: 'B', explanation: 'A pronoun replaces a noun to avoid repetition (he, she, it, they, etc.)'
+    options: { A: 'Takes the place of a noun', B: 'Describes a verb', C: 'Joins two sentences', D: 'Shows action' },
+    answer: 'A', explanation: 'A pronoun replaces a noun to avoid repetition (he, she, it, they, etc.)'
   },
   {
     id: 'eng-q58', subject: 'english', topic: 'Figures of Speech', year: 2015,
     question: '"O Death, where is thy sting?" is an example of',
-    options: { A: 'Onomatopoeia', B: 'Simile', C: 'Metaphor', D: 'Apostrophe' },
-    answer: 'D', explanation: 'Apostrophe addresses an absent person, dead person, or abstract idea directly'
+    options: { A: 'Apostrophe', B: 'Simile', C: 'Metaphor', D: 'Onomatopoeia' },
+    answer: 'A', explanation: 'Apostrophe addresses an absent person, dead person, or abstract idea directly'
   },
   {
     id: 'eng-q59', subject: 'english', topic: 'Comprehension & Summary', year: 2022,
@@ -1215,119 +1153,38 @@ export const QUESTION_BANK: Question[] = [
   {
     id: 'eng-q60', subject: 'english', topic: 'Intonation & Rhythm', year: 2014,
     question: 'Rhythm in English speech depends mainly on',
-    options: { A: 'Spelling patterns', B: 'Number of words', C: 'Punctuation marks', D: 'Stressed and unstressed syllables' },
-    answer: 'D', explanation: 'English rhythm is stress-timed, based on the pattern of stressed and unstressed syllables'
+    options: { A: 'Stressed and unstressed syllables', B: 'Number of words', C: 'Punctuation marks', D: 'Spelling patterns' },
+    answer: 'A', explanation: 'English rhythm is stress-timed, based on the pattern of stressed and unstressed syllables'
   },
 ];
 
 // Helper functions
 export function getQuestionsBySubject(subject: Subject): Question[] {
-  return ALL_QUESTIONS.filter(q => q.subject === subject);
+  return QUESTION_BANK.filter(q => q.subject === subject);
 }
 
 export function getQuestionsByTopic(subject: Subject, topic: string): Question[] {
-  const topicPool = getTopicPool(subject, topic);
-  return ALL_QUESTIONS.filter(q => q.subject === subject && topicPool.has(q.topic));
+  return QUESTION_BANK.filter(q => q.subject === subject && q.topic === topic);
 }
-
-export const getQuestionsForTopic = getQuestionsByTopic;
 
 export function getQuestionsByYear(year: number): Question[] {
-  return ALL_QUESTIONS.filter(q => q.year === year);
-}
-
-// Anti-repetition: prioritize unseen questions
-export const EXAM_SEEN_KEY = 'jamb-seen-questions';
-export const AOC_SEEN_KEY = 'jamb-seen-aoc-questions';
-
-function getSeenIds(storageKey = EXAM_SEEN_KEY): Set<string> {
-  try {
-    const stored = localStorage.getItem(storageKey);
-    if (stored) return new Set(JSON.parse(stored));
-  } catch {}
-  return new Set();
-}
-
-function markSeen(ids: string[], storageKey = EXAM_SEEN_KEY) {
-  const seen = getSeenIds(storageKey);
-  ids.forEach(id => seen.add(id));
-  // Keep max 5000 entries to avoid localStorage bloat
-  const arr = Array.from(seen);
-  if (arr.length > 5000) arr.splice(0, arr.length - 5000);
-  localStorage.setItem(storageKey, JSON.stringify(arr));
-}
-
-function normalizeQuestionKey(question: Question): string {
-  return `${question.subject}|${question.topic}|${question.question}`
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[^a-z0-9|]+/g, ' ')
-    .trim();
-}
-
-function dedupeQuestions(questions: Question[]): Question[] {
-  const seenKeys = new Set<string>();
-  return questions.filter((question) => {
-    const key = normalizeQuestionKey(question);
-    if (seenKeys.has(key)) return false;
-    seenKeys.add(key);
-    return true;
-  });
-}
-
-// Randomize option positions so answer isn't always in same slot
-function randomizeOptions(q: Question): Question {
-  const keys: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
-  const shuffledKeys = shuffleArray(keys);
-  const originalAnswer = q.options[q.answer];
-  const newOptions: Record<string, string> = {};
-  let newAnswer: 'A' | 'B' | 'C' | 'D' = 'A';
-  shuffledKeys.forEach((origKey, i) => {
-    const newKey = keys[i];
-    newOptions[newKey] = q.options[origKey];
-    if (q.options[origKey] === originalAnswer) newAnswer = newKey;
-  });
-  return { ...q, options: newOptions as any, answer: newAnswer };
-}
-
-export function selectQuestionsForSession(questions: Question[], count: number, storageKey = EXAM_SEEN_KEY): Question[] {
-  const uniqueQuestions = dedupeQuestions(questions);
-  const seen = getSeenIds(storageKey);
-  const unseen = uniqueQuestions.filter(q => !seen.has(q.id));
-  const seenQs = uniqueQuestions.filter(q => seen.has(q.id));
-
-  // If all seen, reset the seen list to allow fresh cycle
-  if (unseen.length === 0 && seenQs.length > 0) {
-    localStorage.removeItem(storageKey);
-    const pool = shuffleArray(seenQs);
-    const selected = pool.slice(0, count).map(randomizeOptions);
-    markSeen(selected.map(q => q.id), storageKey);
-    return selected;
-  }
-
-  // Take unseen first, then fill with seen (shuffled)
-  const pool = [...shuffleArray(unseen), ...shuffleArray(seenQs)];
-  const selected = pool.slice(0, count).map(randomizeOptions);
-  markSeen(selected.map(q => q.id), storageKey);
-  return selected;
-}
-
-function prioritizeUnseen(questions: Question[], count: number): Question[] {
-  return selectQuestionsForSession(questions, count, EXAM_SEEN_KEY);
+  return QUESTION_BANK.filter(q => q.year === year);
 }
 
 export function generateExam(mode: 'daily' | 'general'): Question[] {
   if (mode === 'general') {
-    const english = prioritizeUnseen(getQuestionsBySubject('english'), 60);
-    const maths = prioritizeUnseen(getQuestionsBySubject('mathematics'), 40);
-    const physics = prioritizeUnseen(getQuestionsBySubject('physics'), 40);
-    const chemistry = prioritizeUnseen(getQuestionsBySubject('chemistry'), 40);
+    // Full JAMB simulation: 60 English + 40 each for 3 subjects = 180
+    const english = shuffleArray(getQuestionsBySubject('english')).slice(0, 60);
+    const maths = shuffleArray(getQuestionsBySubject('mathematics')).slice(0, 40);
+    const physics = shuffleArray(getQuestionsBySubject('physics')).slice(0, 40);
+    const chemistry = shuffleArray(getQuestionsBySubject('chemistry')).slice(0, 40);
     return [...english, ...maths, ...physics, ...chemistry];
   } else {
-    const english = prioritizeUnseen(getQuestionsBySubject('english'), 15);
-    const maths = prioritizeUnseen(getQuestionsBySubject('mathematics'), 15);
-    const physics = prioritizeUnseen(getQuestionsBySubject('physics'), 15);
-    const chemistry = prioritizeUnseen(getQuestionsBySubject('chemistry'), 15);
+    // Daily mini-test: 15 per subject = 60 questions
+    const english = shuffleArray(getQuestionsBySubject('english')).slice(0, 15);
+    const maths = shuffleArray(getQuestionsBySubject('mathematics')).slice(0, 15);
+    const physics = shuffleArray(getQuestionsBySubject('physics')).slice(0, 15);
+    const chemistry = shuffleArray(getQuestionsBySubject('chemistry')).slice(0, 15);
     return [...english, ...maths, ...physics, ...chemistry];
   }
 }
@@ -1361,21 +1218,15 @@ export function generateCustomExam(config: {
       qs = qs.filter(q => q.year === config.year);
     }
     if (config.topics && config.topics.length > 0) {
-      const topicPool = new Set(config.topics.flatMap(topic => Array.from(getTopicPool(sub, topic))));
-      qs = qs.filter(q => topicPool.has(q.topic));
+      qs = qs.filter(q => config.topics!.includes(q.topic));
     }
-    // Anti-repetition: prioritize unseen questions
-    allQs.push(...prioritizeUnseen(qs, config.questionsPerSubject));
+    // No cap — take as many as requested, up to available
+    allQs.push(...shuffleArray(qs).slice(0, config.questionsPerSubject));
   }
   return shuffleArray(allQs);
 }
 
-// Merge original + yearly questions, removing duplicates by id
-const mergedMap = new Map<string, Question>();
-for (const q of QUESTION_BANK) mergedMap.set(q.id, q);
-for (const q of ALL_YEARLY_QUESTIONS) mergedMap.set(q.id, q);
-export const ALL_QUESTIONS: Question[] = Array.from(mergedMap.values());
-
 export function getSubjectTopics(subject: Subject): string[] {
-  return SYLLABUS.filter(topic => topic.subject === subject).map(topic => topic.name);
+  const topics = new Set(QUESTION_BANK.filter(q => q.subject === subject).map(q => q.topic));
+  return Array.from(topics);
 }
