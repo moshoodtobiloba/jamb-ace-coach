@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowRight, BookOpen, ClipboardCheck, Moon, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { getTodaySubjects, getDailySchedule, isGeneralCBTDay, SUBJECT_LABELS } from '@/data/syllabus';
 
 interface DashboardProps {
   restMode: boolean;
   onToggleRest: () => void;
+  onNavigate: (tab: 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor') => void;
   streakDays: number;
   masteredCount: number;
   totalTopics: number;
@@ -13,15 +16,10 @@ interface DashboardProps {
 
 function getCurrentBlock(schedule: ReturnType<typeof getDailySchedule>) {
   const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const current = h * 60 + m;
-
+  const current = now.getHours() * 60 + now.getMinutes();
   for (let i = 0; i < schedule.length; i++) {
     const [start] = schedule[i].time.split('-');
     const [sh, sm] = start.split(':').map(Number);
-    const startMin = sh * 60 + sm;
-
     const next = schedule[i + 1];
     let endMin = 24 * 60;
     if (next) {
@@ -29,150 +27,72 @@ function getCurrentBlock(schedule: ReturnType<typeof getDailySchedule>) {
       const [nh, nm] = ns.split(':').map(Number);
       endMin = nh * 60 + nm;
     }
-
-    if (current >= startMin && current < endMin) return i;
+    if (current >= sh * 60 + sm && current < endMin) return i;
   }
   return -1;
 }
 
-export default function Dashboard({ restMode, onToggleRest, streakDays, masteredCount, totalTopics, revisionsDue }: DashboardProps) {
+export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDays, masteredCount, totalTopics, revisionsDue }: DashboardProps) {
   const [time, setTime] = useState(new Date());
+  useEffect(() => { const timer = setInterval(() => setTime(new Date()), 60000); return () => clearInterval(timer); }, []);
 
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const hour = time.getHours();
-  const isActive = hour >= 5 && hour < 18;
   const subjects = getTodaySubjects(time);
   const schedule = getDailySchedule(subjects);
   const currentBlockIdx = getCurrentBlock(schedule);
-  const isGeneral = isGeneralCBTDay(time);
-  const progress = Math.round((masteredCount / totalTopics) * 100);
-
-  const dayNames = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  const progress = totalTopics ? Math.round((masteredCount / totalTopics) * 100) : 0;
+  const currentBlock = currentBlockIdx >= 0 ? schedule[currentBlockIdx] : schedule[0];
+  const date = time.toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long' });
 
   if (restMode) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-8">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-6">
-          <p className="text-2xl text-muted-foreground">😴 REST MODE</p>
-          <p className="text-lg text-muted-foreground">You're human. Take a breath.</p>
-          <p className="text-sm text-muted-foreground">When you're ready, toggle back.</p>
-          <button onClick={onToggleRest} className="mt-8 px-6 py-3 border border-border rounded text-foreground hover:bg-muted transition-colors">
-            REACTIVATE MACHINE
-          </button>
-        </motion.div>
-      </div>
-    );
+    return <div className="flex min-h-[75vh] flex-col justify-center py-12"><Moon className="mb-8 size-9 text-primary" /><p className="page-kicker">Rest mode</p><h1 className="mt-3 max-w-xl text-5xl leading-tight sm:text-6xl">Pause without losing your place.</h1><p className="mt-5 max-w-md text-muted-foreground">Your progress is safe. Return when you are ready to continue.</p><Button onClick={onToggleRest} className="mt-10 w-fit">Return to study <ArrowRight /></Button></div>;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Status Bar */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-border rounded p-6 border-glow scanline"
-      >
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${isActive ? 'bg-primary animate-pulse' : 'bg-destructive'}`} />
-              <h1 className="text-2xl font-black tracking-wider glow-green">
-                {isActive ? '⚡ MACHINE ACTIVATED' : '🌙 MACHINE RESTING'}
-              </h1>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1 tracking-widest">
-              {dayNames[time.getDay()]} • {time.toLocaleTimeString('en-US', { hour12: false })}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-black text-secondary glow-amber">TARGET 360+</p>
-            <p className="text-xs text-muted-foreground tracking-widest">JAMB 2026 • BE DIFFERENT</p>
+    <div>
+      <section className="grid gap-8 border-b border-border pb-10 md:grid-cols-[1.5fr_.7fr] md:items-end">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <p className="page-kicker">Your study briefing · {date}</p>
+          <h1 className="mt-4 max-w-3xl text-5xl leading-[1.04] sm:text-6xl lg:text-7xl">Prepare with direction, not pressure.</h1>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">Build confidence across the syllabus, then prove it under real CBT conditions.</p>
+        </motion.div>
+        <div className="border-l-2 border-primary pl-5">
+          <p className="text-xs font-bold uppercase text-muted-foreground">2027 target</p>
+          <p className="mt-1 font-serif text-4xl">300+</p>
+          <p className="mt-2 text-xs text-muted-foreground">One focused session at a time.</p>
+        </div>
+      </section>
+
+      <section className="grid border-b border-border md:grid-cols-2">
+        <div className="py-8 md:border-r md:border-border md:pr-10">
+          <p className="page-kicker">Continue now</p>
+          <h2 className="mt-3 text-3xl">{currentBlock?.label || 'Start a focused practice'}</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{currentBlock?.description || 'Choose a subject and strengthen one topic.'}</p>
+          <Button className="mt-7" onClick={() => onNavigate('cbt')}>Start CBT practice <ArrowRight /></Button>
+        </div>
+        <div className="py-8 md:pl-10">
+          <p className="page-kicker">Today’s subjects</p>
+          <div className="mt-5 divide-y divide-border border-y border-border">
+            {subjects.map((subject, index) => <div key={subject} className="flex items-center justify-between py-4"><span className="font-medium">{SUBJECT_LABELS[subject]}</span><span className="text-xs text-muted-foreground">0{index + 1}</span></div>)}
+            {isGeneralCBTDay(time) && <div className="flex items-center justify-between py-4 text-primary"><span className="font-medium">General CBT simulation</span><span className="text-xs">Due today</span></div>}
           </div>
         </div>
-      </motion.div>
+      </section>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: 'STREAK', value: `${streakDays} DAYS`, color: 'text-secondary' },
-          { label: 'TOPICS MASTERED', value: `${masteredCount}/${totalTopics}`, color: 'text-foreground' },
-          { label: 'SYLLABUS', value: `${progress}%`, color: 'text-foreground' },
-          { label: 'REVISIONS DUE', value: revisionsDue.toString(), color: revisionsDue > 0 ? 'text-destructive' : 'text-foreground' },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.1 }}
-            className="border border-border rounded p-4 text-center"
-          >
-            <p className="text-xs text-muted-foreground tracking-widest">{stat.label}</p>
-            <p className={`text-xl font-black mt-1 ${stat.color}`}>{stat.value}</p>
-          </motion.div>
+      <section className="grid grid-cols-2 border-b border-border md:grid-cols-4">
+        {[['Study streak', `${streakDays} days`], ['Topics mastered', `${masteredCount}/${totalTopics}`], ['Syllabus', `${progress}%`], ['Revisions due', String(revisionsDue)]].map(([label, value], index) => (
+          <div key={label} className={`py-7 ${index % 2 === 0 ? 'pr-4' : 'border-l border-border pl-4'} md:border-l md:border-border md:px-6 ${index === 0 ? 'md:border-l-0 md:pl-0' : ''}`}><p className="text-xs text-muted-foreground">{label}</p><p className="mt-2 font-serif text-3xl">{value}</p></div>
         ))}
-      </div>
+      </section>
 
-      {/* Today's Subjects */}
-      <div className="border border-border rounded p-4">
-        <p className="text-xs text-muted-foreground tracking-widest mb-3">TODAY'S TARGETS</p>
-        <div className="flex gap-4">
-          <span className="px-4 py-2 bg-muted rounded text-sm font-bold tracking-wider">{SUBJECT_LABELS[subjects[0]]}</span>
-          <span className="px-4 py-2 bg-muted rounded text-sm font-bold tracking-wider">{SUBJECT_LABELS[subjects[1]]}</span>
-          {isGeneral && <span className="px-4 py-2 bg-destructive/20 text-destructive rounded text-sm font-bold tracking-wider">🔥 GENERAL CBT DAY</span>}
-        </div>
-      </div>
-
-      {/* Daily Flow Timeline */}
-      <div className="border border-border rounded p-4">
-        <p className="text-xs text-muted-foreground tracking-widest mb-4">DAILY FLOW</p>
-        <div className="space-y-1">
-          {schedule.map((block, i) => {
-            const isCurrent = i === currentBlockIdx;
-            const isPast = i < currentBlockIdx;
-            return (
-              <motion.div
-                key={block.time}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className={`flex items-center gap-4 p-3 rounded text-sm transition-colors ${
-                  isCurrent ? 'bg-primary/10 border border-primary/30' : isPast ? 'opacity-40' : ''
-                }`}
-              >
-                <span className="text-xs text-muted-foreground w-24 shrink-0 font-mono">{block.time}</span>
-                <span className="text-lg">{block.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className={`font-bold tracking-wider ${isCurrent ? 'text-foreground glow-green' : 'text-muted-foreground'}`}>
-                    {block.label}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">{block.description}</p>
-                </div>
-                {isCurrent && (
-                  <span className="text-xs text-primary font-bold animate-pulse tracking-widest">NOW</span>
-                )}
-              </motion.div>
-            );
+      <section className="grid gap-10 py-10 lg:grid-cols-[.75fr_1.25fr]">
+        <div><p className="page-kicker">Today’s timetable</p><h2 className="mt-3 text-4xl">A clear route through the day.</h2><div className="mt-7 flex flex-wrap gap-3"><Button variant="outline" onClick={() => onNavigate('syllabus')}><BookOpen /> Open syllabus</Button><Button variant="outline" onClick={() => onNavigate('mistakes')}><RotateCcw /> Review mistakes</Button></div></div>
+        <div className="border-t border-border">
+          {schedule.map((block, index) => {
+            const current = index === currentBlockIdx;
+            return <div key={`${block.time}-${index}`} className={`grid grid-cols-[5.5rem_1fr_auto] items-center gap-3 border-b border-border py-4 ${index < currentBlockIdx ? 'text-muted-foreground' : ''}`}><span className="text-xs tabular-nums text-muted-foreground">{block.time}</span><div><p className={current ? 'font-semibold text-primary' : 'font-medium'}>{block.label}</p><p className="mt-1 text-xs text-muted-foreground">{block.description}</p></div>{current && <span className="text-[10px] font-bold uppercase text-primary">Now</span>}</div>;
           })}
         </div>
-      </div>
-
-      {/* Motivational Footer */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-center text-sm text-muted-foreground tracking-widest pulse-slow"
-      >
-        {hour < 6 ? "THE MACHINE WAKES BEFORE THE WORLD." :
-         hour < 13 ? "GRIND NOW. REST LATER. DON'T STOP." :
-         hour < 15 ? "YOU'RE HUMAN. RECHARGE. THEN DOMINATE." :
-         hour < 18 ? "FINAL PUSH. CBT TIME. SIMULATE THE REAL THING." :
-         "MACHINE REST. TOMORROW WE GO AGAIN. 🔥"}
-      </motion.p>
+      </section>
     </div>
   );
 }

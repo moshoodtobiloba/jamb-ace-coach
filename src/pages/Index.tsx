@@ -1,139 +1,140 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { BookOpen, Brain, CircleHelp, ClipboardCheck, Home, LogOut, Menu, Moon, Palette, X } from 'lucide-react';
 import Dashboard from '@/components/Dashboard';
 import SyllabusTracker from '@/components/SyllabusTracker';
 import CBTExam from '@/components/CBTExam';
 import MistakeLog from '@/components/MistakeLog';
 import TutorChat from '@/components/TutorChat';
 import AskTutorPopup from '@/components/AskTutorPopup';
-import InstallBanner from '@/components/InstallBanner';
-import { InstallButton } from '@/components/InstallBanner';
+import InstallBanner, { InstallButton } from '@/components/InstallBanner';
+import { Button } from '@/components/ui/button';
 import { useJambStore } from '@/hooks/useJambStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { SYLLABUS } from '@/data/syllabus';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'dashboard', label: 'HQ', icon: '⚡' },
-  { id: 'syllabus', label: 'AOC', icon: '📋' },
-  { id: 'cbt', label: 'CBT', icon: '🖥️' },
-  { id: 'tutor', label: 'TUTOR', icon: '🤖' },
-  { id: 'mistakes', label: 'LOG', icon: '📝' },
+const primaryItems = [
+  { id: 'dashboard' as const, label: 'Headquarters', detail: 'Today’s study briefing', icon: Home },
+  { id: 'syllabus' as const, label: 'AOC syllabus', detail: 'Topics and revision', icon: BookOpen },
+  { id: 'cbt' as const, label: 'CBT centre', detail: 'Practice and full simulations', icon: ClipboardCheck },
+  { id: 'tutor' as const, label: 'Personal tutor', detail: 'Ask and understand', icon: Brain },
+  { id: 'mistakes' as const, label: 'Mistake log', detail: 'Review weak points', icon: ClipboardCheck },
 ];
+
+const pageNames: Record<Tab, string> = {
+  dashboard: 'Headquarters', syllabus: 'AOC syllabus', cbt: 'CBT centre', tutor: 'Personal tutor', mistakes: 'Mistake log',
+};
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [utilityPanel, setUtilityPanel] = useState<'display' | 'help' | null>(null);
   const store = useJambStore();
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
 
-  const isInExam = activeTab === 'cbt'; // Disable ask-tutor during CBT
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  const navigate = (tab: Tab) => {
+    setActiveTab(tab);
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const toggleTheme = () => document.documentElement.classList.toggle('dark');
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Ask Tutor on text selection (disabled during CBT) */}
-      <AskTutorPopup disabled={isInExam} />
-      
-      {/* Install Banner */}
+      <AskTutorPopup disabled={activeTab === 'cbt'} />
       <InstallBanner />
 
-      {/* Top Bar */}
       {!store.restMode && (
-        <header className="border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-40">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🤖</span>
-            <span className="text-sm font-black tracking-widest text-foreground">JAMB MACHINE</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={store.toggleRestMode}
-              className="text-xs px-3 py-1 border border-border rounded text-muted-foreground hover:text-foreground hover:border-foreground transition-colors tracking-wider"
-            >
-              😴 REST
+        <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 lg:px-8">
+            <button onClick={() => navigate('dashboard')} className="text-left" aria-label="Go to headquarters">
+              <span className="block font-serif text-xl leading-none">EXAMGUIDE</span>
+              <span className="mt-1 block text-[9px] font-bold uppercase text-primary" style={{ letterSpacing: '.18em' }}>UTME 2027</span>
             </button>
-            <button
-              onClick={signOut}
-              className="text-xs px-3 py-1 border border-destructive/30 rounded text-destructive/70 hover:text-destructive hover:border-destructive transition-colors tracking-wider"
-            >
-              EXIT
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="hidden text-xs text-muted-foreground sm:block">{pageNames[activeTab]}</span>
+              <Button variant="outline" size="icon" onClick={() => setMenuOpen(true)} aria-label="Open main menu">
+                <Menu className="size-5" />
+              </Button>
+            </div>
           </div>
         </header>
       )}
 
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto p-4 pb-24">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+      <main className={activeTab === 'cbt' ? 'mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8' : 'mx-auto max-w-6xl px-5 py-8 sm:py-12 lg:px-8'}>
+        <motion.div key={activeTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
           {activeTab === 'dashboard' && (
             <>
               <Dashboard
                 restMode={store.restMode}
                 onToggleRest={store.toggleRestMode}
+                onNavigate={navigate}
                 streakDays={store.streakDays}
                 masteredCount={store.topicsMasteredCount}
                 totalTopics={SYLLABUS.length}
                 revisionsDue={store.getRevisionsDue().length}
               />
-              {/* Install button in HQ */}
-              <div className="mt-6">
-                <InstallButton />
-              </div>
+              <div className="mt-10 border-t border-border pt-6"><InstallButton /></div>
             </>
           )}
-          {activeTab === 'syllabus' && (
-            <SyllabusTracker
-              mastered={store.mastered}
-              onToggle={store.toggleMastered}
-              onMarkRevised={store.markRevised}
-              getRevisionsDue={store.getRevisionsDue}
-            />
-          )}
-          {activeTab === 'cbt' && (
-            <CBTExam
-              onSessionComplete={store.addCBTSession}
-              sessions={store.cbtSessions}
-            />
-          )}
+          {activeTab === 'syllabus' && <SyllabusTracker mastered={store.mastered} onToggle={store.toggleMastered} onMarkRevised={store.markRevised} getRevisionsDue={store.getRevisionsDue} />}
+          {activeTab === 'cbt' && <CBTExam onSessionComplete={store.addCBTSession} sessions={store.cbtSessions} />}
           {activeTab === 'tutor' && <TutorChat />}
-          {activeTab === 'mistakes' && (
-            <MistakeLog
-              mistakes={store.mistakes}
-              onAdd={store.addMistake}
-              onDelete={store.deleteMistake}
-            />
-          )}
+          {activeTab === 'mistakes' && <MistakeLog mistakes={store.mistakes} onAdd={store.addMistake} onDelete={store.deleteMistake} />}
         </motion.div>
       </main>
 
-      {/* Bottom Navigation */}
-      {!store.restMode && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border z-40">
-          <div className="max-w-2xl mx-auto flex">
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-3 flex flex-col items-center gap-1 transition-colors ${
-                  activeTab === tab.id
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <span className="text-lg">{tab.icon}</span>
-                <span className="text-[10px] font-bold tracking-widest">{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div layoutId="nav-indicator" className="w-6 h-0.5 bg-primary rounded-full" />
-                )}
-              </button>
-            ))}
-          </div>
-        </nav>
-      )}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div className="fixed inset-0 z-50 bg-foreground/25" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMenuOpen(false)}>
+            <motion.aside
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="ml-auto flex h-full w-full max-w-md flex-col bg-background shadow-2xl" onClick={event => event.stopPropagation()}
+            >
+              <div className="flex h-20 items-center justify-between border-b border-border px-6">
+                <div><p className="font-serif text-2xl">Study index</p><p className="text-xs text-muted-foreground">Everything in one place</p></div>
+                <Button variant="ghost" size="icon" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X /></Button>
+              </div>
+              <nav className="flex-1 overflow-y-auto px-6 py-3" aria-label="Main navigation">
+                {primaryItems.map(({ id, label, detail, icon: Icon }, index) => (
+                  <button key={id} onClick={() => navigate(id)} className={`flex w-full items-center gap-4 border-b border-border py-4 text-left transition-colors hover:text-primary ${activeTab === id ? 'text-primary' : ''}`}>
+                    <span className="w-5 text-xs text-muted-foreground">0{index + 1}</span><Icon className="size-5" />
+                    <span className="flex-1"><span className="block font-medium">{label}</span><span className="block text-xs text-muted-foreground">{detail}</span></span>
+                  </button>
+                ))}
+                <p className="page-kicker mt-8 mb-2">Preferences & support</p>
+                <button onClick={() => setUtilityPanel('display')} className="editorial-row flex w-full items-center gap-4 text-left"><Palette className="size-5" /><span>Theme & display</span></button>
+                <button onClick={() => setUtilityPanel('help')} className="editorial-row flex w-full items-center gap-4 text-left"><CircleHelp className="size-5" /><span>Contact & get help</span></button>
+                <button onClick={() => { store.toggleRestMode(); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Moon className="size-5" /><span>Rest mode</span></button>
+              </nav>
+              <div className="border-t border-border p-6"><Button variant="outline" className="w-full justify-between" onClick={signOut}>Sign out <LogOut /></Button></div>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {utilityPanel && (
+          <motion.div className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/25 p-0 sm:items-center sm:p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.section initial={{ y: 30 }} animate={{ y: 0 }} exit={{ y: 30 }} className="w-full max-w-lg border border-border bg-background p-6 shadow-2xl">
+              <div className="mb-8 flex items-start justify-between"><div><p className="page-kicker">{utilityPanel === 'display' ? 'Preferences' : 'Support'}</p><h2 className="mt-1 text-3xl">{utilityPanel === 'display' ? 'Theme & display' : 'How can we help?'}</h2></div><Button variant="ghost" size="icon" onClick={() => setUtilityPanel(null)}><X /></Button></div>
+              {utilityPanel === 'display' ? (
+                <div className="space-y-6"><p className="text-sm leading-6 text-muted-foreground">Choose the reading mode that feels most comfortable. Your study data is unaffected.</p><Button onClick={toggleTheme} className="w-full">Switch light / dark reading mode</Button></div>
+              ) : (
+                <div className="space-y-5"><p className="text-sm leading-6 text-muted-foreground">Tell us what went wrong or what would make studying better.</p><a className="block border-y border-border py-4 font-medium text-primary" href="mailto:moshoodabdulmujib9@gmail.com?subject=EXAMGUIDE%20UTME%20support">Email moshoodabdulmujib9@gmail.com</a><p className="text-xs text-muted-foreground">Your email app will open with a new support message.</p></div>
+              )}
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
