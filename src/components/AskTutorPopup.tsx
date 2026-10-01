@@ -132,7 +132,7 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
             <div className="flex-1 overflow-y-auto p-4">
               {loading && !response && <span className="text-sm text-muted-foreground animate-pulse">Thinking...</span>}
               {response && (
-                <MathMarkdown className="prose prose-sm prose-invert max-w-none text-sm [&_p]:my-1">
+                <MathMarkdown className="prose prose-sm dark:prose-invert prose-neutral max-w-none text-sm [&_p]:my-1">
                   {response}
                 </MathMarkdown>
               )}

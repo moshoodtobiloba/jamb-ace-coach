@@ -12,6 +12,7 @@ interface DashboardProps {
   masteredCount: number;
   totalTopics: number;
   revisionsDue: number;
+  onEditTimetable?: () => void;
 }
 
 function getCurrentBlock(schedule: ReturnType<typeof getDailySchedule>) {
@@ -32,7 +33,7 @@ function getCurrentBlock(schedule: ReturnType<typeof getDailySchedule>) {
   return -1;
 }
 
-export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDays, masteredCount, totalTopics, revisionsDue }: DashboardProps) {
+export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDays, masteredCount, totalTopics, revisionsDue, onEditTimetable }: DashboardProps) {
   const [time, setTime] = useState(new Date());
   useEffect(() => { const timer = setInterval(() => setTime(new Date()), 60000); return () => clearInterval(timer); }, []);
 
@@ -85,7 +86,7 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
       </section>
 
       <section className="grid gap-10 py-10 lg:grid-cols-[.75fr_1.25fr]">
-        <div><p className="page-kicker">Today’s timetable</p><h2 className="mt-3 text-4xl">A clear route through the day.</h2><div className="mt-7 flex flex-wrap gap-3"><Button variant="outline" onClick={() => onNavigate('syllabus')}><BookOpen /> Open syllabus</Button><Button variant="outline" onClick={() => onNavigate('mistakes')}><RotateCcw /> Review mistakes</Button></div></div>
+        <div><p className="page-kicker">Today’s timetable</p><h2 className="mt-3 text-4xl">A clear route through the day.</h2><div className="mt-7 flex flex-wrap gap-3"><Button variant="outline" onClick={() => onNavigate('syllabus')}><BookOpen /> Open syllabus</Button><Button variant="outline" onClick={() => onNavigate('mistakes')}><RotateCcw /> Review mistakes</Button>{onEditTimetable && <Button variant="outline" onClick={onEditTimetable}>Edit timetable</Button>}</div></div>
         <div className="border-t border-border">
           {schedule.map((block, index) => {
             const current = index === currentBlockIdx;
