@@ -8,8 +8,9 @@ interface ThemePreset {
 }
 
 const THEME_PRESETS: ThemePreset[] = [
+  { name: 'Bright White (Default)', icon: '☀️', vars: {} },
   {
-    name: 'Matrix (Default)',
+    name: 'Matrix',
     icon: '💚',
     vars: {
       '--background': '220 20% 6%',
@@ -132,6 +133,7 @@ const THEME_PRESETS: ThemePreset[] = [
 const FONT_OPTIONS = [
   { name: 'JetBrains Mono', value: "'JetBrains Mono', monospace" },
   { name: 'Inter', value: "'Inter', sans-serif" },
+  { name: 'Manrope (Default)', value: '' },
   { name: 'System Default', value: "system-ui, -apple-system, sans-serif" },
   { name: 'Georgia', value: "Georgia, serif" },
 ];
@@ -143,11 +145,12 @@ function loadTheme(): { preset: string; font: string } {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) return JSON.parse(stored);
   } catch {}
-  return { preset: 'Matrix (Default)', font: "'JetBrains Mono', monospace" };
+  return { preset: 'Bright White (Default)', font: '' };
 }
 
 function applyTheme(preset: ThemePreset, font: string) {
   const root = document.documentElement;
+  ['--background','--foreground','--card','--card-foreground','--primary','--primary-foreground','--muted','--muted-foreground','--border','--input','--ring','--secondary','--secondary-foreground','--accent','--accent-foreground','--popover','--popover-foreground'].forEach(k => root.style.removeProperty(k));
   Object.entries(preset.vars).forEach(([key, value]) => {
     root.style.setProperty(key, value);
   });
