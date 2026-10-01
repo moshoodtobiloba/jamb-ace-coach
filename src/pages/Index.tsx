@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Brain, CircleHelp, ClipboardCheck, Home, LogOut, Menu, Moon, Palette, X } from 'lucide-react';
+import { BookOpen, Brain, CalendarDays, CircleHelp, ClipboardCheck, Home, LogOut, Menu, Moon, Palette, X } from 'lucide-react';
 import Dashboard from '@/components/Dashboard';
 import SyllabusTracker from '@/components/SyllabusTracker';
 import CBTExam from '@/components/CBTExam';
@@ -11,7 +11,13 @@ import InstallBanner, { InstallButton } from '@/components/InstallBanner';
 import { Button } from '@/components/ui/button';
 import { useJambStore } from '@/hooks/useJambStore';
 import { useAuth } from '@/contexts/AuthContext';
-import { SYLLABUS } from '@/data/syllabus';
+import { SYLLABUS, getDailySchedule, getTodaySubjects } from '@/data/syllabus';
+import ContactForm from '@/components/ContactForm';
+import FeedbackSurvey from '@/components/FeedbackSurvey';
+import OnboardingTour from '@/components/OnboardingTour';
+import NotificationManager from '@/components/NotificationManager';
+import EditableTimetable from '@/components/EditableTimetable';
+import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
 
@@ -31,7 +37,12 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
   const [utilityPanel, setUtilityPanel] = useState<'display' | 'help' | null>(null);
+  const [showTheme, setShowTheme] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [showTimetable, setShowTimetable] = useState(false);
   const store = useJambStore();
+  useEffect(() => { initTheme(); }, []);
+  const schedule = getDailySchedule(getTodaySubjects(new Date()));
   const { signOut } = useAuth();
 
   useEffect(() => {
@@ -49,6 +60,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ThemeSettings isOpen={showTheme} onClose={() => setShowTheme(false)} />
+      <ContactForm isOpen={showContact} onClose={() => setShowContact(false)} />
+      <EditableTimetable isOpen={showTimetable} onClose={() => setShowTimetable(false)} />
+      <FeedbackSurvey />
+      <OnboardingTour />
+      <NotificationManager schedule={schedule} />
       <AskTutorPopup disabled={activeTab === 'cbt'} />
       <InstallBanner />
 
@@ -111,8 +128,9 @@ const Index = () => {
                   </button>
                 ))}
                 <p className="page-kicker mt-8 mb-2">Preferences & support</p>
-                <button onClick={() => setUtilityPanel('display')} className="editorial-row flex w-full items-center gap-4 text-left"><Palette className="size-5" /><span>Theme & display</span></button>
-                <button onClick={() => setUtilityPanel('help')} className="editorial-row flex w-full items-center gap-4 text-left"><CircleHelp className="size-5" /><span>Contact & get help</span></button>
+                <button onClick={() => { setShowTimetable(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><CalendarDays className="size-5" /><span>Edit timetable</span></button>
+                <button onClick={() => { setShowTheme(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Palette className="size-5" /><span>Theme & display</span></button>
+                <button onClick={() => { setShowContact(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><CircleHelp className="size-5" /><span>Contact & get help</span></button>
                 <button onClick={() => { store.toggleRestMode(); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Moon className="size-5" /><span>Rest mode</span></button>
               </nav>
               <div className="border-t border-border p-6"><Button variant="outline" className="w-full justify-between" onClick={signOut}>Sign out <LogOut /></Button></div>
