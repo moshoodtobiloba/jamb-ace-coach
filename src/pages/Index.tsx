@@ -98,6 +98,7 @@ const Index = () => {
                 masteredCount={store.topicsMasteredCount}
                 totalTopics={SYLLABUS.length}
                 revisionsDue={store.getRevisionsDue().length}
+                onEditTimetable={() => setShowTimetable(true)}
               />
               <div className="mt-10 border-t border-border pt-6"><InstallButton /></div>
             </>
