@@ -263,7 +263,7 @@ export default function TutorChat() {
                 : 'bg-muted text-foreground'
             }`}>
               {msg.role === 'assistant' ? (
-                <MathMarkdown className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:bg-background/50 [&_code]:px-1 [&_code]:rounded">
+                <MathMarkdown className="prose prose-sm dark:prose-invert prose-neutral max-w-none [&_p]:my-1 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:bg-background/50 [&_code]:px-1 [&_code]:rounded">
                   {msg.content}
                 </MathMarkdown>
               ) : (

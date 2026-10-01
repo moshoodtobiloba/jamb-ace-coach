@@ -97,7 +97,7 @@ export default function TopicLesson({ topic, onClose, onMarkMastered, isMastered
 
           {lesson && (
             <div className="space-y-6">
-              <MathMarkdown className="prose prose-sm prose-invert max-w-none [&_p]:my-2 [&_li]:my-1 [&_h2]:text-lg [&_h2]:font-black [&_h2]:tracking-wider [&_h3]:text-sm [&_h3]:font-bold [&_h3]:tracking-wider [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg">
+              <MathMarkdown className="prose prose-sm dark:prose-invert prose-neutral max-w-none [&_p]:my-2 [&_li]:my-1 [&_h2]:text-lg [&_h2]:font-black [&_h2]:tracking-wider [&_h3]:text-sm [&_h3]:font-bold [&_h3]:tracking-wider [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg">
                 {lesson}
               </MathMarkdown>
               <AOCQuiz questions={practiceQuestions} />
