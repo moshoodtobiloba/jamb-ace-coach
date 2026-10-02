@@ -17,10 +17,13 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "placeholder.svg"],
+      includeAssets: ["favicon.png", "apple-touch-icon.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallbackDenylist: [/^\/~oauth/],
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -45,8 +48,8 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          { src: "/logo-192.jpg", sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
-          { src: "/logo-512.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" },
+          { src: "/logo-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "/logo-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
         ],
       },
     }),

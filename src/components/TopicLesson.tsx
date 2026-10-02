@@ -81,7 +81,7 @@ export default function TopicLesson({ topic, onClose, onMarkMastered, isMastered
           {loading && !lesson && (
             <div className="text-center py-12 space-y-3">
               <span className="text-3xl animate-pulse">📖</span>
-              <p className="text-sm text-muted-foreground animate-pulse">Machine is preparing your lesson...</p>
+              <p className="text-sm text-muted-foreground animate-pulse">Opening your lesson...</p>
             </div>
           )}
 
