@@ -18,6 +18,8 @@ import OnboardingTour from '@/components/OnboardingTour';
 import NotificationManager from '@/components/NotificationManager';
 import EditableTimetable from '@/components/EditableTimetable';
 import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
+import SurveyResponses from '@/components/SurveyResponses';
+import { supabase } from '@/integrations/supabase/client';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
 
@@ -39,6 +41,15 @@ const Index = () => {
   const [utilityPanel, setUtilityPanel] = useState<'display' | 'help' | null>(null);
   const [showTheme, setShowTheme] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showSurveys, setShowSurveys] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!navigator.onLine) return;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      supabase.rpc('has_role', { _user_id: data.user.id, _role: 'admin' }).then(({ data: ok }) => setIsAdmin(!!ok));
+    });
+  }, []);
   const [showTimetable, setShowTimetable] = useState(false);
   const store = useJambStore();
   useEffect(() => { initTheme(); }, []);
@@ -62,6 +73,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <ThemeSettings isOpen={showTheme} onClose={() => setShowTheme(false)} />
       <ContactForm isOpen={showContact} onClose={() => setShowContact(false)} />
+      {showSurveys && <SurveyResponses onClose={() => setShowSurveys(false)} />}
       <EditableTimetable isOpen={showTimetable} onClose={() => setShowTimetable(false)} />
       <FeedbackSurvey />
       <OnboardingTour />
@@ -73,8 +85,9 @@ const Index = () => {
         <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 lg:px-8">
             <button onClick={() => navigate('dashboard')} className="text-left" aria-label="Go to headquarters">
+              <span className="flex items-center gap-3"><img src="/logo-192.png" alt="" width={36} height={36} className="size-9 rounded-sm" /><span>
               <span className="block font-serif text-xl leading-none">EXAMGUIDE</span>
-              <span className="mt-1 block text-[9px] font-bold uppercase text-primary" style={{ letterSpacing: '.18em' }}>UTME 2027</span>
+              <span className="mt-1 block text-[9px] font-bold uppercase text-primary" style={{ letterSpacing: '.18em' }}>UTME 2027</span></span></span>
             </button>
             <div className="flex items-center gap-3">
               <span className="hidden text-xs text-muted-foreground sm:block">{pageNames[activeTab]}</span>
@@ -133,6 +146,7 @@ const Index = () => {
                 <button onClick={() => { setShowTheme(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Palette className="size-5" /><span>Theme & display</span></button>
                 <button onClick={() => { setShowContact(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><CircleHelp className="size-5" /><span>Contact & get help</span></button>
                 <button onClick={() => { store.toggleRestMode(); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Moon className="size-5" /><span>Rest mode</span></button>
+                {isAdmin && <button onClick={() => { setShowSurveys(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><ClipboardCheck className="size-5" /><span>Survey responses</span></button>}
               </nav>
               <div className="border-t border-border p-6"><Button variant="outline" className="w-full justify-between" onClick={signOut}>Sign out <LogOut /></Button></div>
             </motion.aside>

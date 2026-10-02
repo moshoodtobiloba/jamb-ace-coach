@@ -33,7 +33,7 @@ function preprocessMath(text: string): string {
   result = result.replace(/(?<!\$)\(([^()]*\\(?:cdot|boxed|frac|sqrt|sum|prod|int|times|div|pm|mp|leq|geq|neq|approx|equiv|infty|alpha|beta|gamma|delta|theta|lambda|mu|sigma|omega|pi|phi|psi|text|mathbf|mathrm|overline|underline|hat|bar|vec|dot|ddot|quad|qquad|hspace|vspace|left|right|Big|big|Bigg|bigg)[^()]*)\)(?!\$)/g, (_, inner) => `$${inner}$`);
   
   // 4. Convert [ ... ] blocks containing LaTeX commands to display math
-  result = result.replace(/(?<!\$)\[([^\[\]]*\\(?:cdot|boxed|frac|sqrt|sum|prod|int|times|div|pm)[^\[\]]*)\](?!\$)/g, (_, inner) => `$$${inner}$$`);
+  result = result.replace(/(?<!\$)\[([^\[\]]*\\[a-zA-Z]+[^\[\]]*)\](?!\$)/g, (_, inner) => `$$${inner}$$`);
 
   result = result
     .split('\n')
