@@ -57,7 +57,8 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          messages: [{ role: 'user', content: `Explain this clearly and concisely for JAMB preparation: "${selectedText}"` }],
+          userName: localStorage.getItem('jamb-student-name') || '',
+          messages: [{ role: 'user', content: `Explain this clearly and concisely for UTME 2027 preparation: "${selectedText}"` }],
         }),
       });
 
@@ -89,7 +90,7 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
         }
       }
     } catch {
-      setResponse('⚠️ Could not connect to Machine. Try again.');
+      setResponse('⚠️ Could not reach the tutor — check your internet. Try again.');
     } finally {
       setLoading(false);
     }
@@ -110,7 +111,7 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
             style={{ position: 'fixed', left: Math.min(position.x - 50, window.innerWidth - 120), top: Math.max(position.y - 40, 10), zIndex: 100 }}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold tracking-wider shadow-lg hover:bg-primary/80 transition-colors"
           >
-            🤖 ASK MACHINE
+            Ask tutor
           </motion.button>
         )}
       </AnimatePresence>
@@ -126,7 +127,7 @@ export default function AskTutorPopup({ disabled = false }: AskTutorPopupProps) 
             className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-[100] bg-card border border-border rounded-lg shadow-2xl max-h-80 flex flex-col"
           >
             <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-              <span className="text-xs font-bold tracking-widest text-primary">🤖 MACHINE SAYS</span>
+              <span className="text-xs font-bold tracking-widest text-primary">TUTOR</span>
               <button onClick={() => { setShowChat(false); setResponse(''); }} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
             </div>
             <div className="flex-1 overflow-y-auto p-4">
