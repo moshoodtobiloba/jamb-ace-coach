@@ -22,11 +22,20 @@ function parseTime(timeStr: string): { hour: number; minute: number } {
   return { hour: h, minute: m };
 }
 
-export function requestNotificationPermission() {
+export async function requestNotificationPermission() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'default') {
-    Notification.requestPermission();
+    await Notification.requestPermission();
   }
+}
+
+async function showReminder(title: string, body: string, tag: string) {
+  const opts = { body, icon: '/logo-192.png', badge: '/logo-192.png', tag } as NotificationOptions;
+  try {
+    const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined;
+    if (reg) { await reg.showNotification(title, opts); return; }
+  } catch {}
+  try { new Notification(title, opts); } catch {}
 }
 
 export function useScheduleNotifications(schedule: ScheduleBlock[]) {
@@ -46,12 +55,7 @@ export function useScheduleNotifications(schedule: ScheduleBlock[]) {
         const notifKey = `jamb-notif-${now.toDateString()}-${block.time}`;
         if (!localStorage.getItem(notifKey)) {
           localStorage.setItem(notifKey, 'true');
-          new Notification('ACE COACH 📚', {
-            body: `${block.label}: ${block.description}`,
-            icon: '/logo-192.png',
-            badge: '/logo-192.png',
-            tag: block.time,
-          });
+          showReminder('EXAMGUIDE · time to study', `${block.label}: ${block.description}`, block.time);
         }
       }
     }
