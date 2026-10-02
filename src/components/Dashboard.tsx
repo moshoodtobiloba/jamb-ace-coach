@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, ClipboardCheck, Moon, RotateCcw } from 'lucide-react';
+import { ArrowRight, Bell, BookOpen, Brain, ClipboardCheck, Moon, RotateCcw } from 'lucide-react';
+import { requestNotificationPermission } from '@/components/NotificationManager';
 import { Button } from '@/components/ui/button';
 import { getTodaySubjects, getDailySchedule, isGeneralCBTDay, SUBJECT_LABELS } from '@/data/syllabus';
 
@@ -14,6 +15,25 @@ interface DashboardProps {
   revisionsDue: number;
   onEditTimetable?: () => void;
 }
+
+const TICKER = [
+  'UTME 2027 is coming — every topic you master today counts',
+  'Use of English: 60 questions · Each other subject: 40 questions',
+  'Read The Lekki Headmaster chapter by chapter',
+  'Time yourself: about 45 seconds per question in CBT',
+  'Review your mistake log before starting new topics',
+  'Rest well — a fresh brain scores higher',
+];
+const TIPS = [
+  'Eliminate two wrong options first — your odds jump to 50%.',
+  'In Physics, write the formula and units before substituting numbers.',
+  'For Chemistry calculations, always balance the equation first.',
+  'In English comprehension, read the questions before the passage.',
+  'Indices and logarithms appear every year — master the laws.',
+  'Never leave a question blank; there is no negative marking.',
+  'Spaced revision beats cramming: revisit topics after 1, 3 and 7 days.',
+];
+const EXAM_DATE = new Date('2027-04-24T08:00:00+01:00');
 
 function getCurrentBlock(schedule: ReturnType<typeof getDailySchedule>) {
   const now = new Date();
@@ -42,6 +62,11 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
   const currentBlockIdx = getCurrentBlock(schedule);
   const progress = totalTopics ? Math.round((masteredCount / totalTopics) * 100) : 0;
   const currentBlock = currentBlockIdx >= 0 ? schedule[currentBlockIdx] : schedule[0];
+  const daysLeft = Math.max(0, Math.ceil((EXAM_DATE.getTime() - time.getTime()) / 86400000));
+  const [tipIdx, setTipIdx] = useState(() => time.getDate() % TIPS.length);
+  useEffect(() => { const t = setInterval(() => setTipIdx((i) => (i + 1) % TIPS.length), 8000); return () => clearInterval(t); }, []);
+  const [notifState, setNotifState] = useState(() => ('Notification' in window ? Notification.permission : 'unsupported'));
+  const enableReminders = async () => { await requestNotificationPermission(); setNotifState('Notification' in window ? Notification.permission : 'unsupported'); };
   const date = time.toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long' });
 
   if (restMode) {
@@ -50,6 +75,11 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
 
   return (
     <div>
+      <div className="-mx-5 mb-8 overflow-hidden border-y border-border bg-secondary py-2 lg:-mx-8" aria-hidden="true">
+        <motion.div className="flex w-max gap-10 whitespace-nowrap text-xs font-medium text-secondary-foreground" animate={{ x: ['0%', '-50%'] }} transition={{ duration: 40, ease: 'linear', repeat: Infinity }}>
+          {[...TICKER, ...TICKER].map((t, i) => <span key={i} className="flex items-center gap-10">{t}<span className="text-primary">◆</span></span>)}
+        </motion.div>
+      </div>
       <section className="grid gap-8 border-b border-border pb-10 md:grid-cols-[1.5fr_.7fr] md:items-end">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <p className="page-kicker">Your study briefing · {date}</p>
@@ -57,9 +87,9 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
           <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">Build confidence across the syllabus, then prove it under real CBT conditions.</p>
         </motion.div>
         <div className="border-l-2 border-primary pl-5">
-          <p className="text-xs font-bold uppercase text-muted-foreground">2027 target</p>
-          <p className="mt-1 font-serif text-4xl">300+</p>
-          <p className="mt-2 text-xs text-muted-foreground">One focused session at a time.</p>
+          <p className="text-xs font-bold uppercase text-muted-foreground">UTME 2027 countdown</p>
+          <motion.p key={daysLeft} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-1 font-serif text-4xl">{daysLeft} days</motion.p>
+          <p className="mt-2 text-xs text-muted-foreground">Target 300+ · estimated exam window, confirm on the official JAMB 2027 timetable.</p>
         </div>
       </section>
 
@@ -82,6 +112,40 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
       <section className="grid grid-cols-2 border-b border-border md:grid-cols-4">
         {[['Study streak', `${streakDays} days`], ['Topics mastered', `${masteredCount}/${totalTopics}`], ['Syllabus', `${progress}%`], ['Revisions due', String(revisionsDue)]].map(([label, value], index) => (
           <div key={label} className={`py-7 ${index % 2 === 0 ? 'pr-4' : 'border-l border-border pl-4'} md:border-l md:border-border md:px-6 ${index === 0 ? 'md:border-l-0 md:pl-0' : ''}`}><p className="text-xs text-muted-foreground">{label}</p><p className="mt-2 font-serif text-3xl">{value}</p></div>
+        ))}
+      </section>
+
+      <section className="grid border-b border-border md:grid-cols-[1.2fr_.8fr]">
+        <div className="py-8 md:border-r md:border-border md:pr-10">
+          <p className="page-kicker">Exam tip</p>
+          <motion.p key={tipIdx} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} className="mt-3 font-serif text-2xl leading-snug">{TIPS[tipIdx]}</motion.p>
+          <div className="mt-5 flex gap-1.5">{TIPS.map((_, i) => <span key={i} className={`h-1 w-6 transition-colors ${i === tipIdx ? 'bg-primary' : 'bg-border'}`} />)}</div>
+        </div>
+        <div className="py-8 md:pl-10">
+          <p className="page-kicker">Study reminders</p>
+          {notifState === 'granted' ? (
+            <p className="mt-3 text-sm leading-6 text-muted-foreground"><Bell className="mr-2 inline size-4 text-primary" />On. You'll be reminded at the start of each block in your timetable.</p>
+          ) : notifState === 'denied' ? (
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Reminders are blocked. Allow notifications for this site in your browser settings.</p>
+          ) : notifState === 'unsupported' ? (
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">This browser can't show reminders. Install the app to your home screen to get them.</p>
+          ) : (
+            <><p className="mt-3 text-sm leading-6 text-muted-foreground">Get a nudge when each study block in your timetable starts.</p><Button variant="outline" className="mt-5" onClick={enableReminders}><Bell /> Turn on reminders</Button></>
+          )}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 border-b border-border sm:grid-cols-3">
+        {[
+          { label: 'Study a topic', detail: 'Offline lessons + practice', icon: BookOpen, tab: 'syllabus' as const },
+          { label: 'Take a CBT', detail: 'Timed, exam-style', icon: ClipboardCheck, tab: 'cbt' as const },
+          { label: 'Ask the tutor', detail: 'Explanations on demand', icon: Brain, tab: 'tutor' as const },
+        ].map(({ label, detail, icon: Icon, tab }, i) => (
+          <motion.button key={tab} whileHover={{ x: 4 }} onClick={() => onNavigate(tab)} className={`group flex items-center gap-4 py-6 text-left ${i > 0 ? 'border-t border-border sm:border-l sm:border-t-0 sm:pl-6' : ''}`}>
+            <Icon className="size-6 text-primary" />
+            <span className="flex-1"><span className="block font-medium">{label}</span><span className="block text-xs text-muted-foreground">{detail}</span></span>
+            <ArrowRight className="size-4 text-muted-foreground transition-colors group-hover:text-primary" />
+          </motion.button>
         ))}
       </section>
 

@@ -25,7 +25,11 @@ export default function TutorChat() {
   const [showSidebar, setShowSidebar] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const displayName = user?.user_metadata?.display_name || localStorage.getItem('jamb-guest-name') || 'Student';
+  const [studentName, setStudentName] = useState(() => localStorage.getItem('jamb-student-name') || user?.user_metadata?.display_name || localStorage.getItem('jamb-guest-name') || '');
+  const knownName = studentName && !/^student$/i.test(studentName) ? studentName : '';
+  const displayName = knownName || 'Student';
+  const [nameInput, setNameInput] = useState('');
+  const saveName = () => { const n = nameInput.trim().slice(0, 40); if (!n) return; localStorage.setItem('jamb-student-name', n); setStudentName(n); };
 
   // Load conversations
   useEffect(() => {
@@ -115,7 +119,7 @@ export default function TutorChat() {
         },
         body: JSON.stringify({
           messages: [...messages, userMsg],
-          userName: displayName,
+          userName: knownName,
         }),
       });
 
@@ -183,8 +187,8 @@ export default function TutorChat() {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-xl font-black tracking-wider glow-green">🎓 ACE COACH</h2>
-          <p className="text-[10px] text-muted-foreground tracking-widest">YOUR STUDY COMPANION • ASK ANYTHING</p>
+          <h2 className="text-xl font-black tracking-wider glow-green">🎓 EXAMGUIDE TUTOR</h2>
+          <p className="text-[10px] text-muted-foreground tracking-widest">UTME 2027 STUDY COMPANION</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -236,7 +240,17 @@ export default function TutorChat() {
         {messages.length === 0 && (
           <div className="text-center py-12 space-y-4">
             <span className="text-4xl">🎓</span>
-            <p className="text-sm text-muted-foreground">Hi {displayName}! Ask me anything about JAMB.</p>
+            {knownName ? (
+              <p className="text-sm text-muted-foreground">Hi {knownName}! Ask me anything for UTME 2027.</p>
+            ) : (
+              <div className="mx-auto max-w-xs space-y-2">
+                <p className="text-sm text-foreground">What is your name?</p>
+                <div className="flex gap-2">
+                  <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveName()} placeholder="Your first name" className="flex-1 border border-border bg-background px-3 py-2 text-sm rounded-sm focus:border-primary focus:outline-none" />
+                  <button onClick={saveName} className="px-3 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-sm">Save</button>
+                </div>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2 justify-center">
               {['Explain Quadratic Equations', 'Summarize The Lekki Headmaster', 'Tips for Oral English', 'Solve: ∫2x dx'].map(q => (
                 <button
@@ -288,7 +302,7 @@ export default function TutorChat() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-          placeholder="Ask Coach anything about JAMB..."
+          placeholder="Ask anything for UTME 2027..."
           className="flex-1 bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
         />
         <button
