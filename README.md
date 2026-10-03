@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# JAMB Ace Coach
 
-## Project info
+Build a JAMB Mastery Machine app for a high-stakes 2026 candidate. The app must be lean, aggressive, and highly intuitive.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Core Logic:
 
-## How can I edit this code?
+The 'Activation' Dashboard: Every day starts at 5:30 AM. Show a prominent 'Machine Status' (Active/Resting).
 
-There are several ways of editing your application.
+Dynamic AOC Syllabus Tracker: Instead of a static list, create a checklist for 4 subjects (Maths, Physics, Chemistry, English). Use the 2026 JAMB Areas of Concentration (AOC). When a user checks a topic (e.g., 'Ketones' or 'Calculus'), it should move to a 'Mastered' section and trigger a 'Revision' reminder for 3 days later.
 
-**Use Lovable**
+The 'Human-Robot' Daily Flow: - 06:00-08:30: Morning Study (Two subjects, alternating daily).
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+09:00-13:00: 'Lesson Mode' (The app goes quiet).
 
-Changes made via Lovable will be committed automatically to this repo.
+13:00-14:30: 'Human Recharge' (Prompts for rest and food).
 
-**Use your preferred IDE**
+14:30-17:30: 'CBT Lab' (Timer and mistake logger).
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Mistake Log: A dedicated space to type in 'Questions I missed today' so they can be reviewed every Sunday.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+No Google Calendar: This app must be a standalone, local-first experience. It shouldn't feel like a tool; it should feel like a coach.
 
-Follow these steps:
+The Energy:
+
+The UI should be dark mode with high-contrast text. Use sharp, motivating language like 'Machine Activated,' 'Target 300+,' and 'Don't Stop Now.' It needs to understand that I am a human who gets tired, so include a 'Rest Mode' toggle that simplifies the view when I'm overwhelmed.
+
+Input Data: Pre-load the topic lists for:
+
+Math: Algebra, Calculus, AP/GP, Matrices.
+
+Chem: Organic (Ketones/Hydrocarbons), Stoichiometry, Redox.
+
+Physics: Mechanics, Electricity, Waves.
+
+English: The Lekki Headmaster, Concord, Oral English."
+
+Why this works for you:
+
+It knows the AOC: It won't let you miss the big topics.
+
+It respects the "Human": It explicitly includes that 1 PM rest period.
+
+It tracks what I can't: It will remember that you did "Indices" on Monday so it doesn't show it to you on Wednesday."" From Gemini.     Actually with this my main aim is to give you access to my Google calendar and some things so you can set times and remove and even Google alarm so you can access things . So normally I need to prepare for jamb and from Monday to Friday every 9am to 12pm I'm at lesson but by 1pm I'll be at home, a d I'll be writing jamb covering 4 subjects if English, maths, phyt, chemistry. And I'll be taking two two subjects per day that's phyics and English and the next day will be chemistry and maths. Do you'll know how you'll think of setting it that I'll have braks at the there and also help and assist my parent not using book to cover up, and I'll cover all topics of 2026 jamb in the 4 subjects, and I'll do CBT every day by the end , like after the plan of the day I'll do a test a mini CBT and every Wednesday, Saturday and Friday I'll do a general CBT comprising of all subjects, in jamb standard, and also in my day of each day I must do revisions of what I was taught previously or learnt previously like yesterday revise and answer some quick test that morning to make my brain fresh that I'm on it that yesterday work I go it and I should have an AI tutor that nevers behaves like an ai or a teacher but a compactor, so I am not craving for a one page website or drawer website or rose type of useless website you'd creates because this is about my success in life so I need to succeed my plan is to work hard flexible.
+
+This project was built with [Lovable](https://lovable.dev).
+
+**Live app**: https://jamb-ace-coach.lovable.app
+
+## Build with Lovable
+
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/3d8d138f-2a36-4436-a65a-a50777822504).
+
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+
+## Development
+
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+git clone <this-repository-url>
+cd <repository-name>
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
