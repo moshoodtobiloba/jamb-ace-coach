@@ -46,13 +46,9 @@ This project was built with [Lovable](https://lovable.dev).
 
 **Live app**: https://jamb-ace-coach.lovable.app
 
-## Build with Lovable
+https://jamb-ace-coach.vercel.app
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/3d8d138f-2a36-4436-a65a-a50777822504).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+*I'm Moshood Tobiloba also known as Tobi Tech, my profile is publicly visible. I'm a digital marketer, kindly visit my profile and schedule a booking today 😊*
 
 ## Development
 
