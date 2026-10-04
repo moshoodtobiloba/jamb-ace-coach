@@ -17,7 +17,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-3">
           <span className="text-3xl animate-pulse">🤖</span>
-          <p className="text-xs text-muted-foreground tracking-widest">MACHINE BOOTING...</p>
+          <p className="text-xs text-muted-foreground tracking-widest">OPENING EXAMGUIDE...</p>
         </div>
       </div>
     );

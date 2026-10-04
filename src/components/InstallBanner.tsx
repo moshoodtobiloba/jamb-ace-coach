@@ -51,7 +51,7 @@ export default function InstallBanner() {
           <div className="flex items-start gap-3">
             <span className="text-2xl">📱</span>
             <div className="flex-1">
-              <p className="text-sm font-bold text-foreground tracking-wider">INSTALL JAMB MACHINE</p>
+              <p className="text-sm font-bold text-foreground tracking-wider">INSTALL EXAMGUIDE</p>
               <p className="text-xs text-muted-foreground mt-1">Access offline. No browser needed. Like a real app.</p>
             </div>
             <button onClick={() => setShowBanner(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>

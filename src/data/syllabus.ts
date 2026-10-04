@@ -45,6 +45,9 @@ export const SYLLABUS: Topic[] = [
   { id: 'math-20', name: 'Statistics (Mean, Median, Mode)', subject: 'mathematics', category: 'Statistics' },
   { id: 'math-21', name: 'Probability', subject: 'mathematics', category: 'Statistics' },
   { id: 'math-22', name: 'Permutation & Combination', subject: 'mathematics', category: 'Statistics' },
+  { id: 'math-23', name: 'Euclidean Geometry & Circle Theorems', subject: 'mathematics', category: 'Geometry' },
+  { id: 'math-24', name: 'Data Representation', subject: 'mathematics', category: 'Statistics' },
+  { id: 'math-25', name: 'Measures of Dispersion', subject: 'mathematics', category: 'Statistics' },
 
   // PHYSICS
   { id: 'phy-1', name: 'Measurements & Units', subject: 'physics', category: 'Mechanics' },
@@ -71,6 +74,15 @@ export const SYLLABUS: Topic[] = [
   { id: 'phy-22', name: 'Electromagnetic Induction', subject: 'physics', category: 'Electricity' },
   { id: 'phy-23', name: 'Electronics (Diodes, Transistors)', subject: 'physics', category: 'Modern Physics' },
   { id: 'phy-24', name: 'Atomic & Nuclear Physics', subject: 'physics', category: 'Modern Physics' },
+  { id: 'phy-25', name: 'Projectile & Circular Motion', subject: 'physics', category: 'Mechanics' },
+  { id: 'phy-26', name: 'Hydrostatics (Archimedes & Floatation)', subject: 'physics', category: 'Mechanics' },
+  { id: 'phy-27', name: "Elasticity (Hooke's Law & Young's Modulus)", subject: 'physics', category: 'Mechanics' },
+  { id: 'phy-28', name: 'Thermal Expansion', subject: 'physics', category: 'Heat' },
+  { id: 'phy-29', name: 'Quantity of Heat (Specific & Latent Heat)', subject: 'physics', category: 'Heat' },
+  { id: 'phy-30', name: 'Magnetic Fields', subject: 'physics', category: 'Electricity' },
+  { id: 'phy-31', name: 'Radioactivity & Nuclear Energy', subject: 'physics', category: 'Modern Physics' },
+  { id: 'phy-32', name: 'Photoelectric Effect & Dual Nature', subject: 'physics', category: 'Modern Physics' },
+  { id: 'phy-33', name: 'Alternating Current Circuits', subject: 'physics', category: 'Electricity' },
 
   // CHEMISTRY
   { id: 'chem-1', name: 'Atomic Structure & Bonding', subject: 'chemistry', category: 'General Chemistry' },
@@ -92,6 +104,10 @@ export const SYLLABUS: Topic[] = [
   { id: 'chem-17', name: 'Polymers (Natural & Synthetic)', subject: 'chemistry', category: 'Organic Chemistry' },
   { id: 'chem-18', name: 'Industrial Chemistry', subject: 'chemistry', category: 'Applied Chemistry' },
   { id: 'chem-19', name: 'Environmental Chemistry', subject: 'chemistry', category: 'Applied Chemistry' },
+  { id: 'chem-20', name: 'Separation of Mixtures', subject: 'chemistry', category: 'General Chemistry' },
+  { id: 'chem-21', name: 'Solubility', subject: 'chemistry', category: 'Physical Chemistry' },
+  { id: 'chem-22', name: 'Hydrogen', subject: 'chemistry', category: 'Inorganic Chemistry' },
+  { id: 'chem-23', name: 'Petroleum', subject: 'chemistry', category: 'Organic Chemistry' },
 
   // ENGLISH
   { id: 'eng-1', name: 'Vowel Sounds (Monophthongs & Diphthongs)', subject: 'english', category: 'Oral English' },
@@ -111,7 +127,8 @@ export const SYLLABUS: Topic[] = [
   { id: 'eng-15', name: 'Direct & Indirect Speech', subject: 'english', category: 'Lexis & Structure' },
   { id: 'eng-16', name: 'The Life Changer – Khadija Abubakar Jalli', subject: 'english', category: 'Literature' },
   { id: 'eng-17', name: 'In Dependence – Sarah Ladipo Manyika', subject: 'english', category: 'Literature' },
-  { id: 'eng-18', name: 'The Lekki Headmaster – Garba Alabi', subject: 'english', category: 'Literature' },
+  { id: 'eng-18', name: 'The Lekki Headmaster – Kabir Alabi Garba', subject: 'english', category: 'Literature' },
+  { id: 'eng-19', name: 'Sentence Structures', subject: 'english', category: 'Lexis & Structure' },
 ];
 
 // Daily schedule alternation: Day A = Physics + English, Day B = Chemistry + Math
@@ -138,11 +155,11 @@ export interface ScheduleBlock {
 
 export function getDailySchedule(subjects: [Subject, Subject]): ScheduleBlock[] {
   return [
-    { time: '05:30-06:00', label: 'WAKE UP & ACTIVATE', description: 'Machine boots. Cold water. Focus.', type: 'revision', icon: '⚡' },
+    { time: '05:30-06:00', label: 'WAKE UP & ACTIVATE', description: 'Wake up, freshen up, focus.', type: 'revision', icon: '⚡' },
     { time: '06:00-06:45', label: 'REVISION DRILL', description: 'Review yesterday\'s topics. Quick-fire recall.', type: 'revision', icon: '🔄' },
     { time: '06:45-08:30', label: `MORNING ASSAULT: ${SUBJECT_LABELS[subjects[0]]}`, description: `Deep study session — ${SUBJECT_LABELS[subjects[0]]}`, type: 'study', icon: '📖' },
     { time: '08:30-09:00', label: 'FUEL & PREP', description: 'Eat. Prepare for lesson.', type: 'rest', icon: '🍽️' },
-    { time: '09:00-13:00', label: 'LESSON MODE', description: 'At lesson. Machine on standby.', type: 'lesson', icon: '🏫' },
+    { time: '09:00-13:00', label: 'LESSON MODE', description: 'At school or lesson.', type: 'lesson', icon: '🏫' },
     { time: '13:00-14:30', label: 'HUMAN RECHARGE', description: 'Eat. Rest. You are human. Recover.', type: 'rest', icon: '😴' },
     { time: '14:30-16:00', label: `AFTERNOON ASSAULT: ${SUBJECT_LABELS[subjects[1]]}`, description: `Deep study session — ${SUBJECT_LABELS[subjects[1]]}`, type: 'study', icon: '📖' },
     { time: '16:00-16:15', label: 'BREAK', description: 'Walk. Stretch. Breathe.', type: 'rest', icon: '🚶' },

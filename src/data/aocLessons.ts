@@ -1,5 +1,6 @@
 import type { Topic } from './syllabus';
 import { SUBJECT_LABELS } from './syllabus';
+import { getTopicNote } from './topicNotes';
 import { AOC_SEEN_KEY, getQuestionsBySubject, getQuestionsForTopic, selectQuestionsForSession, type Question } from './questions';
 
 function unique<T>(items: T[]): T[] {
@@ -7,8 +8,9 @@ function unique<T>(items: T[]): T[] {
 }
 
 function getLocalQuestions(topic: Topic): Question[] {
+  const own = getTopicNote(topic.id)?.practice ?? [];
   const exact = getQuestionsForTopic(topic.subject, topic.name);
-  if (exact.length > 0) return exact;
+  if (own.length + exact.length > 0) return [...own, ...exact];
   return getQuestionsBySubject(topic.subject).slice(0, 12);
 }
 
@@ -19,46 +21,46 @@ function formatOptions(question: Question): string {
 }
 
 export function getOfflinePracticeQuestions(topic: Topic, count = 10): Question[] {
-  return selectQuestionsForSession(getLocalQuestions(topic), count, AOC_SEEN_KEY);
+  const own = getTopicNote(topic.id)?.practice ?? [];
+  const bank = getQuestionsForTopic(topic.subject, topic.name);
+  const picked = selectQuestionsForSession(bank, Math.max(0, count - own.length), AOC_SEEN_KEY);
+  const result = [...own, ...picked];
+  return result.length > 0 ? result.slice(0, count) : selectQuestionsForSession(getLocalQuestions(topic), count, AOC_SEEN_KEY);
 }
 
 export function buildOfflineLessonMarkdown(topic: Topic): string {
-  const questions = getLocalQuestions(topic);
-  const examples = questions.slice(0, 3);
-  const keyIdeas = unique(questions.map((question) => question.explanation.trim()).filter(Boolean)).slice(0, 6);
-  const quickChecks = questions.slice(3, 8);
-
+  const note = getTopicNote(topic.id);
+  const questions = getQuestionsForTopic(topic.subject, topic.name);
+  const examples = (questions.length ? questions : note?.practice ?? []).slice(0, 2);
   return [
     `## ${topic.name}`,
     '',
-    '### 📖 What Is This? (Offline Lesson)',
-    `This lesson is stored inside your app, so it works without internet connection. It focuses on **${topic.name}** in **${SUBJECT_LABELS[topic.subject]}** and follows the same exam direction as your CBT practice.`,
+    `**${SUBJECT_LABELS[topic.subject]} · ${topic.category}** — aligned to the JAMB UTME syllabus for the 2027 exam. Works without data.`,
     '',
-    `**Topic family:** ${topic.category}`,
-    '',
-    '### 🔰 Core Ideas You Must Know',
-    ...(keyIdeas.length > 0
-      ? keyIdeas.map((idea) => `- ${idea}`)
-      : ['- Study the worked examples and the practice section below for the main patterns in this topic.']),
-    '',
-    '### 📘 Worked Examples from Your Stored Question Bank',
-    ...examples.flatMap((question, index) => [
-      `#### Example ${index + 1}`,
-      `**Question:** ${question.question}`,
-      formatOptions(question),
-      `**Correct answer:** ${question.answer}. ${question.options[question.answer]}`,
-      `**Explanation:** ${question.explanation}`,
+    ...(note ? [
+      '### What JAMB expects you to do',
+      ...note.objectives.map((o) => `- ${o}`),
       '',
-    ]),
-    '### ⚡ Exam Clues',
+      '### Key points',
+      ...note.points.map((p) => `- ${p}`),
+      '',
+      ...(note.formulas?.length ? ['### Formulas to memorise', ...note.formulas.map((f) => `- ${f}`), ''] : []),
+      ...(note.traps?.length ? ['### Common traps', ...note.traps.map((t) => `- ${t}`), ''] : []),
+    ] : []),
+    ...(examples.length ? ['### Worked examples', ...examples.flatMap((question, index) => [
+      `**Example ${index + 1}.** ${question.question}`,
+      '',
+      formatOptions(question),
+      '',
+      `**Answer: ${question.answer}.** ${question.explanation}`,
+      '',
+    ])] : []),
+    '### Exam clues',
     '- Read the exact keyword first before calculating or choosing an option.',
-    '- Watch out for familiar traps: wrong unit, wrong sign, wrong base, wrong tense, or a distractor that looks almost correct.',
-    '- If a question feels long, break it into: what is given, what is asked, and which rule/formula solves it.',
+    '- Watch for traps: wrong unit, wrong sign, wrong base, wrong tense, or an option that looks almost right.',
+    '- Break long questions into: what is given, what is asked, which rule solves it.',
     '',
-    '### 🧠 Quick Self-Check',
-    ...quickChecks.map((question, index) => `${index + 1}. ${question.question}`),
-    '',
-    '### 🎯 Interactive Practice',
-    'Use the offline practice box below to answer with A, B, C, or D and get the explanation immediately.',
+    '### Classwork',
+    'Pick A, B, C or D below — your answer is marked immediately with the correction.',
   ].join('\n');
 }
