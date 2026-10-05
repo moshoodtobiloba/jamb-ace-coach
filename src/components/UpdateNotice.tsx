@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { isPreviewHost } from '@/lib/registerSW';
 
 declare const __BUILD_ID__: string;
 
@@ -21,7 +22,7 @@ async function hardRefresh() {
 export default function UpdateNotice() {
   const [latest, setLatest] = useState<string | null>(null);
   useEffect(() => {
-    if (!import.meta.env.PROD) return;
+    if (isPreviewHost) return;
     const check = async () => {
       if (!navigator.onLine) return;
       try {
