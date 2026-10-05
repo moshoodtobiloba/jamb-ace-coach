@@ -4,6 +4,8 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
+const BUILD_ID = String(Date.now());
+
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -12,15 +14,22 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
+  define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [
     react(),
+    {
+      name: "emit-version",
+      generateBundle() {
+        this.emitFile({ type: "asset", fileName: "version.json", source: JSON.stringify({ id: BUILD_ID }) });
+      },
+    },
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "apple-touch-icon.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        navigateFallbackDenylist: [/^\/~oauth/],
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/version\.json/],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
