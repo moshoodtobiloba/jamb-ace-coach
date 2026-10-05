@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     {
       name: "emit-version",
-      generateBundle() {
+      generateBundle(this: { emitFile: (f: { type: "asset"; fileName: string; source: string }) => string }) {
         this.emitFile({ type: "asset", fileName: "version.json", source: JSON.stringify({ id: BUILD_ID }) });
       },
     },

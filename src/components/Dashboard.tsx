@@ -62,7 +62,7 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
   const subjects = getTodaySubjects(time);
   const [ttVersion, setTtVersion] = useState(0);
   useEffect(() => { const h = () => setTtVersion(v => v + 1); window.addEventListener('timetable-updated', h); window.addEventListener('storage', h); return () => { window.removeEventListener('timetable-updated', h); window.removeEventListener('storage', h); }; }, []);
-  const schedule = (() => { void ttVersion; const hasCustom = !!localStorage.getItem('jamb-custom-timetable'); return hasCustom ? getStoredTimetable() : getDailySchedule(subjects); })();
+  const schedule = (() => { void ttVersion; const hasCustom = !!localStorage.getItem('jamb-custom-timetable'); return hasCustom ? getStoredTimetable().map(b => ({ ...b, type: "study" as const })) : getDailySchedule(subjects); })();
   const currentBlockIdx = getCurrentBlock(schedule);
   const progress = totalTopics ? Math.round((masteredCount / totalTopics) * 100) : 0;
   const currentBlock = currentBlockIdx >= 0 ? schedule[currentBlockIdx] : schedule[0];
