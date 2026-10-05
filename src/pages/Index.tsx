@@ -19,6 +19,7 @@ import NotificationManager from '@/components/NotificationManager';
 import EditableTimetable from '@/components/EditableTimetable';
 import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 import SurveyResponses from '@/components/SurveyResponses';
+import VersionBadge from '@/components/VersionBadge';
 import UpdateNotice from '@/components/UpdateNotice';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -92,7 +93,7 @@ const Index = () => {
               <span className="mt-1 block text-[9px] font-bold uppercase text-primary" style={{ letterSpacing: '.18em' }}>UTME 2027</span></span></span>
             </button>
             <div className="flex items-center gap-3">
-              <span className="hidden text-xs text-muted-foreground sm:block">{pageNames[activeTab]}</span>
+              <VersionBadge />
               <Button variant="outline" size="icon" onClick={() => setMenuOpen(true)} aria-label="Open main menu">
                 <Menu className="size-5" />
               </Button>
@@ -150,7 +151,7 @@ const Index = () => {
                 <button onClick={() => { store.toggleRestMode(); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><Moon className="size-5" /><span>Rest mode</span></button>
                 {isAdmin && <button onClick={() => { setShowSurveys(true); setMenuOpen(false); }} className="editorial-row flex w-full items-center gap-4 text-left"><ClipboardCheck className="size-5" /><span>Survey responses</span></button>}
               </nav>
-              <div className="border-t border-border p-6"><Button variant="outline" className="w-full justify-between" onClick={signOut}>Sign out <LogOut /></Button></div>
+              <div className="border-t border-border p-6"><div className="mb-3"><VersionBadge /></div><Button variant="outline" className="w-full justify-between" onClick={signOut}>Sign out <LogOut /></Button></div>
             </motion.aside>
           </motion.div>
         )}
