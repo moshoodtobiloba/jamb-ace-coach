@@ -47,7 +47,17 @@ export default function EditableTimetable({ isOpen, onClose }: Props) {
 
   useEffect(() => {
     localStorage.setItem(CUSTOM_TIMETABLE_KEY, JSON.stringify(blocks));
+    window.dispatchEvent(new Event('timetable-updated'));
   }, [blocks]);
+
+  const addBlock = () => {
+    const id = `b${Date.now()}`;
+    const nb = { id, time: '19:00-20:00', label: 'NEW PERIOD', description: 'Describe this period', icon: '📌' };
+    setBlocks(prev => [...prev, nb]);
+    startEdit(nb);
+  };
+  const deleteBlock = (id: string) => setBlocks(prev => prev.filter(b => b.id !== id));
+  const sortBlocks = (list: TimeBlock[]) => [...list].sort((a, b) => a.time.localeCompare(b.time));
 
   const startEdit = (block: TimeBlock) => {
     setEditingId(block.id);
@@ -60,13 +70,12 @@ export default function EditableTimetable({ isOpen, onClose }: Props) {
     if (!editingId) return;
     setBlocks(prev => prev.map(b =>
       b.id === editingId ? { ...b, label: editLabel, time: editTime, description: editDesc } : b
-    ));
+    ).sort((a, b) => a.time.localeCompare(b.time)));
     setEditingId(null);
   };
 
   const resetToDefault = () => {
-    setBlocks(DEFAULT_BLOCKS);
-    localStorage.removeItem(CUSTOM_TIMETABLE_KEY);
+    setBlocks(sortBlocks(DEFAULT_BLOCKS));
   };
 
   if (!isOpen) return null;
@@ -89,7 +98,7 @@ export default function EditableTimetable({ isOpen, onClose }: Props) {
           </div>
 
           <p className="text-xs text-muted-foreground mb-4 tracking-wider">
-            Tap any block to customize your schedule. Notifications will follow your custom times.
+            Tap any period to edit or delete it, or add a new one. Changes show on your home page right away. Notifications will follow your custom times.
           </p>
 
           <div className="space-y-2">
@@ -126,6 +135,9 @@ export default function EditableTimetable({ isOpen, onClose }: Props) {
                       <button onClick={() => setEditingId(null)} className="flex-1 py-2 border border-border rounded-lg text-xs text-muted-foreground">
                         Cancel
                       </button>
+                      <button onClick={() => { deleteBlock(block.id); setEditingId(null); }} className="flex-1 py-2 border border-destructive text-destructive rounded-lg text-xs font-bold">
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ) : (
@@ -147,6 +159,9 @@ export default function EditableTimetable({ isOpen, onClose }: Props) {
           </div>
 
           <div className="mt-4 flex gap-3">
+            <button onClick={addBlock} className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-bold">
+              ＋ Add period
+            </button>
             <button
               onClick={resetToDefault}
               className="flex-1 py-3 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

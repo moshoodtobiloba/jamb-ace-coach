@@ -19,6 +19,7 @@ import NotificationManager from '@/components/NotificationManager';
 import EditableTimetable from '@/components/EditableTimetable';
 import ThemeSettings, { initTheme } from '@/components/ThemeSettings';
 import SurveyResponses from '@/components/SurveyResponses';
+import UpdateNotice from '@/components/UpdateNotice';
 import { supabase } from '@/integrations/supabase/client';
 
 type Tab = 'dashboard' | 'syllabus' | 'cbt' | 'mistakes' | 'tutor';
@@ -80,6 +81,7 @@ const Index = () => {
       <NotificationManager schedule={schedule} />
       <AskTutorPopup disabled={activeTab === 'cbt'} />
       <InstallBanner />
+      <UpdateNotice />
 
       {!store.restMode && (
         <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">

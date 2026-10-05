@@ -6,3 +6,6 @@
 - [x] Logo/icons
 - [x] Motion
 - [ ] Survey email (blocked: needs owned domain)
+- [x] Picture slideshow on home
+- [x] New-version notice
+- [x] Timetable on home + add/delete periods

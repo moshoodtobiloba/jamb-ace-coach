@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Bell, BookOpen, Brain, ClipboardCheck, Moon, RotateCcw } from 'lucide-react';
+import { getStoredTimetable } from '@/components/EditableTimetable';
+import HomeCarousel from '@/components/HomeCarousel';
 import { requestNotificationPermission } from '@/components/NotificationManager';
 import { Button } from '@/components/ui/button';
 import { getTodaySubjects, getDailySchedule, isGeneralCBTDay, SUBJECT_LABELS } from '@/data/syllabus';
@@ -58,7 +60,9 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
   useEffect(() => { const timer = setInterval(() => setTime(new Date()), 60000); return () => clearInterval(timer); }, []);
 
   const subjects = getTodaySubjects(time);
-  const schedule = getDailySchedule(subjects);
+  const [ttVersion, setTtVersion] = useState(0);
+  useEffect(() => { const h = () => setTtVersion(v => v + 1); window.addEventListener('timetable-updated', h); window.addEventListener('storage', h); return () => { window.removeEventListener('timetable-updated', h); window.removeEventListener('storage', h); }; }, []);
+  const schedule = (() => { void ttVersion; const hasCustom = !!localStorage.getItem('jamb-custom-timetable'); return hasCustom ? getStoredTimetable().map(b => ({ ...b, type: "study" as const })) : getDailySchedule(subjects); })();
   const currentBlockIdx = getCurrentBlock(schedule);
   const progress = totalTopics ? Math.round((masteredCount / totalTopics) * 100) : 0;
   const currentBlock = currentBlockIdx >= 0 ? schedule[currentBlockIdx] : schedule[0];
@@ -75,11 +79,7 @@ export default function Dashboard({ restMode, onToggleRest, onNavigate, streakDa
 
   return (
     <div>
-      <div className="-mx-5 mb-8 overflow-hidden border-y border-border bg-secondary py-2 lg:-mx-8" aria-hidden="true">
-        <motion.div className="flex w-max gap-10 whitespace-nowrap text-xs font-medium text-secondary-foreground" animate={{ x: ['0%', '-50%'] }} transition={{ duration: 40, ease: 'linear', repeat: Infinity }}>
-          {[...TICKER, ...TICKER].map((t, i) => <span key={i} className="flex items-center gap-10">{t}<span className="text-primary">◆</span></span>)}
-        </motion.div>
-      </div>
+      <HomeCarousel />
       <section className="grid gap-8 border-b border-border pb-10 md:grid-cols-[1.5fr_.7fr] md:items-end">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <p className="page-kicker">Your study briefing · {date}</p>
