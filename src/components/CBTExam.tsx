@@ -1,5 +1,4 @@
 import { SYLLABUS } from '@/data/syllabus';
-import { getTopicNote } from '@/data/topicNotes';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MathMarkdown from '@/components/MathMarkdown';
@@ -113,9 +112,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
   const startPractice = () => {
     let qs = getQuestionsBySubject(practiceSubject);
     if (practiceTopic !== 'all') {
-      const topicId = SYLLABUS.find(t => t.subject === practiceSubject && t.name === practiceTopic)?.id;
-      const notePractice = topicId ? getTopicNote(topicId)?.practice ?? [] : [];
-      qs = [...getQuestionsForTopic(practiceSubject, practiceTopic), ...notePractice];
+      qs = getQuestionsForTopic(practiceSubject, practiceTopic);
     }
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
