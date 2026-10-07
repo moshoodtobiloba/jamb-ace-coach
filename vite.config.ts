@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,ico,png,svg,woff2,jpg}"],
         navigateFallback: null,
+        importScripts: ["notif-sw.js"],
         navigateFallbackDenylist: [/^\/~oauth/, /^\/version\.json/],
         skipWaiting: true,
         clientsClaim: true,

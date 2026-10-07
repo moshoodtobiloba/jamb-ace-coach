@@ -13,7 +13,7 @@ export default function AOCQuiz({ questions }: AOCQuizProps) {
 
   if (usableQuestions.length === 0) return null;
 
-  const currentQuestion = usableQuestions[currentIndex];
+  const currentQuestion = usableQuestions[Math.min(currentIndex, usableQuestions.length - 1)];
   const selected = answers[currentQuestion.id];
   const revealed = Boolean(selected);
   const isLast = currentIndex === usableQuestions.length - 1;
@@ -106,7 +106,7 @@ export default function AOCQuiz({ questions }: AOCQuizProps) {
                 setAnswers({});
                 return;
               }
-              setCurrentIndex((prev) => prev + 1);
+              setCurrentIndex((prev) => Math.min(usableQuestions.length - 1, prev + 1));
             }}
             disabled={!revealed}
             className="rounded px-3 py-2 text-xs font-bold tracking-wider bg-primary text-primary-foreground disabled:opacity-40"

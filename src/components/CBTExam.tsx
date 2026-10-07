@@ -1,3 +1,5 @@
+import { SYLLABUS } from '@/data/syllabus';
+import { getTopicNote } from '@/data/topicNotes';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MathMarkdown from '@/components/MathMarkdown';
@@ -67,8 +69,8 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
   const changeQuestion = useCallback((newIdx: number) => {
     trackTimeOnQ(currentQ);
-    setCurrentQ(newIdx);
-  }, [currentQ, trackTimeOnQ]);
+    setCurrentQ(Math.max(0, Math.min(questions.length - 1, newIdx)));
+  }, [questions.length, currentQ, trackTimeOnQ]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
     const handleKey = (e: KeyboardEvent) => {
       const key = e.key.toUpperCase();
       if (['A', 'B', 'C', 'D'].includes(key)) {
-        setAnswers(prev => ({ ...prev, [questions[currentQ].id]: key as 'A' | 'B' | 'C' | 'D' }));
+        setAnswers(prev => ({ ...prev, [questions[currentQ]?.id ?? '']: key as 'A' | 'B' | 'C' | 'D' }));
       } else if (key === 'N' || e.key === 'ArrowRight') {
         changeQuestion(Math.min(currentQ + 1, questions.length - 1));
       } else if (key === 'P' || e.key === 'ArrowLeft') {
@@ -110,7 +112,11 @@ export default function CBTExam({ onSessionComplete, sessions }: CBTExamProps) {
 
   const startPractice = () => {
     let qs = getQuestionsBySubject(practiceSubject);
-    if (practiceTopic !== 'all') qs = getQuestionsForTopic(practiceSubject, practiceTopic);
+    if (practiceTopic !== 'all') {
+      const topicId = SYLLABUS.find(t => t.subject === practiceSubject && t.name === practiceTopic)?.id;
+      const notePractice = topicId ? getTopicNote(topicId)?.practice ?? [] : [];
+      qs = [...getQuestionsForTopic(practiceSubject, practiceTopic), ...notePractice];
+    }
     if (practiceYear !== 'all') qs = qs.filter(q => q.year === practiceYear);
     if (qs.length === 0) return;
     qs = selectQuestionsForSession(qs, qs.length, EXAM_SEEN_KEY);
