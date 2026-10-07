@@ -1,5 +1,6 @@
 import { SYLLABUS, Subject } from './syllabus';
 import { ALL_YEARLY_QUESTIONS } from './yearlyQuestions';
+import { TOPIC_NOTES } from './topicNotes';
 
 export interface Question {
   id: string;
@@ -1374,6 +1375,7 @@ export function generateCustomExam(config: {
 const mergedMap = new Map<string, Question>();
 for (const q of QUESTION_BANK) mergedMap.set(q.id, q);
 for (const q of ALL_YEARLY_QUESTIONS) mergedMap.set(q.id, q);
+for (const note of Object.values(TOPIC_NOTES)) for (const q of note.practice ?? []) mergedMap.set(q.id, q);
 export const ALL_QUESTIONS: Question[] = Array.from(mergedMap.values());
 
 export function getSubjectTopics(subject: Subject): string[] {
