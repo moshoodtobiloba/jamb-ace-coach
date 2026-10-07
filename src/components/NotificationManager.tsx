@@ -29,13 +29,13 @@ export async function requestNotificationPermission() {
   }
 }
 
-async function showReminder(title: string, body: string, tag: string, url = '/?tab=dashboard') {
-  const opts = { body, icon: '/logo-192.png', badge: '/logo-192.png', tag, renotify: true, requireInteraction: true, data: { url } } as NotificationOptions;
+async function showReminder(title: string, body: string, tag: string) {
+  const opts = { body, icon: '/logo-192.png', badge: '/logo-192.png', tag } as NotificationOptions;
   try {
     const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined;
     if (reg) { await reg.showNotification(title, opts); return; }
   } catch {}
-  try { const n = new Notification(title, opts); n.onclick = () => { window.focus(); window.location.href = url; n.close(); }; } catch {}
+  try { new Notification(title, opts); } catch {}
 }
 
 export function useScheduleNotifications(schedule: ScheduleBlock[]) {
@@ -55,9 +55,7 @@ export function useScheduleNotifications(schedule: ScheduleBlock[]) {
         const notifKey = `jamb-notif-${now.toDateString()}-${block.time}`;
         if (!localStorage.getItem(notifKey)) {
           localStorage.setItem(notifKey, 'true');
-          const l = block.label.toLowerCase();
-          const tab = l.includes('cbt') ? 'cbt' : l.includes('mistake') ? 'mistakes' : l.includes('revision') || l.includes('study') ? 'syllabus' : 'dashboard';
-          showReminder('EXAMGUIDE · time to study', `${block.label}: ${block.description}`, `exg-${now.toDateString()}-${block.time}`, `/?tab=${tab}`);
+          showReminder('EXAMGUIDE · time to study', `${block.label}: ${block.description}`, block.time);
         }
       }
     }

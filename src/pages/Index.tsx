@@ -38,15 +38,7 @@ const pageNames: Record<Tab, string> = {
 };
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    const t = new URLSearchParams(window.location.search).get('tab') as Tab | null;
-    return t && ['dashboard', 'syllabus', 'cbt', 'mistakes', 'tutor'].includes(t) ? t : 'dashboard';
-  });
-  useEffect(() => {
-    const onMsg = (e: MessageEvent) => { if (e.data?.type === 'open-tab') setActiveTab(e.data.tab); };
-    navigator.serviceWorker?.addEventListener('message', onMsg);
-    return () => navigator.serviceWorker?.removeEventListener('message', onMsg);
-  }, []);
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
   const [utilityPanel, setUtilityPanel] = useState<'display' | 'help' | null>(null);
   const [showTheme, setShowTheme] = useState(false);
